@@ -141,6 +141,25 @@ object ApiClient {
         }
     }
 
+    suspend fun deleteLink(serverUrl: String, apiKey: String, linkId: Int): Result =
+        withContext(Dispatchers.IO) {
+            try {
+                val conn = URL("$serverUrl/api/v1/links/$linkId").openConnection() as HttpURLConnection
+                conn.requestMethod = "DELETE"
+                conn.setRequestProperty("X-API-Key", apiKey)
+                conn.connectTimeout = 10_000
+                conn.readTimeout = 10_000
+                when (conn.responseCode) {
+                    204 -> Result(true, "Lien supprimé")
+                    404 -> Result(false, "Lien introuvable")
+                    401 -> Result(false, "Clé API invalide")
+                    else -> Result(false, "Erreur serveur (${conn.responseCode})")
+                }
+            } catch (e: Exception) {
+                Result(false, "Erreur réseau : ${e.message}")
+            }
+        }
+
     suspend fun addLink(
         serverUrl: String,
         apiKey: String,
