@@ -8,9 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    container:
-      image: mingc/android-build-box:latest
+    runs-on: lab  # runner sur LAN_HOST_1 avec Android SDK (mingc/android-build-box)
 
     steps:
       - uses: actions/checkout@v4
