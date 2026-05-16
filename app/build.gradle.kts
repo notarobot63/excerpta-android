@@ -12,6 +12,7 @@ fun String.runCommand(): String? = try {
 } catch (_: Exception) { null }
 
 val gitCommit = "git rev-parse --short HEAD".runCommand() ?: "unknown"
+val gitVersionCode = "git rev-list --count HEAD".runCommand()?.toIntOrNull() ?: 1
 
 android {
     namespace = "xyz.notarobot.linky"
@@ -21,7 +22,7 @@ android {
         applicationId = "xyz.notarobot.linky"
         minSdk = 26
         targetSdk = 34
-        versionCode = 1
+        versionCode = gitVersionCode
         versionName = "1.0"
         buildConfigField("String", "GIT_COMMIT", "\"$gitCommit\"")
     }
@@ -74,4 +75,5 @@ dependencies {
     implementation("androidx.recyclerview:recyclerview:1.3.2")
     implementation("io.coil-kt:coil:2.6.0")
     implementation("androidx.security:security-crypto:1.0.0")
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 }

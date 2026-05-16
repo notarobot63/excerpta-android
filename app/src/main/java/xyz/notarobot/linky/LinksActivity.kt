@@ -1,5 +1,7 @@
 package xyz.notarobot.linky
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
@@ -18,7 +20,9 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
@@ -44,6 +48,8 @@ class LinksActivity : AppCompatActivity() {
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var drawerNav: LinearLayout
     private lateinit var toolbar: MaterialToolbar
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var swipeRefresh: SwipeRefreshLayout
 
     private var selectedNavView: View? = null
 
@@ -62,7 +68,8 @@ class LinksActivity : AppCompatActivity() {
         drawerLayout = findViewById(R.id.drawerLayout)
         drawerNav = findViewById(R.id.drawerNav)
         toolbar = findViewById(R.id.toolbar)
-        val recycler = findViewById<RecyclerView>(R.id.recyclerView)
+        recyclerView = findViewById(R.id.recyclerView)
+        swipeRefresh = findViewById(R.id.swipeRefresh)
         val progress = findViewById<LinearProgressIndicator>(R.id.progress)
         val tvEmpty = findViewById<View>(R.id.tvEmpty)
         val etSearch = findViewById<TextInputEditText>(R.id.etSearch)
@@ -83,10 +90,12 @@ class LinksActivity : AppCompatActivity() {
             }
         }
 
-        recycler.layoutManager = LinearLayoutManager(this)
-        recycler.adapter = adapter
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.adapter = adapter
 
-        recycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        swipeRefresh.setOnRefreshListener { resetAndLoad() }
+
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(rv: RecyclerView, dx: Int, dy: Int) {
                 val lm = rv.layoutManager as LinearLayoutManager
                 if (!isLoading && currentPage < totalPages &&
@@ -96,6 +105,8 @@ class LinksActivity : AppCompatActivity() {
                 }
             }
         })
+
+        adapter.onLongClick = { item -> showLinkMenu(item) }
 
         etSearch.addTextChangedListener(object : android.text.TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, st: Int, c: Int, a: Int) = Unit
@@ -124,12 +135,13 @@ class LinksActivity : AppCompatActivity() {
 
         loadPage(1, append = false)
         buildDrawer()
-        checkForUpdate(recycler)
+        checkForUpdate(recyclerView)
     }
 
     override fun onResume() {
         super.onResume()
         if (ThemeHelper.needsRecreate(this)) recreate()
+        else buildDrawer()
     }
 
     // ── Drawer ──────────────────────────────────────────────────────────────
@@ -321,6 +333,7 @@ class LinksActivity : AppCompatActivity() {
                 groupId = currentGroupId,
             )
             progressView.visibility = View.GONE
+            swipeRefresh.isRefreshing = false
             isLoading = false
             currentPage = result.page
             totalPages = result.totalPages
@@ -329,6 +342,51 @@ class LinksActivity : AppCompatActivity() {
             adapter.submitList(newList)
             emptyView.visibility = if (newList.isEmpty()) View.VISIBLE else View.GONE
         }
+    }
+
+    // ── Menu contextuel (appui long) ────────────────────────────────────────
+
+    private fun showLinkMenu(item: ApiClient.LinkItem) {
+        val options = arrayOf("Ouvrir", "Copier l'URL", "Supprimer")
+        MaterialAlertDialogBuilder(this)
+            .setTitle(item.title.ifBlank { item.url })
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> startActivity(Intent(Intent.ACTION_VIEW, android.net.Uri.parse(item.url)))
+                    1 -> {
+                        val clip = ClipData.newPlainText("url", item.url)
+                        (getSystemService(CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(clip)
+                        Snackbar.make(recyclerView, "URL copiée", Snackbar.LENGTH_SHORT).show()
+                    }
+                    2 -> confirmDelete(item)
+                }
+            }
+            .show()
+    }
+
+    private fun confirmDelete(item: ApiClient.LinkItem) {
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Supprimer ce lien ?")
+            .setMessage(item.title.ifBlank { item.url })
+            .setNegativeButton("Annuler", null)
+            .setPositiveButton("Supprimer") { _, _ ->
+                lifecycleScope.launch {
+                    val result = ApiClient.deleteLink(
+                        Prefs.serverUrl(this@LinksActivity),
+                        Prefs.apiKey(this@LinksActivity),
+                        item.id,
+                    )
+                    if (result.success) {
+                        val updated = adapter.currentList.filter { it.id != item.id }
+                        adapter.submitList(updated)
+                        emptyView.visibility = if (updated.isEmpty()) View.VISIBLE else View.GONE
+                        Snackbar.make(recyclerView, "Lien supprimé", Snackbar.LENGTH_SHORT).show()
+                    } else {
+                        Snackbar.make(recyclerView, result.message, Snackbar.LENGTH_LONG).show()
+                    }
+                }
+            }
+            .show()
     }
 
     // ── Mise à jour ──────────────────────────────────────────────────────────

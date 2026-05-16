@@ -17,6 +17,8 @@ import java.util.Locale
 
 class LinkAdapter : ListAdapter<ApiClient.LinkItem, LinkAdapter.VH>(DIFF) {
 
+    var onLongClick: ((ApiClient.LinkItem) -> Unit)? = null
+
     inner class VH(view: View) : RecyclerView.ViewHolder(view) {
         val favicon: ImageView = view.findViewById(R.id.imgFavicon)
         val domain: TextView = view.findViewById(R.id.tvDomain)
@@ -69,6 +71,11 @@ class LinkAdapter : ListAdapter<ApiClient.LinkItem, LinkAdapter.VH>(DIFF) {
 
         holder.itemView.setOnClickListener {
             it.context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(item.url)))
+        }
+
+        holder.itemView.setOnLongClickListener {
+            onLongClick?.invoke(item)
+            true
         }
     }
 
