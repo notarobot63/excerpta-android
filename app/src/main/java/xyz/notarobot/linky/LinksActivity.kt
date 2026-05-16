@@ -1,16 +1,24 @@
 package xyz.notarobot.linky
 
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
+import android.util.TypedValue
+import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.widget.LinearLayout
+import android.widget.TextView
+import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
@@ -28,6 +36,16 @@ class LinksActivity : AppCompatActivity() {
     private var isLoading = false
     private var searchJob: Job? = null
     private var currentQuery = ""
+    private var currentTag: String? = null
+    private var currentGroupId: Int? = null
+
+    private lateinit var progressView: View
+    private lateinit var emptyView: View
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var drawerNav: LinearLayout
+    private lateinit var toolbar: MaterialToolbar
+
+    private var selectedNavView: View? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,22 +59,35 @@ class LinksActivity : AppCompatActivity() {
         ThemeHelper.apply(this)
         setContentView(R.layout.activity_links)
 
-        val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
-        setSupportActionBar(toolbar)
-
+        drawerLayout = findViewById(R.id.drawerLayout)
+        drawerNav = findViewById(R.id.drawerNav)
+        toolbar = findViewById(R.id.toolbar)
         val recycler = findViewById<RecyclerView>(R.id.recyclerView)
         val progress = findViewById<LinearProgressIndicator>(R.id.progress)
         val tvEmpty = findViewById<View>(R.id.tvEmpty)
         val etSearch = findViewById<TextInputEditText>(R.id.etSearch)
-        val fab = findViewById<ExtendedFloatingActionButton>(R.id.fab)
+
+        progressView = progress
+        emptyView = tvEmpty
+
+        setSupportActionBar(toolbar)
+        toolbar.setNavigationOnClickListener { drawerLayout.openDrawer(GravityCompat.START) }
+
+        // Fermer le drawer avec le bouton retour
+        onBackPressedDispatcher.addCallback(this) {
+            if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                drawerLayout.closeDrawer(GravityCompat.START)
+            } else {
+                isEnabled = false
+                onBackPressedDispatcher.onBackPressed()
+            }
+        }
 
         recycler.layoutManager = LinearLayoutManager(this)
         recycler.adapter = adapter
 
-        // Pagination + shrink FAB au scroll
         recycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(rv: RecyclerView, dx: Int, dy: Int) {
-                if (dy > 8) fab.shrink() else if (dy < -8) fab.extend()
                 val lm = rv.layoutManager as LinearLayoutManager
                 if (!isLoading && currentPage < totalPages &&
                     lm.findLastVisibleItemPosition() >= adapter.itemCount - 5
@@ -66,7 +97,6 @@ class LinksActivity : AppCompatActivity() {
             }
         })
 
-        // Recherche avec debounce
         etSearch.addTextChangedListener(object : android.text.TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, st: Int, c: Int, a: Int) = Unit
             override fun onTextChanged(s: CharSequence?, st: Int, c: Int, a: Int) = Unit
@@ -87,44 +117,186 @@ class LinksActivity : AppCompatActivity() {
             } else false
         }
 
-        fab.setOnClickListener {
-            startActivity(Intent(this, MainActivity::class.java))
-        }
-
-        fun updateEmpty(count: Int) {
-            tvEmpty.visibility = if (count == 0) View.VISIBLE else View.GONE
-        }
-
         adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
-            override fun onChanged() = updateEmpty(adapter.itemCount)
-            override fun onItemRangeInserted(p: Int, c: Int) = updateEmpty(adapter.itemCount)
+            override fun onChanged() = updateEmpty()
+            override fun onItemRangeInserted(p: Int, c: Int) = updateEmpty()
         })
 
-        // Stocker progress/empty pour loadPage
-        this.progressView = progress
-        this.emptyView = tvEmpty
-
         loadPage(1, append = false)
+        buildDrawer()
         checkForUpdate(recycler)
     }
-
-    private fun checkForUpdate(anchor: View) {
-        lifecycleScope.launch {
-            val info = withContext(Dispatchers.IO) { UpdateChecker.check() }
-            if (info != null && info.hasUpdate) {
-                Snackbar.make(anchor, "Mise à jour disponible (${info.remoteCommit})", Snackbar.LENGTH_INDEFINITE)
-                    .setAction("Installer") { UpdateChecker.openDownload(this@LinksActivity) }
-                    .show()
-            }
-        }
-    }
-
-    private lateinit var progressView: View
-    private lateinit var emptyView: View
 
     override fun onResume() {
         super.onResume()
         if (ThemeHelper.needsRecreate(this)) recreate()
+    }
+
+    // ── Drawer ──────────────────────────────────────────────────────────────
+
+    private fun buildDrawer() {
+        drawerNav.removeAllViews()
+
+        addNavItem(
+            label = "Tous les liens",
+            isSelected = currentTag == null && currentGroupId == null,
+        ) {
+            clearFilter()
+        }
+
+        addDivider()
+
+        addNavItem(label = "⚙ Paramètres") {
+            drawerLayout.closeDrawer(GravityCompat.START)
+            startActivity(Intent(this, MainActivity::class.java))
+        }
+
+        addDivider()
+
+        lifecycleScope.launch {
+            val tags = withContext(Dispatchers.IO) {
+                ApiClient.fetchTags(Prefs.serverUrl(this@LinksActivity), Prefs.apiKey(this@LinksActivity))
+            }
+            val groups = withContext(Dispatchers.IO) {
+                ApiClient.fetchGroups(Prefs.serverUrl(this@LinksActivity), Prefs.apiKey(this@LinksActivity))
+            }
+
+            if (tags.isNotEmpty()) {
+                addSection("Tags")
+                for (tag in tags) {
+                    addNavItem(
+                        label = "# ${tag.name}",
+                        count = tag.count,
+                        isSelected = currentTag == tag.name,
+                    ) {
+                        setFilter(tag = tag.name)
+                    }
+                }
+            }
+
+            if (groups.isNotEmpty()) {
+                addSection("Groupes")
+                for (group in groups) {
+                    val indent = group.depth * 16
+                    val prefix = if (group.depth > 0) "↳ " else "📁 "
+                    addNavItem(
+                        label = "$prefix${group.name}",
+                        count = group.count,
+                        paddingStart = 16 + indent,
+                        isSelected = currentGroupId == group.id,
+                    ) {
+                        setFilter(groupId = group.id, groupName = group.name)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun addNavItem(
+        label: String,
+        count: Int = 0,
+        paddingStart: Int = 16,
+        isSelected: Boolean = false,
+        onClick: () -> Unit,
+    ): View {
+        val view = LayoutInflater.from(this).inflate(R.layout.item_drawer_nav, drawerNav, false)
+        val tvLabel = view.findViewById<TextView>(R.id.tvLabel)
+        val tvCount = view.findViewById<TextView>(R.id.tvCount)
+
+        tvLabel.text = label
+        val startPx = (paddingStart * resources.displayMetrics.density).toInt()
+        view.setPadding(startPx, view.paddingTop, view.paddingRight, view.paddingBottom)
+
+        if (count > 0) {
+            tvCount.text = count.toString()
+            tvCount.visibility = View.VISIBLE
+        }
+
+        if (isSelected) markSelected(view, tvLabel)
+
+        val ripple = TypedValue()
+        theme.resolveAttribute(android.R.attr.selectableItemBackground, ripple, true)
+        view.setBackgroundResource(ripple.resourceId)
+
+        view.setOnClickListener {
+            selectedNavView?.let { prev ->
+                prev.setBackgroundResource(ripple.resourceId)
+                prev.findViewById<TextView>(R.id.tvLabel)?.let { tv ->
+                    tv.setTypeface(null, Typeface.NORMAL)
+                    tv.setTextColor(resolveColor(com.google.android.material.R.attr.colorOnSurface))
+                }
+            }
+            markSelected(view, tvLabel)
+            drawerLayout.closeDrawer(GravityCompat.START)
+            onClick()
+        }
+
+        drawerNav.addView(view)
+        return view
+    }
+
+    private fun markSelected(view: View, tvLabel: TextView) {
+        val bg = resolveColor(com.google.android.material.R.attr.colorPrimaryContainer)
+        view.setBackgroundColor(bg)
+        tvLabel.setTypeface(null, Typeface.BOLD)
+        tvLabel.setTextColor(resolveColor(com.google.android.material.R.attr.colorOnPrimaryContainer))
+        selectedNavView = view
+    }
+
+    private fun addSection(title: String) {
+        val tv = TextView(this).apply {
+            text = title.uppercase()
+            setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_LabelSmall)
+            setTextColor(resolveColor(com.google.android.material.R.attr.colorPrimary))
+            setPadding(
+                (16 * resources.displayMetrics.density).toInt(),
+                (20 * resources.displayMetrics.density).toInt(),
+                (16 * resources.displayMetrics.density).toInt(),
+                (6 * resources.displayMetrics.density).toInt(),
+            )
+            letterSpacing = 0.1f
+        }
+        drawerNav.addView(tv)
+    }
+
+    private fun addDivider() {
+        val v = View(this).apply {
+            val lp = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 1)
+            val m = (8 * resources.displayMetrics.density).toInt()
+            lp.setMargins(0, m, 0, m)
+            layoutParams = lp
+            setBackgroundColor(resolveColor(com.google.android.material.R.attr.colorOutline))
+        }
+        drawerNav.addView(v)
+    }
+
+    private fun resolveColor(attr: Int): Int {
+        val ta = obtainStyledAttributes(intArrayOf(attr))
+        val c = ta.getColor(0, Color.GRAY)
+        ta.recycle()
+        return c
+    }
+
+    // ── Filtres ─────────────────────────────────────────────────────────────
+
+    private fun clearFilter() {
+        currentTag = null
+        currentGroupId = null
+        toolbar.subtitle = null
+        resetAndLoad()
+    }
+
+    private fun setFilter(tag: String? = null, groupId: Int? = null, groupName: String? = null) {
+        currentTag = tag
+        currentGroupId = groupId
+        toolbar.subtitle = tag?.let { "#$it" } ?: groupName
+        resetAndLoad()
+    }
+
+    // ── Chargement ──────────────────────────────────────────────────────────
+
+    private fun updateEmpty() {
+        emptyView.visibility = if (adapter.itemCount == 0) View.VISIBLE else View.GONE
     }
 
     private fun resetAndLoad() {
@@ -145,6 +317,8 @@ class LinksActivity : AppCompatActivity() {
                 apiKey = Prefs.apiKey(this@LinksActivity),
                 page = page,
                 q = currentQuery,
+                tag = currentTag ?: "",
+                groupId = currentGroupId,
             )
             progressView.visibility = View.GONE
             isLoading = false
@@ -154,6 +328,19 @@ class LinksActivity : AppCompatActivity() {
             val newList = if (append) (adapter.currentList + result.links) else result.links
             adapter.submitList(newList)
             emptyView.visibility = if (newList.isEmpty()) View.VISIBLE else View.GONE
+        }
+    }
+
+    // ── Mise à jour ──────────────────────────────────────────────────────────
+
+    private fun checkForUpdate(anchor: View) {
+        lifecycleScope.launch {
+            val info = withContext(Dispatchers.IO) { UpdateChecker.check() }
+            if (info != null && info.hasUpdate) {
+                Snackbar.make(anchor, "Mise à jour disponible (${info.remoteCommit})", Snackbar.LENGTH_INDEFINITE)
+                    .setAction("Installer") { UpdateChecker.openDownload(this@LinksActivity) }
+                    .show()
+            }
         }
     }
 }
