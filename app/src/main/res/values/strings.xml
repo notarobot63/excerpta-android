@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Linky</string>
+    <string name="settings_title">Paramètres</string>
+    <string name="settings_subtitle">Connectez l\'app à votre instance Linky.</string>
+    <string name="hint_server_url">URL du serveur (ex: http://192.168.1.18:8070)</string>
+    <string name="hint_api_key">Clé API</string>
+    <string name="hint_url">URL</string>
+    <string name="hint_title">Titre</string>
+    <string name="hint_tags">Tags (séparés par des virgules)</string>
+    <string name="hint_note">Note (optionnelle)</string>
+    <string name="btn_save">Enregistrer</string>
+    <string name="btn_save_link">Sauvegarder</string>
+    <string name="btn_test">Tester la connexion</string>
+    <string name="btn_cancel">Annuler</string>
+    <string name="btn_scan_qr">Scanner le QR code</string>
+    <string name="settings_saved">Paramètres enregistrés.</string>
+    <string name="fill_both_fields">Remplissez les deux champs.</string>
+    <string name="testing">Test en cours…</string>
+    <string name="url_required">URL requise</string>
+    <string name="configure_first">Configurez d\'abord le serveur dans les paramètres Linky.</string>
+    <string name="scan_prompt">Scannez le QR code affiché dans Paramètres → App Android</string>
+    <string name="qr_invalid">QR code non reconnu — utilisez celui de la page Paramètres Linky.</string>
+    <string name="share_title">Ajouter à Linky</string>
+    <string name="share_subtitle">Enregistrer ce lien dans ma collection</string>
+    <string name="section_connection">Connexion au serveur</string>
+</resources>
