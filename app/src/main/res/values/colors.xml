@@ -1,10 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">#4F46E5</color>
-    <color name="on_primary">#FFFFFF</color>
-    <color name="primary_container">#E0E7FF</color>
-    <color name="on_primary_container">#1E1B4B</color>
-    <color name="surface">#FFFBFE</color>
-    <color name="on_surface">#1C1B1F</color>
-    <color name="background">#FFFBFE</color>
+    <!-- Light -->
+    <color name="t_light_primary">#3B82F6</color>
+    <color name="t_light_on_primary">#FFFFFF</color>
+    <color name="t_light_primary_container">#DBEAFE</color>
+    <color name="t_light_on_primary_container">#1E40AF</color>
+    <color name="t_light_surface">#F9FAFB</color>
+    <color name="t_light_on_surface">#111827</color>
+    <color name="t_light_on_surface_variant">#6B7280</color>
+    <color name="t_light_background">#FFFFFF</color>
+    <color name="t_light_outline">#E5E7EB</color>
+
+    <!-- Dark -->
+    <color name="t_dark_primary">#3B82F6</color>
+    <color name="t_dark_on_primary">#FFFFFF</color>
+    <color name="t_dark_primary_container">#1E3A5F</color>
+    <color name="t_dark_on_primary_container">#93C5FD</color>
+    <color name="t_dark_surface">#1F2937</color>
+    <color name="t_dark_on_surface">#F9FAFB</color>
+    <color name="t_dark_on_surface_variant">#9CA3AF</color>
+    <color name="t_dark_background">#111827</color>
+    <color name="t_dark_outline">#374151</color>
+
+    <!-- Dracula -->
+    <color name="t_dracula_primary">#BD93F9</color>
+    <color name="t_dracula_on_primary">#282A36</color>
+    <color name="t_dracula_primary_container">#44475A</color>
+    <color name="t_dracula_on_primary_container">#BD93F9</color>
+    <color name="t_dracula_surface">#21222C</color>
+    <color name="t_dracula_on_surface">#F8F8F2</color>
+    <color name="t_dracula_on_surface_variant">#6272A4</color>
+    <color name="t_dracula_background">#282A36</color>
+    <color name="t_dracula_outline">#44475A</color>
+
+    <!-- Nord -->
+    <color name="t_nord_primary">#5E81AC</color>
+    <color name="t_nord_on_primary">#FFFFFF</color>
+    <color name="t_nord_primary_container">#D8DEE9</color>
+    <color name="t_nord_on_primary_container">#5E81AC</color>
+    <color name="t_nord_surface">#E5E9F0</color>
+    <color name="t_nord_on_surface">#2E3440</color>
+    <color name="t_nord_on_surface_variant">#4C566A</color>
+    <color name="t_nord_background">#ECEFF4</color>
+    <color name="t_nord_outline">#D8DEE9</color>
+
+    <!-- Nord Dark -->
+    <color name="t_norddark_primary">#5E81AC</color>
+    <color name="t_norddark_on_primary">#FFFFFF</color>
+    <color name="t_norddark_primary_container">#434C5E</color>
+    <color name="t_norddark_on_primary_container">#88C0D0</color>
+    <color name="t_norddark_surface">#3B4252</color>
+    <color name="t_norddark_on_surface">#ECEFF4</color>
+    <color name="t_norddark_on_surface_variant">#9099AB</color>
+    <color name="t_norddark_background">#2E3440</color>
+    <color name="t_norddark_outline">#434C5E</color>
+
+    <!-- Catppuccin -->
+    <color name="t_catppuccin_primary">#CBA6F7</color>
+    <color name="t_catppuccin_on_primary">#1E1E2E</color>
+    <color name="t_catppuccin_primary_container">#313244</color>
+    <color name="t_catppuccin_on_primary_container">#CBA6F7</color>
+    <color name="t_catppuccin_surface">#181825</color>
+    <color name="t_catppuccin_on_surface">#CDD6F4</color>
+    <color name="t_catppuccin_on_surface_variant">#7F849C</color>
+    <color name="t_catppuccin_background">#1E1E2E</color>
+    <color name="t_catppuccin_outline">#313244</color>
+
+    <!-- Gruvbox -->
+    <color name="t_gruvbox_primary">#83A598</color>
+    <color name="t_gruvbox_on_primary">#1D2021</color>
+    <color name="t_gruvbox_primary_container">#3C3836</color>
+    <color name="t_gruvbox_on_primary_container">#FABD2F</color>
+    <color name="t_gruvbox_surface">#1D2021</color>
+    <color name="t_gruvbox_on_surface">#EBDBB2</color>
+    <color name="t_gruvbox_on_surface_variant">#928374</color>
+    <color name="t_gruvbox_background">#282828</color>
+    <color name="t_gruvbox_outline">#3C3836</color>
+
+    <!-- Solarized -->
+    <color name="t_solarized_primary">#268BD2</color>
+    <color name="t_solarized_on_primary">#FFFFFF</color>
+    <color name="t_solarized_primary_container">#EEE8D5</color>
+    <color name="t_solarized_on_primary_container">#2AA198</color>
+    <color name="t_solarized_surface">#EEE8D5</color>
+    <color name="t_solarized_on_surface">#657B83</color>
+    <color name="t_solarized_on_surface_variant">#93A1A1</color>
+    <color name="t_solarized_background">#FDF6E3</color>
+    <color name="t_solarized_outline">#DFD5B0</color>
+
+    <!-- Rosé Pine -->
+    <color name="t_rosepine_primary">#C4A7E7</color>
+    <color name="t_rosepine_on_primary">#191724</color>
+    <color name="t_rosepine_primary_container">#26233A</color>
+    <color name="t_rosepine_on_primary_container">#C4A7E7</color>
+    <color name="t_rosepine_surface">#1F1D2E</color>
+    <color name="t_rosepine_on_surface">#E0DEF4</color>
+    <color name="t_rosepine_on_surface_variant">#6E6A86</color>
+    <color name="t_rosepine_background">#191724</color>
+    <color name="t_rosepine_outline">#26233A</color>
 </resources>

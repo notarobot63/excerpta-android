@@ -1,24 +1,238 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.Linky" parent="Theme.Material3.Light.NoActionBar">
-        <item name="colorPrimary">@color/primary</item>
-        <item name="colorOnPrimary">@color/on_primary</item>
-        <item name="colorPrimaryContainer">@color/primary_container</item>
-        <item name="colorOnPrimaryContainer">@color/on_primary_container</item>
-        <item name="colorSurface">@color/surface</item>
-        <item name="colorOnSurface">@color/on_surface</item>
-        <item name="android:colorBackground">@color/background</item>
-    </style>
 
-    <!-- ShareActivity flotte au-dessus de l'app qui partage -->
+    <!-- ── Light ─────────────────────────────────────────────────── -->
+    <style name="Theme.Linky" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/t_light_primary</item>
+        <item name="colorOnPrimary">@color/t_light_on_primary</item>
+        <item name="colorPrimaryContainer">@color/t_light_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/t_light_on_primary_container</item>
+        <item name="colorSurface">@color/t_light_surface</item>
+        <item name="colorOnSurface">@color/t_light_on_surface</item>
+        <item name="colorOnSurfaceVariant">@color/t_light_on_surface_variant</item>
+        <item name="android:colorBackground">@color/t_light_background</item>
+        <item name="colorOutline">@color/t_light_outline</item>
+    </style>
     <style name="Theme.Linky.Dialog" parent="Theme.Material3.Light.Dialog">
-        <item name="colorPrimary">@color/primary</item>
-        <item name="colorOnPrimary">@color/on_primary</item>
-        <item name="colorPrimaryContainer">@color/primary_container</item>
-        <item name="colorOnPrimaryContainer">@color/on_primary_container</item>
-        <item name="colorSurface">@color/surface</item>
-        <item name="colorOnSurface">@color/on_surface</item>
+        <item name="colorPrimary">@color/t_light_primary</item>
+        <item name="colorOnPrimary">@color/t_light_on_primary</item>
+        <item name="colorPrimaryContainer">@color/t_light_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/t_light_on_primary_container</item>
+        <item name="colorSurface">@color/t_light_surface</item>
+        <item name="colorOnSurface">@color/t_light_on_surface</item>
+        <item name="colorOnSurfaceVariant">@color/t_light_on_surface_variant</item>
+        <item name="android:colorBackground">@color/t_light_background</item>
+        <item name="colorOutline">@color/t_light_outline</item>
         <item name="android:windowMinWidthMajor">92%</item>
         <item name="android:windowMinWidthMinor">92%</item>
     </style>
+
+    <!-- ── Dark ──────────────────────────────────────────────────── -->
+    <style name="Theme.Linky.Dark" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">@color/t_dark_primary</item>
+        <item name="colorOnPrimary">@color/t_dark_on_primary</item>
+        <item name="colorPrimaryContainer">@color/t_dark_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/t_dark_on_primary_container</item>
+        <item name="colorSurface">@color/t_dark_surface</item>
+        <item name="colorOnSurface">@color/t_dark_on_surface</item>
+        <item name="colorOnSurfaceVariant">@color/t_dark_on_surface_variant</item>
+        <item name="android:colorBackground">@color/t_dark_background</item>
+        <item name="colorOutline">@color/t_dark_outline</item>
+    </style>
+    <style name="Theme.Linky.Dark.Dialog" parent="Theme.Material3.Dark.Dialog">
+        <item name="colorPrimary">@color/t_dark_primary</item>
+        <item name="colorOnPrimary">@color/t_dark_on_primary</item>
+        <item name="colorPrimaryContainer">@color/t_dark_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/t_dark_on_primary_container</item>
+        <item name="colorSurface">@color/t_dark_surface</item>
+        <item name="colorOnSurface">@color/t_dark_on_surface</item>
+        <item name="colorOnSurfaceVariant">@color/t_dark_on_surface_variant</item>
+        <item name="android:colorBackground">@color/t_dark_background</item>
+        <item name="colorOutline">@color/t_dark_outline</item>
+        <item name="android:windowMinWidthMajor">92%</item>
+        <item name="android:windowMinWidthMinor">92%</item>
+    </style>
+
+    <!-- ── Dracula ────────────────────────────────────────────────── -->
+    <style name="Theme.Linky.Dracula" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">@color/t_dracula_primary</item>
+        <item name="colorOnPrimary">@color/t_dracula_on_primary</item>
+        <item name="colorPrimaryContainer">@color/t_dracula_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/t_dracula_on_primary_container</item>
+        <item name="colorSurface">@color/t_dracula_surface</item>
+        <item name="colorOnSurface">@color/t_dracula_on_surface</item>
+        <item name="colorOnSurfaceVariant">@color/t_dracula_on_surface_variant</item>
+        <item name="android:colorBackground">@color/t_dracula_background</item>
+        <item name="colorOutline">@color/t_dracula_outline</item>
+    </style>
+    <style name="Theme.Linky.Dracula.Dialog" parent="Theme.Material3.Dark.Dialog">
+        <item name="colorPrimary">@color/t_dracula_primary</item>
+        <item name="colorOnPrimary">@color/t_dracula_on_primary</item>
+        <item name="colorPrimaryContainer">@color/t_dracula_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/t_dracula_on_primary_container</item>
+        <item name="colorSurface">@color/t_dracula_surface</item>
+        <item name="colorOnSurface">@color/t_dracula_on_surface</item>
+        <item name="colorOnSurfaceVariant">@color/t_dracula_on_surface_variant</item>
+        <item name="android:colorBackground">@color/t_dracula_background</item>
+        <item name="colorOutline">@color/t_dracula_outline</item>
+        <item name="android:windowMinWidthMajor">92%</item>
+        <item name="android:windowMinWidthMinor">92%</item>
+    </style>
+
+    <!-- ── Nord ──────────────────────────────────────────────────── -->
+    <style name="Theme.Linky.Nord" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/t_nord_primary</item>
+        <item name="colorOnPrimary">@color/t_nord_on_primary</item>
+        <item name="colorPrimaryContainer">@color/t_nord_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/t_nord_on_primary_container</item>
+        <item name="colorSurface">@color/t_nord_surface</item>
+        <item name="colorOnSurface">@color/t_nord_on_surface</item>
+        <item name="colorOnSurfaceVariant">@color/t_nord_on_surface_variant</item>
+        <item name="android:colorBackground">@color/t_nord_background</item>
+        <item name="colorOutline">@color/t_nord_outline</item>
+    </style>
+    <style name="Theme.Linky.Nord.Dialog" parent="Theme.Material3.Light.Dialog">
+        <item name="colorPrimary">@color/t_nord_primary</item>
+        <item name="colorOnPrimary">@color/t_nord_on_primary</item>
+        <item name="colorPrimaryContainer">@color/t_nord_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/t_nord_on_primary_container</item>
+        <item name="colorSurface">@color/t_nord_surface</item>
+        <item name="colorOnSurface">@color/t_nord_on_surface</item>
+        <item name="colorOnSurfaceVariant">@color/t_nord_on_surface_variant</item>
+        <item name="android:colorBackground">@color/t_nord_background</item>
+        <item name="colorOutline">@color/t_nord_outline</item>
+        <item name="android:windowMinWidthMajor">92%</item>
+        <item name="android:windowMinWidthMinor">92%</item>
+    </style>
+
+    <!-- ── Nord Dark ──────────────────────────────────────────────── -->
+    <style name="Theme.Linky.NordDark" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">@color/t_norddark_primary</item>
+        <item name="colorOnPrimary">@color/t_norddark_on_primary</item>
+        <item name="colorPrimaryContainer">@color/t_norddark_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/t_norddark_on_primary_container</item>
+        <item name="colorSurface">@color/t_norddark_surface</item>
+        <item name="colorOnSurface">@color/t_norddark_on_surface</item>
+        <item name="colorOnSurfaceVariant">@color/t_norddark_on_surface_variant</item>
+        <item name="android:colorBackground">@color/t_norddark_background</item>
+        <item name="colorOutline">@color/t_norddark_outline</item>
+    </style>
+    <style name="Theme.Linky.NordDark.Dialog" parent="Theme.Material3.Dark.Dialog">
+        <item name="colorPrimary">@color/t_norddark_primary</item>
+        <item name="colorOnPrimary">@color/t_norddark_on_primary</item>
+        <item name="colorPrimaryContainer">@color/t_norddark_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/t_norddark_on_primary_container</item>
+        <item name="colorSurface">@color/t_norddark_surface</item>
+        <item name="colorOnSurface">@color/t_norddark_on_surface</item>
+        <item name="colorOnSurfaceVariant">@color/t_norddark_on_surface_variant</item>
+        <item name="android:colorBackground">@color/t_norddark_background</item>
+        <item name="colorOutline">@color/t_norddark_outline</item>
+        <item name="android:windowMinWidthMajor">92%</item>
+        <item name="android:windowMinWidthMinor">92%</item>
+    </style>
+
+    <!-- ── Catppuccin ─────────────────────────────────────────────── -->
+    <style name="Theme.Linky.Catppuccin" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">@color/t_catppuccin_primary</item>
+        <item name="colorOnPrimary">@color/t_catppuccin_on_primary</item>
+        <item name="colorPrimaryContainer">@color/t_catppuccin_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/t_catppuccin_on_primary_container</item>
+        <item name="colorSurface">@color/t_catppuccin_surface</item>
+        <item name="colorOnSurface">@color/t_catppuccin_on_surface</item>
+        <item name="colorOnSurfaceVariant">@color/t_catppuccin_on_surface_variant</item>
+        <item name="android:colorBackground">@color/t_catppuccin_background</item>
+        <item name="colorOutline">@color/t_catppuccin_outline</item>
+    </style>
+    <style name="Theme.Linky.Catppuccin.Dialog" parent="Theme.Material3.Dark.Dialog">
+        <item name="colorPrimary">@color/t_catppuccin_primary</item>
+        <item name="colorOnPrimary">@color/t_catppuccin_on_primary</item>
+        <item name="colorPrimaryContainer">@color/t_catppuccin_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/t_catppuccin_on_primary_container</item>
+        <item name="colorSurface">@color/t_catppuccin_surface</item>
+        <item name="colorOnSurface">@color/t_catppuccin_on_surface</item>
+        <item name="colorOnSurfaceVariant">@color/t_catppuccin_on_surface_variant</item>
+        <item name="android:colorBackground">@color/t_catppuccin_background</item>
+        <item name="colorOutline">@color/t_catppuccin_outline</item>
+        <item name="android:windowMinWidthMajor">92%</item>
+        <item name="android:windowMinWidthMinor">92%</item>
+    </style>
+
+    <!-- ── Gruvbox ────────────────────────────────────────────────── -->
+    <style name="Theme.Linky.Gruvbox" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">@color/t_gruvbox_primary</item>
+        <item name="colorOnPrimary">@color/t_gruvbox_on_primary</item>
+        <item name="colorPrimaryContainer">@color/t_gruvbox_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/t_gruvbox_on_primary_container</item>
+        <item name="colorSurface">@color/t_gruvbox_surface</item>
+        <item name="colorOnSurface">@color/t_gruvbox_on_surface</item>
+        <item name="colorOnSurfaceVariant">@color/t_gruvbox_on_surface_variant</item>
+        <item name="android:colorBackground">@color/t_gruvbox_background</item>
+        <item name="colorOutline">@color/t_gruvbox_outline</item>
+    </style>
+    <style name="Theme.Linky.Gruvbox.Dialog" parent="Theme.Material3.Dark.Dialog">
+        <item name="colorPrimary">@color/t_gruvbox_primary</item>
+        <item name="colorOnPrimary">@color/t_gruvbox_on_primary</item>
+        <item name="colorPrimaryContainer">@color/t_gruvbox_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/t_gruvbox_on_primary_container</item>
+        <item name="colorSurface">@color/t_gruvbox_surface</item>
+        <item name="colorOnSurface">@color/t_gruvbox_on_surface</item>
+        <item name="colorOnSurfaceVariant">@color/t_gruvbox_on_surface_variant</item>
+        <item name="android:colorBackground">@color/t_gruvbox_background</item>
+        <item name="colorOutline">@color/t_gruvbox_outline</item>
+        <item name="android:windowMinWidthMajor">92%</item>
+        <item name="android:windowMinWidthMinor">92%</item>
+    </style>
+
+    <!-- ── Solarized ──────────────────────────────────────────────── -->
+    <style name="Theme.Linky.Solarized" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/t_solarized_primary</item>
+        <item name="colorOnPrimary">@color/t_solarized_on_primary</item>
+        <item name="colorPrimaryContainer">@color/t_solarized_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/t_solarized_on_primary_container</item>
+        <item name="colorSurface">@color/t_solarized_surface</item>
+        <item name="colorOnSurface">@color/t_solarized_on_surface</item>
+        <item name="colorOnSurfaceVariant">@color/t_solarized_on_surface_variant</item>
+        <item name="android:colorBackground">@color/t_solarized_background</item>
+        <item name="colorOutline">@color/t_solarized_outline</item>
+    </style>
+    <style name="Theme.Linky.Solarized.Dialog" parent="Theme.Material3.Light.Dialog">
+        <item name="colorPrimary">@color/t_solarized_primary</item>
+        <item name="colorOnPrimary">@color/t_solarized_on_primary</item>
+        <item name="colorPrimaryContainer">@color/t_solarized_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/t_solarized_on_primary_container</item>
+        <item name="colorSurface">@color/t_solarized_surface</item>
+        <item name="colorOnSurface">@color/t_solarized_on_surface</item>
+        <item name="colorOnSurfaceVariant">@color/t_solarized_on_surface_variant</item>
+        <item name="android:colorBackground">@color/t_solarized_background</item>
+        <item name="colorOutline">@color/t_solarized_outline</item>
+        <item name="android:windowMinWidthMajor">92%</item>
+        <item name="android:windowMinWidthMinor">92%</item>
+    </style>
+
+    <!-- ── Rosé Pine ──────────────────────────────────────────────── -->
+    <style name="Theme.Linky.RosePine" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">@color/t_rosepine_primary</item>
+        <item name="colorOnPrimary">@color/t_rosepine_on_primary</item>
+        <item name="colorPrimaryContainer">@color/t_rosepine_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/t_rosepine_on_primary_container</item>
+        <item name="colorSurface">@color/t_rosepine_surface</item>
+        <item name="colorOnSurface">@color/t_rosepine_on_surface</item>
+        <item name="colorOnSurfaceVariant">@color/t_rosepine_on_surface_variant</item>
+        <item name="android:colorBackground">@color/t_rosepine_background</item>
+        <item name="colorOutline">@color/t_rosepine_outline</item>
+    </style>
+    <style name="Theme.Linky.RosePine.Dialog" parent="Theme.Material3.Dark.Dialog">
+        <item name="colorPrimary">@color/t_rosepine_primary</item>
+        <item name="colorOnPrimary">@color/t_rosepine_on_primary</item>
+        <item name="colorPrimaryContainer">@color/t_rosepine_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/t_rosepine_on_primary_container</item>
+        <item name="colorSurface">@color/t_rosepine_surface</item>
+        <item name="colorOnSurface">@color/t_rosepine_on_surface</item>
+        <item name="colorOnSurfaceVariant">@color/t_rosepine_on_surface_variant</item>
+        <item name="android:colorBackground">@color/t_rosepine_background</item>
+        <item name="colorOutline">@color/t_rosepine_outline</item>
+        <item name="android:windowMinWidthMajor">92%</item>
+        <item name="android:windowMinWidthMinor">92%</item>
+    </style>
+
 </resources>

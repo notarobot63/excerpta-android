@@ -3,6 +3,8 @@ package xyz.notarobot.linky
 import android.content.Intent
 import android.os.Bundle
 import android.view.inputmethod.EditorInfo
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -42,6 +44,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        ThemeHelper.apply(this)
         setContentView(R.layout.activity_main)
 
         setSupportActionBar(findViewById<MaterialToolbar>(R.id.toolbar))
@@ -55,6 +58,15 @@ class MainActivity : AppCompatActivity() {
 
         etServer.setText(Prefs.serverUrl(this))
         etApiKey.setText(Prefs.apiKey(this))
+
+        val actvTheme = findViewById<AutoCompleteTextView>(R.id.actvTheme)
+        val themeAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, ThemeHelper.labels)
+        actvTheme.setAdapter(themeAdapter)
+        val currentThemeIdx = ThemeHelper.themes.indexOf(Prefs.theme(this))
+        actvTheme.setText(ThemeHelper.labels.getOrNull(currentThemeIdx) ?: ThemeHelper.labels[0], false)
+        actvTheme.setOnItemClickListener { _, _, position, _ ->
+            Prefs.saveTheme(this, ThemeHelper.themes[position])
+        }
 
         btnScan.setOnClickListener {
             val options = ScanOptions().apply {

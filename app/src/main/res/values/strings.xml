@@ -29,4 +29,6 @@
     <string name="not_configured">Serveur non configuré</string>
     <string name="open_settings">Ouvrir les paramètres</string>
     <string name="tag_suggestions">Tags suggérés</string>
+    <string name="section_appearance">Apparence</string>
+    <string name="hint_theme">Thème</string>
 </resources>
