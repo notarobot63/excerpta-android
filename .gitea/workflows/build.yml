@@ -33,11 +33,11 @@ jobs:
           # Supprimer le tag "latest"
           curl -s -X DELETE "$BASE/tags/latest" -H "Authorization: token $TOKEN" || true
           sleep 1
-          # Créer la release
+          # Créer la release avec le hash du commit dans le body
           RELEASE_ID=$(curl -s -X POST "$BASE/releases" \
             -H "Authorization: token $TOKEN" \
             -H "Content-Type: application/json" \
-            -d '{"tag_name":"latest","name":"Latest build","body":"Build automatique — dernier commit sur main.","prerelease":true}' \
+            -d "{\"tag_name\":\"latest\",\"name\":\"Latest build\",\"body\":\"commit:${GITHUB_SHA::7}\",\"prerelease\":true}" \
             | python3 -c "import sys,json; print(json.load(sys.stdin)['id'])")
           # Uploader l'APK
           curl -s -X POST "$BASE/releases/$RELEASE_ID/assets" \

@@ -12,10 +12,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.progressindicator.LinearProgressIndicator
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class LinksActivity : AppCompatActivity() {
 
@@ -101,6 +104,18 @@ class LinksActivity : AppCompatActivity() {
         this.emptyView = tvEmpty
 
         loadPage(1, append = false)
+        checkForUpdate(recycler)
+    }
+
+    private fun checkForUpdate(anchor: View) {
+        lifecycleScope.launch {
+            val info = withContext(Dispatchers.IO) { UpdateChecker.check() }
+            if (info != null && info.hasUpdate) {
+                Snackbar.make(anchor, "Mise à jour disponible (${info.remoteCommit})", Snackbar.LENGTH_INDEFINITE)
+                    .setAction("Installer") { UpdateChecker.openDownload(this@LinksActivity) }
+                    .show()
+            }
+        }
     }
 
     private lateinit var progressView: View
