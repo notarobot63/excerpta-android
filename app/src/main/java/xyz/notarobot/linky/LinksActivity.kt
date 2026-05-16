@@ -23,6 +23,8 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import java.io.File
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
@@ -52,6 +54,8 @@ class LinksActivity : AppCompatActivity() {
     private lateinit var swipeRefresh: SwipeRefreshLayout
 
     private var selectedNavView: View? = null
+    private var listNeedsRefresh = false
+    private val cacheFile by lazy { File(cacheDir, "links_cache.json") }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -108,6 +112,12 @@ class LinksActivity : AppCompatActivity() {
 
         adapter.onLongClick = { item -> showLinkMenu(item) }
 
+        val fabAdd = findViewById<FloatingActionButton>(R.id.fabAdd)
+        fabAdd.setOnClickListener {
+            listNeedsRefresh = true
+            startActivity(Intent(this, ShareActivity::class.java))
+        }
+
         etSearch.addTextChangedListener(object : android.text.TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, st: Int, c: Int, a: Int) = Unit
             override fun onTextChanged(s: CharSequence?, st: Int, c: Int, a: Int) = Unit
@@ -141,7 +151,13 @@ class LinksActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         if (ThemeHelper.needsRecreate(this)) recreate()
-        else buildDrawer()
+        else {
+            buildDrawer()
+            if (listNeedsRefresh) {
+                listNeedsRefresh = false
+                resetAndLoad()
+            }
+        }
     }
 
     // ── Drawer ──────────────────────────────────────────────────────────────
@@ -335,19 +351,87 @@ class LinksActivity : AppCompatActivity() {
             progressView.visibility = View.GONE
             swipeRefresh.isRefreshing = false
             isLoading = false
+
+            if (result == null) {
+                if (page == 1 && !append) {
+                    val cached = loadCache()
+                    if (cached != null) {
+                        adapter.submitList(cached)
+                        emptyView.visibility = if (cached.isEmpty()) View.VISIBLE else View.GONE
+                        Snackbar.make(recyclerView, getString(R.string.offline_notice), Snackbar.LENGTH_INDEFINITE).show()
+                        return@launch
+                    }
+                }
+                emptyView.visibility = if (adapter.itemCount == 0) View.VISIBLE else View.GONE
+                return@launch
+            }
+
             currentPage = result.page
             totalPages = result.totalPages
-
             val newList = if (append) (adapter.currentList + result.links) else result.links
             adapter.submitList(newList)
             emptyView.visibility = if (newList.isEmpty()) View.VISIBLE else View.GONE
+
+            if (page == 1 && !append && currentTag == null && currentGroupId == null && currentQuery.isBlank()) {
+                saveCache(newList)
+            }
         }
+    }
+
+    private fun saveCache(links: List<ApiClient.LinkItem>) {
+        try {
+            val arr = org.json.JSONArray()
+            links.forEach { item ->
+                arr.put(org.json.JSONObject().apply {
+                    put("id", item.id)
+                    put("url", item.url)
+                    put("title", item.title)
+                    put("description", item.description)
+                    put("favicon_url", item.faviconUrl)
+                    put("thumbnail_url", item.thumbnailUrl)
+                    put("is_public", item.isPublic)
+                    put("created_at", item.createdAt)
+                    val tagsArr = org.json.JSONArray()
+                    item.tags.forEach { tagsArr.put(it) }
+                    put("tags", tagsArr)
+                })
+            }
+            cacheFile.writeText(arr.toString())
+        } catch (_: Exception) {}
+    }
+
+    private fun loadCache(): List<ApiClient.LinkItem>? {
+        return try {
+            if (!cacheFile.exists()) return null
+            val arr = org.json.JSONArray(cacheFile.readText())
+            List(arr.length()) { i ->
+                val o = arr.getJSONObject(i)
+                val tagsArr = o.getJSONArray("tags")
+                ApiClient.LinkItem(
+                    id = o.getInt("id"),
+                    url = o.getString("url"),
+                    title = o.optString("title", ""),
+                    description = o.optString("description", ""),
+                    faviconUrl = o.optString("favicon_url", ""),
+                    thumbnailUrl = o.optString("thumbnail_url", ""),
+                    isPublic = o.optBoolean("is_public", false),
+                    createdAt = o.optString("created_at", ""),
+                    tags = List(tagsArr.length()) { tagsArr.getString(it) },
+                )
+            }
+        } catch (_: Exception) { null }
     }
 
     // ── Menu contextuel (appui long) ────────────────────────────────────────
 
     private fun showLinkMenu(item: ApiClient.LinkItem) {
-        val options = arrayOf("Ouvrir", "Copier l'URL", "Supprimer")
+        val visibilityLabel = if (item.isPublic) getString(R.string.menu_make_private) else getString(R.string.menu_make_public)
+        val options = arrayOf(
+            getString(R.string.menu_open),
+            getString(R.string.menu_copy_url),
+            visibilityLabel,
+            getString(R.string.menu_delete),
+        )
         MaterialAlertDialogBuilder(this)
             .setTitle(item.title.ifBlank { item.url })
             .setItems(options) { _, which ->
@@ -358,10 +442,28 @@ class LinksActivity : AppCompatActivity() {
                         (getSystemService(CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(clip)
                         Snackbar.make(recyclerView, "URL copiée", Snackbar.LENGTH_SHORT).show()
                     }
-                    2 -> confirmDelete(item)
+                    2 -> togglePublic(item)
+                    3 -> confirmDelete(item)
                 }
             }
             .show()
+    }
+
+    private fun togglePublic(item: ApiClient.LinkItem) {
+        val newPublic = !item.isPublic
+        lifecycleScope.launch {
+            val result = ApiClient.patchLink(
+                Prefs.serverUrl(this@LinksActivity),
+                Prefs.apiKey(this@LinksActivity),
+                item.id,
+                newPublic,
+            )
+            Snackbar.make(recyclerView, result.message, Snackbar.LENGTH_SHORT).show()
+            if (result.success) {
+                val updated = adapter.currentList.map { if (it.id == item.id) it.copy(isPublic = newPublic) else it }
+                adapter.submitList(updated)
+            }
+        }
     }
 
     private fun confirmDelete(item: ApiClient.LinkItem) {

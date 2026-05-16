@@ -29,6 +29,7 @@ object ApiClient {
         val thumbnailUrl: String,
         val tags: List<String>,
         val createdAt: String,
+        val isPublic: Boolean = false,
     )
 
     data class LinksPage(
@@ -104,7 +105,7 @@ object ApiClient {
         q: String = "",
         tag: String = "",
         groupId: Int? = null,
-    ): LinksPage = withContext(Dispatchers.IO) {
+    ): LinksPage? = withContext(Dispatchers.IO) {
         try {
             val params = buildString {
                 append("page=$page&per_page=30")
@@ -113,7 +114,7 @@ object ApiClient {
                 if (groupId != null) append("&group_id=$groupId")
             }
             val conn = openGet("$serverUrl/api/v1/links?$params", apiKey)
-            if (conn.responseCode != 200) return@withContext LinksPage(emptyList(), 0, 1, 1)
+            if (conn.responseCode != 200) return@withContext null
             val json = JSONObject(conn.inputStream.bufferedReader().readText())
             val arr = json.getJSONArray("links")
             val items = List(arr.length()) { i ->
@@ -126,6 +127,7 @@ object ApiClient {
                     description = o.optString("description", ""),
                     faviconUrl = o.optString("favicon_url", ""),
                     thumbnailUrl = o.optString("thumbnail_url", ""),
+                    isPublic = o.optBoolean("is_public", false),
                     tags = List(tagsArr.length()) { tagsArr.getString(it) },
                     createdAt = o.optString("created_at", ""),
                 )
@@ -137,9 +139,31 @@ object ApiClient {
                 totalPages = json.getInt("total_pages"),
             )
         } catch (_: Exception) {
-            LinksPage(emptyList(), 0, 1, 1)
+            null
         }
     }
+
+    suspend fun patchLink(serverUrl: String, apiKey: String, linkId: Int, isPublic: Boolean): Result =
+        withContext(Dispatchers.IO) {
+            try {
+                val body = JSONObject().put("is_public", isPublic).toString()
+                val conn = URL("$serverUrl/api/v1/links/$linkId").openConnection() as HttpURLConnection
+                conn.requestMethod = "PATCH"
+                conn.setRequestProperty("Content-Type", "application/json")
+                conn.setRequestProperty("X-API-Key", apiKey)
+                conn.doOutput = true
+                conn.connectTimeout = 10_000
+                conn.readTimeout = 10_000
+                conn.outputStream.use { it.write(body.toByteArray()) }
+                when (conn.responseCode) {
+                    200 -> Result(true, if (isPublic) "Lien rendu public" else "Lien rendu privé")
+                    404 -> Result(false, "Lien introuvable")
+                    else -> Result(false, "Erreur serveur (${conn.responseCode})")
+                }
+            } catch (e: Exception) {
+                Result(false, "Erreur réseau : ${e.message}")
+            }
+        }
 
     suspend fun deleteLink(serverUrl: String, apiKey: String, linkId: Int): Result =
         withContext(Dispatchers.IO) {
