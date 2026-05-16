@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: lab  # runner sur 192.168.1.18 avec Android SDK (mingc/android-build-box)
+    runs-on: lab
 
     steps:
       - uses: actions/checkout@v4
@@ -47,4 +47,4 @@ jobs:
           # Uploader l'APK
           curl -s -X POST "$BASE/releases/$RELEASE_ID/assets" \
             -H "Authorization: token $TOKEN" \
-            -F "attachment=@app/build/outputs/apk/debug/app-debug.apk;filename=linky-android.apk"
+            -F "attachment=@app/build/outputs/apk/debug/app-debug.apk;filename=excerpta-android.apk"
