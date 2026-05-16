@@ -11,16 +11,24 @@
         android:theme="@style/Theme.Linky"
         android:usesCleartextTraffic="true">
 
+        <!-- Écran principal : liste des liens -->
         <activity
-            android:name=".MainActivity"
+            android:name=".LinksActivity"
             android:exported="true"
-            android:label="@string/settings_title">
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
+        <!-- Paramètres + scan QR -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="false"
+            android:label="@string/settings_title" />
+
+        <!-- Partage depuis autres apps -->
         <activity
             android:name=".ShareActivity"
             android:exported="true"
