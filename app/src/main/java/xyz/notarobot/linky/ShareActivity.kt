@@ -18,6 +18,8 @@ class ShareActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        ThemeHelper.applyDialog(this)
+
         if (!Prefs.isConfigured(this)) {
             Toast.makeText(this, getString(R.string.configure_first), Toast.LENGTH_LONG).show()
             startActivity(Intent(this, MainActivity::class.java))
