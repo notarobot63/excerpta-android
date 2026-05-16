@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Linky</string>
+    <string name="app_name">Excerpta</string>
     <string name="settings_title">Paramètres</string>
-    <string name="settings_subtitle">Connectez l\'app à votre instance Linky.</string>
+    <string name="settings_subtitle">Connectez l\'app à votre instance Excerpta.</string>
     <string name="hint_server_url">URL du serveur (ex: http://192.168.1.18:8070)</string>
     <string name="hint_api_key">Clé API</string>
     <string name="hint_url">URL</string>
@@ -18,10 +18,10 @@
     <string name="fill_both_fields">Remplissez les deux champs.</string>
     <string name="testing">Test en cours…</string>
     <string name="url_required">URL requise</string>
-    <string name="configure_first">Configurez d\'abord le serveur dans les paramètres Linky.</string>
+    <string name="configure_first">Configurez d\'abord le serveur dans les paramètres Excerpta.</string>
     <string name="scan_prompt">Scannez le QR code affiché dans Paramètres → App Android</string>
-    <string name="qr_invalid">QR code non reconnu — utilisez celui de la page Paramètres Linky.</string>
-    <string name="share_title">Ajouter à Linky</string>
+    <string name="qr_invalid">QR code non reconnu — utilisez celui de la page Paramètres Excerpta.</string>
+    <string name="share_title">Ajouter à Excerpta</string>
     <string name="share_subtitle">Enregistrer ce lien dans ma collection</string>
     <string name="section_connection">Connexion au serveur</string>
     <string name="hint_search">Rechercher…</string>

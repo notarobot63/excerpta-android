@@ -26,26 +26,26 @@ object ThemeHelper {
     }
 
     private fun fullResId(theme: String) = when (theme) {
-        "dark"        -> R.style.Theme_Linky_Dark
-        "dracula"     -> R.style.Theme_Linky_Dracula
-        "nord"        -> R.style.Theme_Linky_Nord
-        "nord-dark"   -> R.style.Theme_Linky_NordDark
-        "catppuccin"  -> R.style.Theme_Linky_Catppuccin
-        "gruvbox"     -> R.style.Theme_Linky_Gruvbox
-        "solarized"   -> R.style.Theme_Linky_Solarized
-        "rosepine"    -> R.style.Theme_Linky_RosePine
-        else          -> R.style.Theme_Linky
+        "dark"        -> R.style.Theme_Excerpta_Dark
+        "dracula"     -> R.style.Theme_Excerpta_Dracula
+        "nord"        -> R.style.Theme_Excerpta_Nord
+        "nord-dark"   -> R.style.Theme_Excerpta_NordDark
+        "catppuccin"  -> R.style.Theme_Excerpta_Catppuccin
+        "gruvbox"     -> R.style.Theme_Excerpta_Gruvbox
+        "solarized"   -> R.style.Theme_Excerpta_Solarized
+        "rosepine"    -> R.style.Theme_Excerpta_RosePine
+        else          -> R.style.Theme_Excerpta
     }
 
     private fun dialogResId(theme: String) = when (theme) {
-        "dark"        -> R.style.Theme_Linky_Dark_Dialog
-        "dracula"     -> R.style.Theme_Linky_Dracula_Dialog
-        "nord"        -> R.style.Theme_Linky_Nord_Dialog
-        "nord-dark"   -> R.style.Theme_Linky_NordDark_Dialog
-        "catppuccin"  -> R.style.Theme_Linky_Catppuccin_Dialog
-        "gruvbox"     -> R.style.Theme_Linky_Gruvbox_Dialog
-        "solarized"   -> R.style.Theme_Linky_Solarized_Dialog
-        "rosepine"    -> R.style.Theme_Linky_RosePine_Dialog
-        else          -> R.style.Theme_Linky_Dialog
+        "dark"        -> R.style.Theme_Excerpta_Dark_Dialog
+        "dracula"     -> R.style.Theme_Excerpta_Dracula_Dialog
+        "nord"        -> R.style.Theme_Excerpta_Nord_Dialog
+        "nord-dark"   -> R.style.Theme_Excerpta_NordDark_Dialog
+        "catppuccin"  -> R.style.Theme_Excerpta_Catppuccin_Dialog
+        "gruvbox"     -> R.style.Theme_Excerpta_Gruvbox_Dialog
+        "solarized"   -> R.style.Theme_Excerpta_Solarized_Dialog
+        "rosepine"    -> R.style.Theme_Excerpta_RosePine_Dialog
+        else          -> R.style.Theme_Excerpta_Dialog
     }
 }
