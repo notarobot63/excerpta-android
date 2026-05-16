@@ -3,7 +3,7 @@
     <string name="app_name">Excerpta</string>
     <string name="settings_title">Paramètres</string>
     <string name="settings_subtitle">Connectez l\'app à votre instance Excerpta.</string>
-    <string name="hint_server_url">URL du serveur (ex: http://LAN_HOST_1:8070)</string>
+    <string name="hint_server_url">URL du serveur (ex: https://excerpta.mondomaine.fr)</string>
     <string name="hint_api_key">Clé API</string>
     <string name="hint_url">URL</string>
     <string name="hint_title">Titre</string>
