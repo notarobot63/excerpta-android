@@ -10,23 +10,99 @@ import java.net.URL
 object ApiClient {
     data class Result(val success: Boolean, val message: String)
 
+    data class LinkItem(
+        val id: Int,
+        val url: String,
+        val title: String,
+        val description: String,
+        val faviconUrl: String,
+        val thumbnailUrl: String,
+        val tags: List<String>,
+        val createdAt: String,
+    )
+
+    data class LinksPage(
+        val links: List<LinkItem>,
+        val total: Int,
+        val page: Int,
+        val totalPages: Int,
+    )
+
+    private fun openGet(url: String, apiKey: String): HttpURLConnection =
+        (URL(url).openConnection() as HttpURLConnection).apply {
+            requestMethod = "GET"
+            setRequestProperty("X-API-Key", apiKey)
+            connectTimeout = 10_000
+            readTimeout = 10_000
+        }
+
     suspend fun ping(serverUrl: String, apiKey: String): Result = withContext(Dispatchers.IO) {
         try {
-            val conn = URL("$serverUrl/api/v1/me").openConnection() as HttpURLConnection
-            conn.requestMethod = "GET"
-            conn.setRequestProperty("X-API-Key", apiKey)
-            conn.connectTimeout = 8_000
-            conn.readTimeout = 8_000
+            val conn = openGet("$serverUrl/api/v1/me", apiKey)
             val code = conn.responseCode
             if (code == 200) {
-                val body = conn.inputStream.bufferedReader().readText()
-                val name = JSONObject(body).optString("name", "")
+                val name = JSONObject(conn.inputStream.bufferedReader().readText()).optString("name", "")
                 Result(true, "Connecté en tant que $name")
             } else {
                 Result(false, "Erreur $code — vérifiez l'URL et la clé API")
             }
         } catch (e: Exception) {
             Result(false, "Impossible de joindre le serveur : ${e.message}")
+        }
+    }
+
+    suspend fun fetchTags(serverUrl: String, apiKey: String): List<String> =
+        withContext(Dispatchers.IO) {
+            try {
+                val conn = openGet("$serverUrl/api/v1/tags", apiKey)
+                if (conn.responseCode != 200) return@withContext emptyList()
+                val arr = JSONObject(conn.inputStream.bufferedReader().readText())
+                    .getJSONArray("tags")
+                List(arr.length()) { arr.getString(it) }
+            } catch (_: Exception) {
+                emptyList()
+            }
+        }
+
+    suspend fun fetchLinks(
+        serverUrl: String,
+        apiKey: String,
+        page: Int = 1,
+        q: String = "",
+        tag: String = "",
+    ): LinksPage = withContext(Dispatchers.IO) {
+        try {
+            val params = buildString {
+                append("page=$page&per_page=30")
+                if (q.isNotBlank()) append("&q=${java.net.URLEncoder.encode(q, "UTF-8")}")
+                if (tag.isNotBlank()) append("&tag=${java.net.URLEncoder.encode(tag, "UTF-8")}")
+            }
+            val conn = openGet("$serverUrl/api/v1/links?$params", apiKey)
+            if (conn.responseCode != 200) return@withContext LinksPage(emptyList(), 0, 1, 1)
+            val json = JSONObject(conn.inputStream.bufferedReader().readText())
+            val arr = json.getJSONArray("links")
+            val items = List(arr.length()) { i ->
+                val o = arr.getJSONObject(i)
+                val tagsArr = o.getJSONArray("tags")
+                LinkItem(
+                    id = o.getInt("id"),
+                    url = o.getString("url"),
+                    title = o.optString("title", o.getString("url")),
+                    description = o.optString("description", ""),
+                    faviconUrl = o.optString("favicon_url", ""),
+                    thumbnailUrl = o.optString("thumbnail_url", ""),
+                    tags = List(tagsArr.length()) { tagsArr.getString(it) },
+                    createdAt = o.optString("created_at", ""),
+                )
+            }
+            LinksPage(
+                links = items,
+                total = json.getInt("total"),
+                page = json.getInt("page"),
+                totalPages = json.getInt("total_pages"),
+            )
+        } catch (_: Exception) {
+            LinksPage(emptyList(), 0, 1, 1)
         }
     }
 

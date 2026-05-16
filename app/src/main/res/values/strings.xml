@@ -24,4 +24,9 @@
     <string name="share_title">Ajouter à Linky</string>
     <string name="share_subtitle">Enregistrer ce lien dans ma collection</string>
     <string name="section_connection">Connexion au serveur</string>
+    <string name="hint_search">Rechercher…</string>
+    <string name="empty_links">Aucun lien trouvé</string>
+    <string name="not_configured">Serveur non configuré</string>
+    <string name="open_settings">Ouvrir les paramètres</string>
+    <string name="tag_suggestions">Tags suggérés</string>
 </resources>
