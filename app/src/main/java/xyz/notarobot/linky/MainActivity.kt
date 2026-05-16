@@ -1,5 +1,6 @@
 package xyz.notarobot.linky
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
@@ -25,7 +26,11 @@ class MainActivity : AppCompatActivity() {
                     findViewById<EditText>(R.id.etServer).setText(server)
                     findViewById<EditText>(R.id.etApiKey).setText(key)
                     Prefs.save(this, server, key)
-                    findViewById<TextView>(R.id.tvStatus).text = getString(R.string.settings_saved)
+                    startActivity(
+                        Intent(this, LinksActivity::class.java)
+                            .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                    )
+                    finish()
                 } else {
                     findViewById<TextView>(R.id.tvStatus).text = getString(R.string.qr_invalid)
                 }
@@ -62,7 +67,13 @@ class MainActivity : AppCompatActivity() {
 
         btnSave.setOnClickListener {
             Prefs.save(this, etServer.text.toString(), etApiKey.text.toString())
-            tvStatus.text = getString(R.string.settings_saved)
+            // Retour à LinksActivity (CLEAR_TOP la réutilise si elle est dans la pile,
+            // ou en crée une nouvelle si c'est le premier lancement)
+            startActivity(
+                Intent(this, LinksActivity::class.java)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            )
+            finish()
         }
 
         btnTest.setOnClickListener {
