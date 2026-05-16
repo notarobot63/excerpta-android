@@ -30,8 +30,21 @@ android {
         buildConfig = true
     }
 
+    signingConfigs {
+        create("fixed") {
+            storeFile = rootProject.file("linky-debug.jks")
+            storePassword = "linky_debug"
+            keyAlias = "linky"
+            keyPassword = "linky_debug"
+        }
+    }
+
     buildTypes {
+        debug {
+            signingConfig = signingConfigs.getByName("fixed")
+        }
         release {
+            signingConfig = signingConfigs.getByName("fixed")
             isMinifyEnabled = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
