@@ -3,7 +3,7 @@ package xyz.notarobot.linky
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKey
+import androidx.security.crypto.MasterKeys
 
 object Prefs {
     private const val NAME = "linky_prefs"
@@ -14,16 +14,13 @@ object Prefs {
 
     private fun getPrefs(ctx: Context): SharedPreferences {
         return try {
-            val masterKey = MasterKey.Builder(ctx)
-                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-                .build()
+            val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
             EncryptedSharedPreferences.create(
-                ctx, NAME, masterKey,
+                NAME, masterKeyAlias, ctx,
                 EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
                 EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM,
             )
         } catch (_: Exception) {
-            // Fallback si le KeyStore du device est corrompu
             ctx.getSharedPreferences(NAME_LEGACY, Context.MODE_PRIVATE)
         }
     }
