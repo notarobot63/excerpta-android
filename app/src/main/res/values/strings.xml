@@ -31,4 +31,11 @@
     <string name="tag_suggestions">Tags suggérés</string>
     <string name="section_appearance">Apparence</string>
     <string name="hint_theme">Thème</string>
+    <string name="fab_add">Ajouter un lien</string>
+    <string name="menu_open">Ouvrir</string>
+    <string name="menu_copy_url">Copier l\'URL</string>
+    <string name="menu_make_public">Rendre public</string>
+    <string name="menu_make_private">Rendre privé</string>
+    <string name="menu_delete">Supprimer</string>
+    <string name="offline_notice">Mode hors ligne — données mises en cache</string>
 </resources>
