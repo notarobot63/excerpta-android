@@ -12,3 +12,5 @@
 *.apk
 *.ap_
 app/build/
+*.jks
+linky-ci.jks
