@@ -55,7 +55,7 @@ object ApiClient {
                 val name = JSONObject(conn.inputStream.bufferedReader().readText()).optString("name", "")
                 Result(true, "Connecté en tant que $name")
             } else {
-                Result(false, "Erreur $code — vérifiez l'URL et la clé API")
+                Result(false, "Erreur $code - vérifiez l'URL et la clé API")
             }
         } catch (e: Exception) {
             Result(false, "Impossible de joindre le serveur : ${e.message}")
