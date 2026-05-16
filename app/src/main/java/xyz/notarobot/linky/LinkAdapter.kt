@@ -10,6 +10,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
+import coil.transform.RoundedCornersTransformation
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 
@@ -31,6 +33,16 @@ class LinkAdapter : ListAdapter<ApiClient.LinkItem, LinkAdapter.VH>(DIFF) {
 
         holder.domain.text = Uri.parse(item.url).host ?: item.url
         holder.title.text = item.title.ifBlank { item.url }
+
+        if (item.faviconUrl.isNotBlank()) {
+            holder.favicon.load(item.faviconUrl) {
+                crossfade(true)
+                transformations(RoundedCornersTransformation(4f))
+                error(R.drawable.ic_bookmark)
+            }
+        } else {
+            holder.favicon.load(R.drawable.ic_bookmark)
+        }
 
         if (item.description.isNotBlank()) {
             holder.description.visibility = View.VISIBLE
