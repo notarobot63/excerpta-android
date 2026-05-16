@@ -3,12 +3,14 @@ package xyz.notarobot.linky
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
+import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.launch
 
 class ShareActivity : AppCompatActivity() {
@@ -28,16 +30,46 @@ class ShareActivity : AppCompatActivity() {
         val sharedUrl = intent.getStringExtra(Intent.EXTRA_TEXT)?.trim() ?: ""
         val sharedTitle = intent.getStringExtra(Intent.EXTRA_SUBJECT)?.trim() ?: ""
 
-        val etUrl = findViewById<EditText>(R.id.etUrl)
-        val etTitle = findViewById<EditText>(R.id.etTitle)
-        val etTags = findViewById<EditText>(R.id.etTags)
-        val etNote = findViewById<EditText>(R.id.etNote)
-        val btnSave = findViewById<Button>(R.id.btnSave)
-        val btnCancel = findViewById<Button>(R.id.btnCancel)
+        val etUrl = findViewById<TextInputEditText>(R.id.etUrl)
+        val etTitle = findViewById<TextInputEditText>(R.id.etTitle)
+        val etTags = findViewById<TextInputEditText>(R.id.etTags)
+        val etNote = findViewById<TextInputEditText>(R.id.etNote)
+        val btnSave = findViewById<MaterialButton>(R.id.btnSave)
+        val btnCancel = findViewById<MaterialButton>(R.id.btnCancel)
         val progress = findViewById<ProgressBar>(R.id.progress)
+        val chipGroup = findViewById<ChipGroup>(R.id.chipGroupSuggestions)
+        val suggestionsSection = findViewById<View>(R.id.suggestionsSection)
 
         etUrl.setText(sharedUrl)
         etTitle.setText(sharedTitle)
+
+        // Charger les tags suggérés
+        lifecycleScope.launch {
+            val tags = ApiClient.fetchTags(
+                Prefs.serverUrl(this@ShareActivity),
+                Prefs.apiKey(this@ShareActivity),
+            )
+            if (tags.isNotEmpty()) {
+                suggestionsSection.visibility = View.VISIBLE
+                tags.forEach { tagName ->
+                    val chip = Chip(chipGroup.context).apply {
+                        text = tagName
+                        isCheckable = true
+                    }
+                    chip.setOnCheckedChangeListener { _, checked ->
+                        val current = etTags.text?.toString()?.trim() ?: ""
+                        val existing = current.split(",").map { it.trim() }.filter { it.isNotBlank() }
+                        val updated = if (checked) {
+                            (existing + tagName).distinct()
+                        } else {
+                            existing.filter { it != tagName }
+                        }
+                        etTags.setText(updated.joinToString(", "))
+                    }
+                    chipGroup.addView(chip)
+                }
+            }
+        }
 
         btnCancel.setOnClickListener { finish() }
 
