@@ -38,6 +38,7 @@ class LinksActivity : AppCompatActivity() {
             return
         }
 
+        ThemeHelper.apply(this)
         setContentView(R.layout.activity_links)
 
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
@@ -120,6 +121,11 @@ class LinksActivity : AppCompatActivity() {
 
     private lateinit var progressView: View
     private lateinit var emptyView: View
+
+    override fun onResume() {
+        super.onResume()
+        if (ThemeHelper.needsRecreate(this)) recreate()
+    }
 
     private fun resetAndLoad() {
         currentPage = 1
