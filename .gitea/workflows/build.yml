@@ -16,9 +16,30 @@ jobs:
       - name: Build debug APK
         run: ./gradlew assembleDebug --no-daemon
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v3
-        with:
-          name: linky-android-debug
-          path: app/build/outputs/apk/debug/app-debug.apk
-          retention-days: 30
+      - name: Publier la release "latest"
+        if: github.ref == 'refs/heads/main'
+        env:
+          BASE: https://git.notarobot.xyz/api/v1/repos/${{ github.repository }}
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Supprimer l'ancienne release "latest" si elle existe
+          OLD_ID=$(curl -s "$BASE/releases/tags/latest" \
+            -H "Authorization: token $TOKEN" \
+            | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('id',''))" 2>/dev/null || true)
+          if [ -n "$OLD_ID" ] && [ "$OLD_ID" != "None" ] && [ "$OLD_ID" != "" ]; then
+            curl -s -X DELETE "$BASE/releases/$OLD_ID" -H "Authorization: token $TOKEN"
+            sleep 1
+          fi
+          # Supprimer le tag "latest"
+          curl -s -X DELETE "$BASE/tags/latest" -H "Authorization: token $TOKEN" || true
+          sleep 1
+          # Créer la release
+          RELEASE_ID=$(curl -s -X POST "$BASE/releases" \
+            -H "Authorization: token $TOKEN" \
+            -H "Content-Type: application/json" \
+            -d '{"tag_name":"latest","name":"Latest build","body":"Build automatique — dernier commit sur main.","prerelease":true}' \
+            | python3 -c "import sys,json; print(json.load(sys.stdin)['id'])")
+          # Uploader l'APK
+          curl -s -X POST "$BASE/releases/$RELEASE_ID/assets" \
+            -H "Authorization: token $TOKEN" \
+            -F "attachment=@app/build/outputs/apk/debug/app-debug.apk;filename=linky-android.apk"
