@@ -1,3 +1,5 @@
+import java.util.Base64
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -36,7 +38,7 @@ android {
             val b64 = System.getenv("KEYSTORE_B64") ?: ""
             storeFile = if (b64.isNotBlank()) {
                 val f = rootProject.file("linky-ci.jks")
-                f.writeBytes(java.util.Base64.getDecoder().decode(b64))
+                f.writeBytes(Base64.getDecoder().decode(b64))
                 f
             } else {
                 rootProject.file("linky-debug.jks") // dev local uniquement
