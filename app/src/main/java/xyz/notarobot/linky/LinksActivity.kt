@@ -10,7 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.Job
@@ -44,14 +44,15 @@ class LinksActivity : AppCompatActivity() {
         val progress = findViewById<LinearProgressIndicator>(R.id.progress)
         val tvEmpty = findViewById<View>(R.id.tvEmpty)
         val etSearch = findViewById<TextInputEditText>(R.id.etSearch)
-        val fab = findViewById<FloatingActionButton>(R.id.fab)
+        val fab = findViewById<ExtendedFloatingActionButton>(R.id.fab)
 
         recycler.layoutManager = LinearLayoutManager(this)
         recycler.adapter = adapter
 
-        // Pagination au scroll
+        // Pagination + shrink FAB au scroll
         recycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(rv: RecyclerView, dx: Int, dy: Int) {
+                if (dy > 8) fab.shrink() else if (dy < -8) fab.extend()
                 val lm = rv.layoutManager as LinearLayoutManager
                 if (!isLoading && currentPage < totalPages &&
                     lm.findLastVisibleItemPosition() >= adapter.itemCount - 5
