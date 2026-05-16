@@ -3,6 +3,16 @@ plugins {
     id("org.jetbrains.kotlin.android")
 }
 
+fun String.runCommand(): String? = try {
+    ProcessBuilder(split(" "))
+        .redirectErrorStream(true)
+        .start()
+        .inputStream.bufferedReader().readText().trim()
+        .takeIf { it.isNotBlank() }
+} catch (_: Exception) { null }
+
+val gitCommit = "git rev-parse --short HEAD".runCommand() ?: "unknown"
+
 android {
     namespace = "xyz.notarobot.linky"
     compileSdk = 34
@@ -13,6 +23,11 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
+        buildConfigField("String", "GIT_COMMIT", "\"$gitCommit\"")
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     buildTypes {
