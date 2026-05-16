@@ -189,19 +189,6 @@ class LinksActivity : AppCompatActivity() {
                 ApiClient.fetchGroups(Prefs.serverUrl(this@LinksActivity), Prefs.apiKey(this@LinksActivity))
             }
 
-            if (tags.isNotEmpty()) {
-                addSection("Tags")
-                for (tag in tags) {
-                    addNavItem(
-                        label = "# ${tag.name}",
-                        count = tag.count,
-                        isSelected = currentTag == tag.name,
-                    ) {
-                        setFilter(tag = tag.name)
-                    }
-                }
-            }
-
             if (groups.isNotEmpty()) {
                 addSection("Groupes")
                 for (group in groups) {
@@ -214,6 +201,19 @@ class LinksActivity : AppCompatActivity() {
                         isSelected = currentGroupId == group.id,
                     ) {
                         setFilter(groupId = group.id, groupName = group.name)
+                    }
+                }
+            }
+
+            if (tags.isNotEmpty()) {
+                addSection("Tags")
+                for (tag in tags) {
+                    addNavItem(
+                        label = "# ${tag.name}",
+                        count = tag.count,
+                        isSelected = currentTag == tag.name,
+                    ) {
+                        setFilter(tag = tag.name)
                     }
                 }
             }
