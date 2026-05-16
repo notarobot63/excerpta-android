@@ -15,8 +15,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:navigationIcon="@drawable/ic_bookmark"
-            app:navigationIconTint="?attr/colorPrimary"
+            app:navigationIcon="@drawable/ic_logo"
             app:title="@string/settings_title"
             app:subtitle="@string/app_name" />
 
