@@ -10,6 +10,16 @@ import java.net.URL
 object ApiClient {
     data class Result(val success: Boolean, val message: String)
 
+    data class TagInfo(val name: String, val count: Int)
+
+    data class GroupItem(
+        val id: Int,
+        val name: String,
+        val parentId: Int?,
+        val count: Int,
+        val depth: Int,
+    )
+
     data class LinkItem(
         val id: Int,
         val url: String,
@@ -51,14 +61,37 @@ object ApiClient {
         }
     }
 
-    suspend fun fetchTags(serverUrl: String, apiKey: String): List<String> =
+    suspend fun fetchTags(serverUrl: String, apiKey: String): List<TagInfo> =
         withContext(Dispatchers.IO) {
             try {
                 val conn = openGet("$serverUrl/api/v1/tags", apiKey)
                 if (conn.responseCode != 200) return@withContext emptyList()
-                val arr = JSONObject(conn.inputStream.bufferedReader().readText())
-                    .getJSONArray("tags")
-                List(arr.length()) { arr.getString(it) }
+                val arr = JSONObject(conn.inputStream.bufferedReader().readText()).getJSONArray("tags")
+                List(arr.length()) {
+                    val o = arr.getJSONObject(it)
+                    TagInfo(o.getString("name"), o.optInt("count", 0))
+                }
+            } catch (_: Exception) {
+                emptyList()
+            }
+        }
+
+    suspend fun fetchGroups(serverUrl: String, apiKey: String): List<GroupItem> =
+        withContext(Dispatchers.IO) {
+            try {
+                val conn = openGet("$serverUrl/api/v1/groups", apiKey)
+                if (conn.responseCode != 200) return@withContext emptyList()
+                val arr = JSONObject(conn.inputStream.bufferedReader().readText()).getJSONArray("groups")
+                List(arr.length()) {
+                    val o = arr.getJSONObject(it)
+                    GroupItem(
+                        id = o.getInt("id"),
+                        name = o.getString("name"),
+                        parentId = if (o.isNull("parent_id")) null else o.getInt("parent_id"),
+                        count = o.optInt("count", 0),
+                        depth = o.optInt("depth", 0),
+                    )
+                }
             } catch (_: Exception) {
                 emptyList()
             }
@@ -70,12 +103,14 @@ object ApiClient {
         page: Int = 1,
         q: String = "",
         tag: String = "",
+        groupId: Int? = null,
     ): LinksPage = withContext(Dispatchers.IO) {
         try {
             val params = buildString {
                 append("page=$page&per_page=30")
                 if (q.isNotBlank()) append("&q=${java.net.URLEncoder.encode(q, "UTF-8")}")
                 if (tag.isNotBlank()) append("&tag=${java.net.URLEncoder.encode(tag, "UTF-8")}")
+                if (groupId != null) append("&group_id=$groupId")
             }
             val conn = openGet("$serverUrl/api/v1/links?$params", apiKey)
             if (conn.responseCode != 200) return@withContext LinksPage(emptyList(), 0, 1, 1)

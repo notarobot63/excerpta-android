@@ -53,7 +53,8 @@ class ShareActivity : AppCompatActivity() {
             )
             if (tags.isNotEmpty()) {
                 suggestionsSection.visibility = View.VISIBLE
-                tags.forEach { tagName ->
+                tags.forEach { tagInfo ->
+                    val tagName = tagInfo.name
                     val chip = Chip(chipGroup.context).apply {
                         text = tagName
                         isCheckable = true
