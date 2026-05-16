@@ -32,10 +32,17 @@ android {
 
     signingConfigs {
         create("fixed") {
-            storeFile = rootProject.file("linky-debug.jks")
-            storePassword = "linky_debug"
-            keyAlias = "linky"
-            keyPassword = "linky_debug"
+            val b64 = System.getenv("KEYSTORE_B64") ?: ""
+            storeFile = if (b64.isNotBlank()) {
+                val f = rootProject.file("linky-ci.jks")
+                f.writeBytes(java.util.Base64.getDecoder().decode(b64))
+                f
+            } else {
+                rootProject.file("linky-debug.jks") // dev local uniquement
+            }
+            storePassword = System.getenv("KEYSTORE_PASS") ?: "linky_debug"
+            keyAlias = System.getenv("KEY_ALIAS") ?: "linky"
+            keyPassword = System.getenv("KEY_PASS") ?: "linky_debug"
         }
     }
 
@@ -66,4 +73,5 @@ dependencies {
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
     implementation("androidx.recyclerview:recyclerview:1.3.2")
     implementation("io.coil-kt:coil:2.6.0")
+    implementation("androidx.security:security-crypto:1.0.0")
 }

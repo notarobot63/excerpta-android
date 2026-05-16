@@ -15,6 +15,11 @@ import kotlinx.coroutines.launch
 
 class ShareActivity : AppCompatActivity() {
 
+    private fun isValidUrl(url: String): Boolean = try {
+        val uri = android.net.Uri.parse(url)
+        uri.scheme in listOf("http", "https") && !uri.host.isNullOrBlank()
+    } catch (_: Exception) { false }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -29,7 +34,8 @@ class ShareActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_share)
 
-        val sharedUrl = intent.getStringExtra(Intent.EXTRA_TEXT)?.trim() ?: ""
+        val raw = intent.getStringExtra(Intent.EXTRA_TEXT)?.trim() ?: ""
+        val sharedUrl = if (isValidUrl(raw)) raw else ""
         val sharedTitle = intent.getStringExtra(Intent.EXTRA_SUBJECT)?.trim() ?: ""
 
         val etUrl = findViewById<TextInputEditText>(R.id.etUrl)
