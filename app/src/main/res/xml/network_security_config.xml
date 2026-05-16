@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    HTTP autorisé partout : le serveur Linky tourne sur le LAN en HTTP.
+    Pour un déploiement externe (Pangolin/Traefik), HTTPS est utilisé automatiquement.
+    Restriction future possible en listant des domaines HTTPS uniquement.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>
