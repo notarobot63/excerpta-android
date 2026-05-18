@@ -10,9 +10,9 @@ import java.net.URL
 object UpdateChecker {
 
     private const val RELEASES_URL =
-        "https://GIT_HOST/api/v1/repos/Thomas/linky-android/releases/tags/latest"
+        "https://GIT_HOST/api/v1/repos/Thomas/excerpta-android/releases/tags/latest"
     private const val APK_URL =
-        "https://GIT_HOST/Thomas/linky-android/releases/download/latest/linky-android.apk"
+        "https://GIT_HOST/Thomas/excerpta-android/releases/download/latest/excerpta-android.apk"
 
     data class UpdateInfo(val remoteCommit: String, val hasUpdate: Boolean)
 

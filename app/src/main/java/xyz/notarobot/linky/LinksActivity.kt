@@ -151,12 +151,9 @@ class LinksActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         if (ThemeHelper.needsRecreate(this)) recreate()
-        else {
-            buildDrawer()
-            if (listNeedsRefresh) {
-                listNeedsRefresh = false
-                resetAndLoad()
-            }
+        else if (listNeedsRefresh) {
+            listNeedsRefresh = false
+            resetAndLoad()
         }
     }
 
@@ -164,6 +161,7 @@ class LinksActivity : AppCompatActivity() {
 
     private fun buildDrawer() {
         drawerNav.removeAllViews()
+        selectedNavView = null  // les vues précédentes sont détachées, reset la référence
 
         addNavItem(
             label = "Tous les liens",
