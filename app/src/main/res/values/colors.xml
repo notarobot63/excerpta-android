@@ -29,9 +29,10 @@
     <color name="t_dracula_on_primary_container">#BD93F9</color>
     <color name="t_dracula_surface">#21222C</color>
     <color name="t_dracula_on_surface">#F8F8F2</color>
-    <color name="t_dracula_on_surface_variant">#6272A4</color>
+    <color name="t_dracula_on_surface_variant">#8B96C0</color>
     <color name="t_dracula_background">#282A36</color>
-    <color name="t_dracula_outline">#44475A</color>
+    <color name="t_dracula_outline">#565870</color>
+    <color name="t_dracula_dialog_surface">#44475A</color>
 
     <!-- Nord -->
     <color name="t_nord_primary">#5E81AC</color>
@@ -53,7 +54,8 @@
     <color name="t_norddark_on_surface">#ECEFF4</color>
     <color name="t_norddark_on_surface_variant">#9099AB</color>
     <color name="t_norddark_background">#2E3440</color>
-    <color name="t_norddark_outline">#434C5E</color>
+    <color name="t_norddark_outline">#4C566A</color>
+    <color name="t_norddark_dialog_surface">#434C5E</color>
 
     <!-- Catppuccin -->
     <color name="t_catppuccin_primary">#CBA6F7</color>
@@ -62,9 +64,10 @@
     <color name="t_catppuccin_on_primary_container">#CBA6F7</color>
     <color name="t_catppuccin_surface">#181825</color>
     <color name="t_catppuccin_on_surface">#CDD6F4</color>
-    <color name="t_catppuccin_on_surface_variant">#7F849C</color>
+    <color name="t_catppuccin_on_surface_variant">#A6ADC8</color>
     <color name="t_catppuccin_background">#1E1E2E</color>
-    <color name="t_catppuccin_outline">#313244</color>
+    <color name="t_catppuccin_outline">#585B70</color>
+    <color name="t_catppuccin_dialog_surface">#313244</color>
 
     <!-- Gruvbox -->
     <color name="t_gruvbox_primary">#83A598</color>
@@ -73,9 +76,10 @@
     <color name="t_gruvbox_on_primary_container">#FABD2F</color>
     <color name="t_gruvbox_surface">#1D2021</color>
     <color name="t_gruvbox_on_surface">#EBDBB2</color>
-    <color name="t_gruvbox_on_surface_variant">#928374</color>
+    <color name="t_gruvbox_on_surface_variant">#A89984</color>
     <color name="t_gruvbox_background">#282828</color>
-    <color name="t_gruvbox_outline">#3C3836</color>
+    <color name="t_gruvbox_outline">#504945</color>
+    <color name="t_gruvbox_dialog_surface">#3C3836</color>
 
     <!-- Solarized -->
     <color name="t_solarized_primary">#268BD2</color>
@@ -95,7 +99,8 @@
     <color name="t_rosepine_on_primary_container">#C4A7E7</color>
     <color name="t_rosepine_surface">#1F1D2E</color>
     <color name="t_rosepine_on_surface">#E0DEF4</color>
-    <color name="t_rosepine_on_surface_variant">#6E6A86</color>
+    <color name="t_rosepine_on_surface_variant">#908CAA</color>
     <color name="t_rosepine_background">#191724</color>
-    <color name="t_rosepine_outline">#26233A</color>
+    <color name="t_rosepine_outline">#403C58</color>
+    <color name="t_rosepine_dialog_surface">#26233A</color>
 </resources>

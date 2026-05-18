@@ -1,4 +1,4 @@
-package xyz.notarobot.linky
+package xyz.notarobot.excerpta
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -6,8 +6,8 @@ import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
 
 object Prefs {
-    private const val NAME = "linky_prefs"
-    private const val NAME_LEGACY = "linky_prefs_plain"
+    private const val NAME = "excerpta_prefs"
+    private const val NAME_LEGACY = "excerpta_prefs_plain"
     private const val KEY_SERVER = "server_url"
     private const val KEY_API_KEY = "api_key"
     private const val KEY_THEME = "theme"
