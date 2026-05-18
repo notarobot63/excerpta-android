@@ -48,8 +48,8 @@ object ApiClient {
         }
 
     suspend fun ping(serverUrl: String, apiKey: String): Result = withContext(Dispatchers.IO) {
+        val conn = openGet("$serverUrl/api/v1/me", apiKey)
         try {
-            val conn = openGet("$serverUrl/api/v1/me", apiKey)
             val code = conn.responseCode
             if (code == 200) {
                 val name = JSONObject(conn.inputStream.bufferedReader().readText()).optString("name", "")
@@ -59,13 +59,15 @@ object ApiClient {
             }
         } catch (e: Exception) {
             Result(false, "Impossible de joindre le serveur : ${e.message}")
+        } finally {
+            conn.disconnect()
         }
     }
 
     suspend fun fetchTags(serverUrl: String, apiKey: String): List<TagInfo> =
         withContext(Dispatchers.IO) {
+            val conn = openGet("$serverUrl/api/v1/tags", apiKey)
             try {
-                val conn = openGet("$serverUrl/api/v1/tags", apiKey)
                 if (conn.responseCode != 200) return@withContext emptyList()
                 val arr = JSONObject(conn.inputStream.bufferedReader().readText()).getJSONArray("tags")
                 List(arr.length()) {
@@ -74,13 +76,15 @@ object ApiClient {
                 }
             } catch (_: Exception) {
                 emptyList()
+            } finally {
+                conn.disconnect()
             }
         }
 
     suspend fun fetchGroups(serverUrl: String, apiKey: String): List<GroupItem> =
         withContext(Dispatchers.IO) {
+            val conn = openGet("$serverUrl/api/v1/groups", apiKey)
             try {
-                val conn = openGet("$serverUrl/api/v1/groups", apiKey)
                 if (conn.responseCode != 200) return@withContext emptyList()
                 val arr = JSONObject(conn.inputStream.bufferedReader().readText()).getJSONArray("groups")
                 List(arr.length()) {
@@ -95,6 +99,8 @@ object ApiClient {
                 }
             } catch (_: Exception) {
                 emptyList()
+            } finally {
+                conn.disconnect()
             }
         }
 
@@ -106,14 +112,14 @@ object ApiClient {
         tag: String = "",
         groupId: Int? = null,
     ): LinksPage? = withContext(Dispatchers.IO) {
+        val params = buildString {
+            append("page=$page&per_page=30")
+            if (q.isNotBlank()) append("&q=${java.net.URLEncoder.encode(q, "UTF-8")}")
+            if (tag.isNotBlank()) append("&tag=${java.net.URLEncoder.encode(tag, "UTF-8")}")
+            if (groupId != null) append("&group_id=$groupId")
+        }
+        val conn = openGet("$serverUrl/api/v1/links?$params", apiKey)
         try {
-            val params = buildString {
-                append("page=$page&per_page=30")
-                if (q.isNotBlank()) append("&q=${java.net.URLEncoder.encode(q, "UTF-8")}")
-                if (tag.isNotBlank()) append("&tag=${java.net.URLEncoder.encode(tag, "UTF-8")}")
-                if (groupId != null) append("&group_id=$groupId")
-            }
-            val conn = openGet("$serverUrl/api/v1/links?$params", apiKey)
             if (conn.responseCode != 200) return@withContext null
             val json = JSONObject(conn.inputStream.bufferedReader().readText())
             val arr = json.getJSONArray("links")
@@ -140,14 +146,16 @@ object ApiClient {
             )
         } catch (_: Exception) {
             null
+        } finally {
+            conn.disconnect()
         }
     }
 
     suspend fun patchLink(serverUrl: String, apiKey: String, linkId: Int, isPublic: Boolean): Result =
         withContext(Dispatchers.IO) {
+            val conn = URL("$serverUrl/api/v1/links/$linkId").openConnection() as HttpURLConnection
             try {
                 val body = JSONObject().put("is_public", isPublic).toString()
-                val conn = URL("$serverUrl/api/v1/links/$linkId").openConnection() as HttpURLConnection
                 conn.requestMethod = "PATCH"
                 conn.setRequestProperty("Content-Type", "application/json")
                 conn.setRequestProperty("X-API-Key", apiKey)
@@ -162,13 +170,15 @@ object ApiClient {
                 }
             } catch (e: Exception) {
                 Result(false, "Erreur réseau : ${e.message}")
+            } finally {
+                conn.disconnect()
             }
         }
 
     suspend fun deleteLink(serverUrl: String, apiKey: String, linkId: Int): Result =
         withContext(Dispatchers.IO) {
+            val conn = URL("$serverUrl/api/v1/links/$linkId").openConnection() as HttpURLConnection
             try {
-                val conn = URL("$serverUrl/api/v1/links/$linkId").openConnection() as HttpURLConnection
                 conn.requestMethod = "DELETE"
                 conn.setRequestProperty("X-API-Key", apiKey)
                 conn.connectTimeout = 10_000
@@ -181,6 +191,8 @@ object ApiClient {
                 }
             } catch (e: Exception) {
                 Result(false, "Erreur réseau : ${e.message}")
+            } finally {
+                conn.disconnect()
             }
         }
 
@@ -192,6 +204,7 @@ object ApiClient {
         tags: List<String>,
         note: String = "",
     ): Result = withContext(Dispatchers.IO) {
+        val conn = URL("$serverUrl/api/v1/links").openConnection() as HttpURLConnection
         try {
             val body = JSONObject().apply {
                 put("url", url)
@@ -199,8 +212,6 @@ object ApiClient {
                 put("note", note)
                 put("tags", JSONArray(tags))
             }.toString()
-
-            val conn = URL("$serverUrl/api/v1/links").openConnection() as HttpURLConnection
             conn.requestMethod = "POST"
             conn.setRequestProperty("Content-Type", "application/json")
             conn.setRequestProperty("X-API-Key", apiKey)
@@ -208,7 +219,6 @@ object ApiClient {
             conn.connectTimeout = 10_000
             conn.readTimeout = 10_000
             conn.outputStream.use { it.write(body.toByteArray()) }
-
             when (val code = conn.responseCode) {
                 201 -> Result(true, "Lien sauvegardé")
                 401 -> Result(false, "Clé API invalide")
@@ -217,6 +227,8 @@ object ApiClient {
             }
         } catch (e: Exception) {
             Result(false, "Erreur réseau : ${e.message}")
+        } finally {
+            conn.disconnect()
         }
     }
 }
