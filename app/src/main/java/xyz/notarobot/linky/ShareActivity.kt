@@ -9,8 +9,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.chip.Chip
-import com.google.android.material.chip.ChipGroup
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.launch
 
@@ -52,40 +50,8 @@ class ShareActivity : AppCompatActivity() {
         val btnSave = findViewById<MaterialButton>(R.id.btnSave)
         val btnCancel = findViewById<MaterialButton>(R.id.btnCancel)
         val progress = findViewById<ProgressBar>(R.id.progress)
-        val chipGroup = findViewById<ChipGroup>(R.id.chipGroupSuggestions)
-        val suggestionsSection = findViewById<View>(R.id.suggestionsSection)
-
         etUrl.setText(sharedUrl)
         etTitle.setText(sharedTitle)
-
-        // Charger les tags suggérés
-        lifecycleScope.launch {
-            val tags = ApiClient.fetchTags(
-                Prefs.serverUrl(this@ShareActivity),
-                Prefs.apiKey(this@ShareActivity),
-            )
-            if (tags.isNotEmpty()) {
-                suggestionsSection.visibility = View.VISIBLE
-                tags.forEach { tagInfo ->
-                    val tagName = tagInfo.name
-                    val chip = Chip(chipGroup.context).apply {
-                        text = tagName
-                        isCheckable = true
-                    }
-                    chip.setOnCheckedChangeListener { _, checked ->
-                        val current = etTags.text?.toString()?.trim() ?: ""
-                        val existing = current.split(",").map { it.trim() }.filter { it.isNotBlank() }
-                        val updated = if (checked) {
-                            (existing + tagName).distinct()
-                        } else {
-                            existing.filter { it != tagName }
-                        }
-                        etTags.setText(updated.joinToString(", "))
-                    }
-                    chipGroup.addView(chip)
-                }
-            }
-        }
 
         btnCancel.setOnClickListener { finish() }
 
