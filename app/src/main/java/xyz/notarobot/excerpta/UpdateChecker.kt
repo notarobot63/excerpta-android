@@ -1,4 +1,4 @@
-package xyz.notarobot.linky
+package xyz.notarobot.excerpta
 
 import android.content.Context
 import android.content.Intent

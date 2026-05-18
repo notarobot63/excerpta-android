@@ -1,4 +1,4 @@
-package xyz.notarobot.linky
+package xyz.notarobot.excerpta
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
