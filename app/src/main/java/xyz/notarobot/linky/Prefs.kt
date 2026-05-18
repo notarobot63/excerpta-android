@@ -12,16 +12,23 @@ object Prefs {
     private const val KEY_API_KEY = "api_key"
     private const val KEY_THEME = "theme"
 
+    @Volatile private var _prefs: SharedPreferences? = null
+
     private fun getPrefs(ctx: Context): SharedPreferences {
-        return try {
-            val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
-            EncryptedSharedPreferences.create(
-                NAME, masterKeyAlias, ctx,
-                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM,
-            )
-        } catch (_: Exception) {
-            ctx.getSharedPreferences(NAME_LEGACY, Context.MODE_PRIVATE)
+        _prefs?.let { return it }
+        return synchronized(this) {
+            _prefs ?: try {
+                val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
+                EncryptedSharedPreferences.create(
+                    NAME, masterKeyAlias, ctx.applicationContext,
+                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM,
+                ).also { _prefs = it }
+            } catch (e: Exception) {
+                android.util.Log.w("Prefs", "EncryptedSharedPreferences indisponible, fallback non chiffré", e)
+                ctx.applicationContext.getSharedPreferences(NAME_LEGACY, Context.MODE_PRIVATE)
+                    .also { _prefs = it }
+            }
         }
     }
 
