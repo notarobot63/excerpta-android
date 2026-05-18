@@ -17,11 +17,11 @@ val gitCommit = "git rev-parse --short HEAD".runCommand() ?: "unknown"
 val gitVersionCode = "git rev-list --count HEAD".runCommand()?.toIntOrNull() ?: 1
 
 android {
-    namespace = "xyz.notarobot.linky"
+    namespace = "xyz.notarobot.excerpta"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "xyz.notarobot.linky"
+        applicationId = "xyz.notarobot.excerpta"
         minSdk = 26
         targetSdk = 34
         versionCode = gitVersionCode
@@ -37,15 +37,15 @@ android {
         create("fixed") {
             val b64 = System.getenv("KEYSTORE_B64") ?: ""
             storeFile = if (b64.isNotBlank()) {
-                val f = rootProject.file("linky-ci.jks")
+                val f = rootProject.file("excerpta-ci.jks")
                 f.writeBytes(Base64.getDecoder().decode(b64))
                 f
             } else {
-                rootProject.file("linky-debug.jks") // dev local uniquement
+                rootProject.file("excerpta-debug.jks") // dev local uniquement
             }
-            storePassword = System.getenv("KEYSTORE_PASS") ?: "linky_debug"
-            keyAlias = System.getenv("KEY_ALIAS") ?: "linky"
-            keyPassword = System.getenv("KEY_PASS") ?: "linky_debug"
+            storePassword = System.getenv("KEYSTORE_PASS") ?: "excerpta_debug"
+            keyAlias = System.getenv("KEY_ALIAS") ?: "excerpta"
+            keyPassword = System.getenv("KEY_PASS") ?: "excerpta_debug"
         }
     }
 
