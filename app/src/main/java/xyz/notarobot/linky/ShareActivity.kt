@@ -3,6 +3,7 @@ package xyz.notarobot.linky
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -19,6 +20,12 @@ class ShareActivity : AppCompatActivity() {
         val uri = android.net.Uri.parse(url)
         uri.scheme in listOf("http", "https") && !uri.host.isNullOrBlank()
     } catch (_: Exception) { false }
+
+    override fun onStart() {
+        super.onStart()
+        val h = (resources.displayMetrics.heightPixels * 0.85).toInt()
+        window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, h)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
