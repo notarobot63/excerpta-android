@@ -1,4 +1,4 @@
 # Garder uniquement les Activity (référencées dans le manifest)
--keep public class xyz.notarobot.linky.*Activity { public <init>(); }
+-keep public class xyz.notarobot.excerpta.*Activity { public <init>(); }
 # BuildConfig accédé dans UpdateChecker
--keep class xyz.notarobot.linky.BuildConfig { *; }
+-keep class xyz.notarobot.excerpta.BuildConfig { *; }
