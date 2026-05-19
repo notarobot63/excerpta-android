@@ -12,5 +12,5 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "Linky"
+rootProject.name = "Excerpta"
 include(":app")
