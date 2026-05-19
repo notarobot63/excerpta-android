@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    HTTP autorisé partout : le serveur Linky tourne sur le LAN en HTTP.
+    HTTP autorisé partout : le serveur Excerpta tourne sur le LAN en HTTP.
     Pour un déploiement externe (Pangolin/Traefik), HTTPS est utilisé automatiquement.
     Restriction future possible en listant des domaines HTTPS uniquement.
 -->
