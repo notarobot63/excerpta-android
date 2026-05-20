@@ -24,7 +24,9 @@ class MainActivity : AppCompatActivity() {
                 val json = JSONObject(result.contents)
                 val server = json.optString("server", "")
                 val key = json.optString("key", "")
-                if (server.isNotBlank() && key.isNotBlank()) {
+                val serverUri = try { android.net.Uri.parse(server) } catch (_: Exception) { null }
+                val serverValid = serverUri?.scheme in listOf("http", "https") && !serverUri?.host.isNullOrBlank()
+                if (server.isNotBlank() && key.isNotBlank() && serverValid) {
                     findViewById<EditText>(R.id.etServer).setText(server)
                     findViewById<EditText>(R.id.etApiKey).setText(key)
                     Prefs.save(this, server, key)
