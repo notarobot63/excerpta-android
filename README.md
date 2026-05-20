@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://git.notarobot.xyz/Thomas/excerpta/raw/branch/main/app/static/logo.svg" alt="Excerpta" width="380"/>
+</p>
+
 # Excerpta Android
 
 Application Android companion pour [Excerpta](https://git.notarobot.xyz/Thomas/excerpta), le gestionnaire de liens self-hosted.
