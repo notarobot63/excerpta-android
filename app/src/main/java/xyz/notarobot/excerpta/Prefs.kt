@@ -13,6 +13,9 @@ object Prefs {
     private const val KEY_THEME = "theme"
 
     @Volatile private var _prefs: SharedPreferences? = null
+    @Volatile private var _encrypted: Boolean = true
+
+    fun isEncrypted(ctx: Context): Boolean { getPrefs(ctx); return _encrypted }
 
     private fun getPrefs(ctx: Context): SharedPreferences {
         _prefs?.let { return it }
@@ -26,6 +29,7 @@ object Prefs {
                 ).also { _prefs = it }
             } catch (e: Exception) {
                 android.util.Log.w("Prefs", "EncryptedSharedPreferences indisponible, fallback non chiffré", e)
+                _encrypted = false
                 ctx.applicationContext.getSharedPreferences(NAME_LEGACY, Context.MODE_PRIVATE)
                     .also { _prefs = it }
             }
