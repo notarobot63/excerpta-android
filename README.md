@@ -49,4 +49,4 @@ L'APK produit se trouve dans `app/build/outputs/apk/debug/app-debug.apk`.
 
 ## Licence
 
-Usage privé / self-hosted.
+[GNU Affero General Public License v3.0](LICENSE) — fork libre, copyleft fort, attribution obligatoire.
