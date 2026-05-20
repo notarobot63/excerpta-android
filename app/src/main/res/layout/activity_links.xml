@@ -128,7 +128,6 @@
             android:padding="20dp"
             android:paddingTop="36dp"
             android:paddingBottom="20dp"
-            android:background="#FEFBF5">
 
             <ImageView
                 android:layout_width="32dp"
