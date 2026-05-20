@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://GIT_HOST/Thomas/excerpta/raw/branch/main/app/static/logo.svg" alt="Excerpta" width="380"/>
+  <img src="https://GIT_HOST/Thomas/excerpta/raw/branch/main/app/static/logo_full.svg" alt="Excerpta" width="380"/>
 </p>
 
 # Excerpta Android
