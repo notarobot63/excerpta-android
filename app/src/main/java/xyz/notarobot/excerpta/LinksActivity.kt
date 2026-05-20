@@ -146,6 +146,9 @@ class LinksActivity : AppCompatActivity() {
         loadPage(1, append = false)
         buildDrawer()
         checkForUpdate(recyclerView)
+        if (!Prefs.isEncrypted(this)) {
+            Snackbar.make(recyclerView, "⚠️ Stockage non chiffré (KeyStore indisponible)", Snackbar.LENGTH_LONG).show()
+        }
     }
 
     override fun onResume() {
