@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://GIT_HOST/Thomas/excerpta/raw/branch/main/app/static/logo.svg" alt="Excerpta" width="380"/>
+</p>
+
 # Excerpta Android
 
 Application Android companion pour [Excerpta](https://GIT_HOST/Thomas/excerpta), le gestionnaire de liens self-hosted.
