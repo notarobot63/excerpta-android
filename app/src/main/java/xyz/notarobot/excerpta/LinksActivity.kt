@@ -6,12 +6,12 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
+import androidx.core.view.WindowCompat
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.addCallback
@@ -22,6 +22,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.io.File
@@ -49,6 +50,7 @@ class LinksActivity : AppCompatActivity() {
     private lateinit var emptyView: View
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var drawerNav: LinearLayout
+    private lateinit var toolbar: MaterialToolbar
     private lateinit var recyclerView: RecyclerView
     private lateinit var swipeRefresh: SwipeRefreshLayout
 
@@ -65,22 +67,24 @@ class LinksActivity : AppCompatActivity() {
             return
         }
 
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         ThemeHelper.apply(this)
         setContentView(R.layout.activity_links)
 
         drawerLayout = findViewById(R.id.drawerLayout)
         drawerNav = findViewById(R.id.drawerNav)
+        toolbar = findViewById(R.id.toolbar)
         recyclerView = findViewById(R.id.recyclerView)
         swipeRefresh = findViewById(R.id.swipeRefresh)
         val progress = findViewById<LinearProgressIndicator>(R.id.progress)
         val tvEmpty = findViewById<View>(R.id.tvEmpty)
         val etSearch = findViewById<TextInputEditText>(R.id.etSearch)
-        val btnDrawer = findViewById<ImageButton>(R.id.btnDrawer)
 
         progressView = progress
         emptyView = tvEmpty
 
-        btnDrawer.setOnClickListener { drawerLayout.openDrawer(GravityCompat.START) }
+        setSupportActionBar(toolbar)
+        toolbar.setNavigationOnClickListener { drawerLayout.openDrawer(GravityCompat.START) }
 
         // Fermer le drawer avec le bouton retour
         onBackPressedDispatcher.addCallback(this) {
@@ -309,14 +313,14 @@ class LinksActivity : AppCompatActivity() {
     private fun clearFilter() {
         currentTag = null
         currentGroupId = null
-        // subtitle supprimé (toolbar retirée)
+        toolbar.subtitle = null
         resetAndLoad()
     }
 
     private fun setFilter(tag: String? = null, groupId: Int? = null, groupName: String? = null) {
         currentTag = tag
         currentGroupId = groupId
-        // subtitle supprimé (toolbar retirée)
+        toolbar.subtitle = tag?.let { "#$it" } ?: groupName
         resetAndLoad()
     }
 
