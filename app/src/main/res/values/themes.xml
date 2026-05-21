@@ -12,7 +12,7 @@
         <item name="colorOnSurfaceVariant">@color/t_light_on_surface_variant</item>
         <item name="android:colorBackground">@color/t_light_background</item>
         <item name="colorOutline">@color/t_light_outline</item>
-        <item name="android:statusBarColor">@color/t_light_background</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">true</item>
     </style>
     <style name="Theme.Excerpta.Dialog" parent="Theme.Material3.Light.Dialog">
@@ -41,7 +41,7 @@
         <item name="colorOnSurfaceVariant">@color/t_dark_on_surface_variant</item>
         <item name="android:colorBackground">@color/t_dark_background</item>
         <item name="colorOutline">@color/t_dark_outline</item>
-        <item name="android:statusBarColor">@color/t_dark_background</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
     <style name="Theme.Excerpta.Dark.Dialog" parent="Theme.Material3.Dark.Dialog">
         <item name="colorPrimary">@color/t_dark_primary</item>
@@ -69,7 +69,7 @@
         <item name="colorOnSurfaceVariant">@color/t_dracula_on_surface_variant</item>
         <item name="android:colorBackground">@color/t_dracula_background</item>
         <item name="colorOutline">@color/t_dracula_outline</item>
-        <item name="android:statusBarColor">@color/t_dracula_background</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
     <style name="Theme.Excerpta.Dracula.Dialog" parent="Theme.Material3.Dark.Dialog">
         <item name="colorPrimary">@color/t_dracula_primary</item>
@@ -97,7 +97,7 @@
         <item name="colorOnSurfaceVariant">@color/t_nord_on_surface_variant</item>
         <item name="android:colorBackground">@color/t_nord_background</item>
         <item name="colorOutline">@color/t_nord_outline</item>
-        <item name="android:statusBarColor">@color/t_nord_background</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">true</item>
     </style>
     <style name="Theme.Excerpta.Nord.Dialog" parent="Theme.Material3.Light.Dialog">
@@ -126,7 +126,7 @@
         <item name="colorOnSurfaceVariant">@color/t_norddark_on_surface_variant</item>
         <item name="android:colorBackground">@color/t_norddark_background</item>
         <item name="colorOutline">@color/t_norddark_outline</item>
-        <item name="android:statusBarColor">@color/t_norddark_background</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
     <style name="Theme.Excerpta.NordDark.Dialog" parent="Theme.Material3.Dark.Dialog">
         <item name="colorPrimary">@color/t_norddark_primary</item>
@@ -154,7 +154,7 @@
         <item name="colorOnSurfaceVariant">@color/t_catppuccin_on_surface_variant</item>
         <item name="android:colorBackground">@color/t_catppuccin_background</item>
         <item name="colorOutline">@color/t_catppuccin_outline</item>
-        <item name="android:statusBarColor">@color/t_catppuccin_background</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
     <style name="Theme.Excerpta.Catppuccin.Dialog" parent="Theme.Material3.Dark.Dialog">
         <item name="colorPrimary">@color/t_catppuccin_primary</item>
@@ -182,7 +182,7 @@
         <item name="colorOnSurfaceVariant">@color/t_gruvbox_on_surface_variant</item>
         <item name="android:colorBackground">@color/t_gruvbox_background</item>
         <item name="colorOutline">@color/t_gruvbox_outline</item>
-        <item name="android:statusBarColor">@color/t_gruvbox_background</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
     <style name="Theme.Excerpta.Gruvbox.Dialog" parent="Theme.Material3.Dark.Dialog">
         <item name="colorPrimary">@color/t_gruvbox_primary</item>
@@ -210,7 +210,7 @@
         <item name="colorOnSurfaceVariant">@color/t_solarized_on_surface_variant</item>
         <item name="android:colorBackground">@color/t_solarized_background</item>
         <item name="colorOutline">@color/t_solarized_outline</item>
-        <item name="android:statusBarColor">@color/t_solarized_background</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">true</item>
     </style>
     <style name="Theme.Excerpta.Solarized.Dialog" parent="Theme.Material3.Light.Dialog">
@@ -239,7 +239,7 @@
         <item name="colorOnSurfaceVariant">@color/t_rosepine_on_surface_variant</item>
         <item name="android:colorBackground">@color/t_rosepine_background</item>
         <item name="colorOutline">@color/t_rosepine_outline</item>
-        <item name="android:statusBarColor">@color/t_rosepine_background</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
     <style name="Theme.Excerpta.RosePine.Dialog" parent="Theme.Material3.Dark.Dialog">
         <item name="colorPrimary">@color/t_rosepine_primary</item>
