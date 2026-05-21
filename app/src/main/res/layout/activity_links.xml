@@ -141,7 +141,7 @@
                 android:layout_marginStart="10dp"
                 android:text="@string/app_name"
                 android:textAppearance="?attr/textAppearanceTitleLarge"
-                android:textColor="#1A1A2E" />
+                android:textColor="?attr/colorOnSurface" />
 
         </LinearLayout>
 
