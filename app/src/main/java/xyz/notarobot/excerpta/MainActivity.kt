@@ -2,6 +2,7 @@ package xyz.notarobot.excerpta
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.core.view.WindowCompat
 import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
@@ -46,6 +47,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         ThemeHelper.apply(this)
         setContentView(R.layout.activity_main)
 
