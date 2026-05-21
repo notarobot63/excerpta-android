@@ -134,10 +134,11 @@ class LinksActivity : AppCompatActivity() {
             override fun beforeTextChanged(s: CharSequence?, st: Int, c: Int, a: Int) = Unit
             override fun onTextChanged(s: CharSequence?, st: Int, c: Int, a: Int) = Unit
             override fun afterTextChanged(s: android.text.Editable?) {
+                val q = s?.toString()?.trim() ?: ""
                 searchJob?.cancel()
                 searchJob = lifecycleScope.launch {
-                    delay(400)
-                    currentQuery = s?.toString()?.trim() ?: ""
+                    if (q.isNotEmpty()) delay(300)
+                    currentQuery = q
                     resetAndLoad()
                 }
             }
