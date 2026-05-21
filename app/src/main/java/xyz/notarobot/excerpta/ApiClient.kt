@@ -83,10 +83,10 @@ object ApiClient {
 
     suspend fun fetchGroups(serverUrl: String, apiKey: String): List<GroupItem> =
         withContext(Dispatchers.IO) {
-            val conn = openGet("$serverUrl/api/v1/groups", apiKey)
+            val conn = openGet("$serverUrl/api/v1/folders", apiKey)
             try {
                 if (conn.responseCode != 200) return@withContext emptyList()
-                val arr = JSONObject(conn.inputStream.bufferedReader().readText()).getJSONArray("groups")
+                val arr = JSONObject(conn.inputStream.bufferedReader().readText()).getJSONArray("folders")
                 List(arr.length()) {
                     val o = arr.getJSONObject(it)
                     GroupItem(
