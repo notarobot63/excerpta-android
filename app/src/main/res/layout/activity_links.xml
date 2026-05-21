@@ -43,6 +43,7 @@
                     android:layout_height="wrap_content"
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
                     app:startIconDrawable="@android:drawable/ic_menu_search"
+                    app:endIconMode="clear_text"
                     app:boxCornerRadiusTopStart="24dp"
                     app:boxCornerRadiusTopEnd="24dp"
                     app:boxCornerRadiusBottomStart="24dp"
