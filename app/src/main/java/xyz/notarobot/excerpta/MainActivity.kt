@@ -3,6 +3,7 @@ package xyz.notarobot.excerpta
 import android.content.Intent
 import android.os.Bundle
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
@@ -50,6 +51,9 @@ class MainActivity : AppCompatActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         ThemeHelper.apply(this)
         setContentView(R.layout.activity_main)
+        window.statusBarColor = android.graphics.Color.TRANSPARENT
+        val lightStatusBar = Prefs.theme(this) in listOf("light", "nord", "solarized")
+        WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = lightStatusBar
 
         setSupportActionBar(findViewById<MaterialToolbar>(R.id.toolbar))
 

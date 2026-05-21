@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -70,6 +71,9 @@ class LinksActivity : AppCompatActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         ThemeHelper.apply(this)
         setContentView(R.layout.activity_links)
+        window.statusBarColor = android.graphics.Color.TRANSPARENT
+        val lightStatusBar = Prefs.theme(this) in listOf("light", "nord", "solarized")
+        WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = lightStatusBar
 
         drawerLayout = findViewById(R.id.drawerLayout)
         drawerNav = findViewById(R.id.drawerNav)
