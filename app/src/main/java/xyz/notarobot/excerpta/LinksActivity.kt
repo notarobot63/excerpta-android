@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.addCallback
@@ -21,7 +22,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.io.File
@@ -49,7 +49,6 @@ class LinksActivity : AppCompatActivity() {
     private lateinit var emptyView: View
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var drawerNav: LinearLayout
-    private lateinit var toolbar: MaterialToolbar
     private lateinit var recyclerView: RecyclerView
     private lateinit var swipeRefresh: SwipeRefreshLayout
 
@@ -71,18 +70,17 @@ class LinksActivity : AppCompatActivity() {
 
         drawerLayout = findViewById(R.id.drawerLayout)
         drawerNav = findViewById(R.id.drawerNav)
-        toolbar = findViewById(R.id.toolbar)
         recyclerView = findViewById(R.id.recyclerView)
         swipeRefresh = findViewById(R.id.swipeRefresh)
         val progress = findViewById<LinearProgressIndicator>(R.id.progress)
         val tvEmpty = findViewById<View>(R.id.tvEmpty)
         val etSearch = findViewById<TextInputEditText>(R.id.etSearch)
+        val btnDrawer = findViewById<ImageButton>(R.id.btnDrawer)
 
         progressView = progress
         emptyView = tvEmpty
 
-        setSupportActionBar(toolbar)
-        toolbar.setNavigationOnClickListener { drawerLayout.openDrawer(GravityCompat.START) }
+        btnDrawer.setOnClickListener { drawerLayout.openDrawer(GravityCompat.START) }
 
         // Fermer le drawer avec le bouton retour
         onBackPressedDispatcher.addCallback(this) {
@@ -311,14 +309,14 @@ class LinksActivity : AppCompatActivity() {
     private fun clearFilter() {
         currentTag = null
         currentGroupId = null
-        toolbar.subtitle = null
+        // subtitle supprimé (toolbar retirée)
         resetAndLoad()
     }
 
     private fun setFilter(tag: String? = null, groupId: Int? = null, groupName: String? = null) {
         currentTag = tag
         currentGroupId = groupId
-        toolbar.subtitle = tag?.let { "#$it" } ?: groupName
+        // subtitle supprimé (toolbar retirée)
         resetAndLoad()
     }
 
