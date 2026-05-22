@@ -1,10 +1,6 @@
-<p align="center">
-  <img src="https://GIT_HOST/Thomas/excerpta/raw/branch/main/app/static/logo_full.svg" alt="Excerpta" width="380"/>
-</p>
-
 # Excerpta Android
 
-Application Android companion pour [Excerpta](https://GIT_HOST/Thomas/excerpta), le gestionnaire de liens self-hosted.
+Application Android companion pour [Excerpta](../excerpta), le gestionnaire de liens self-hosted.
 
 > collect • annotate • remember
 
@@ -21,7 +17,7 @@ Application Android companion pour [Excerpta](https://GIT_HOST/Thomas/excerpta),
 
 ## Téléchargement
 
-La dernière version est disponible dans les [releases](https://GIT_HOST/Thomas/excerpta-android/releases) sous le nom `excerpta-android.apk`.
+La dernière version est disponible dans les **Releases** du dépôt sous le nom `excerpta-android.apk`.
 
 Chaque push sur `main` déclenche un build CI qui met à jour automatiquement la release `latest`.
 
@@ -34,8 +30,7 @@ Chaque push sur `main` déclenche un build CI qui met à jour automatiquement la
 ## Compilation
 
 ```bash
-# Cloner le dépôt
-git clone https://GIT_HOST/Thomas/excerpta-android.git
+git clone <url-du-dépôt>
 cd excerpta-android
 
 # Build debug (sans signature)
