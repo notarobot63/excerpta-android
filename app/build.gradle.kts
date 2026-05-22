@@ -27,6 +27,14 @@ android {
         versionCode = gitVersionCode
         versionName = "1.${gitVersionCode}"
         buildConfigField("String", "GIT_COMMIT", "\"$gitCommit\"")
+        val serverUrl = System.getenv("GITEA_SERVER_URL") ?: ""
+        val repository = System.getenv("GITEA_REPOSITORY") ?: ""
+        val releasesUrl = if (serverUrl.isNotBlank() && repository.isNotBlank())
+            "$serverUrl/api/v1/repos/$repository/releases/tags/latest" else ""
+        val apkUrl = if (serverUrl.isNotBlank() && repository.isNotBlank())
+            "$serverUrl/$repository/releases/download/latest/excerpta-android.apk" else ""
+        buildConfigField("String", "RELEASES_URL", "\"$releasesUrl\"")
+        buildConfigField("String", "APK_URL", "\"$apkUrl\"")
     }
 
     buildFeatures {
