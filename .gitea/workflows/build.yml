@@ -19,12 +19,14 @@ jobs:
           KEYSTORE_PASS: ${{ secrets.KEYSTORE_PASS }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASS: ${{ secrets.KEY_PASS }}
+          GITEA_SERVER_URL: ${{ github.server_url }}
+          GITEA_REPOSITORY: ${{ github.repository }}
         run: ./gradlew assembleRelease --no-daemon
 
       - name: Publier la release "latest"
         if: github.ref == 'refs/heads/main'
         env:
-          BASE: https://GIT_HOST/api/v1/repos/${{ github.repository }}
+          BASE: ${{ github.server_url }}/api/v1/repos/${{ github.repository }}
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Supprimer l'ancienne release "latest" si elle existe
