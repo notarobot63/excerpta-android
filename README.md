@@ -1,10 +1,14 @@
+<p align="center">
+  <img src="https://git.notarobot.xyz/thomas/excerpta-android/-/raw/main/app/src/main/res/drawable-xxxhdpi/ic_logo.png" alt="Excerpta" width="120">
+</p>
+
 # Excerpta Android
 
 Application Android companion pour [Excerpta](../excerpta), le gestionnaire de liens self-hosted.
 
 > collect • annotate • remember
 
-[![Get it on Obtainium](https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png)](https://apps.obtainium.imranr.dev/redirect.html?r=obtainium://add/https://git.notarobot.xyz/thomas/excerpta-android/-/raw/main/obtainium.html)
+<a href="https://apps.obtainium.imranr.dev/redirect.html?r=obtainium://add/https://git.notarobot.xyz/thomas/excerpta-android/-/raw/main/obtainium.html"><img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" alt="Get it on Obtainium" height="42"></a>
 
 ## Fonctionnalités
 
