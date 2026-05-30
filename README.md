@@ -4,6 +4,8 @@ Application Android companion pour [Excerpta](../excerpta), le gestionnaire de l
 
 > collect • annotate • remember
 
+[![Get it on Obtainium](https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png)](https://apps.obtainium.imranr.dev/redirect.html?r=obtainium://add/https://git.notarobot.xyz/thomas/excerpta-android/-/raw/main/obtainium.html)
+
 ## Fonctionnalités
 
 - **Liste de liens** paginée avec chargement à la demande (swipe-to-refresh)
@@ -17,9 +19,19 @@ Application Android companion pour [Excerpta](../excerpta), le gestionnaire de l
 
 ## Téléchargement
 
-La dernière version est disponible dans les **Releases** du dépôt sous le nom `excerpta-android.apk`.
+**Obtainium (recommandé)** : clique sur le badge ci-dessus, ou ajoute manuellement cette URL dans Obtainium (mises à jour automatiques) :
 
-Chaque push sur `main` déclenche un build CI qui met à jour automatiquement la release `latest`.
+```
+https://git.notarobot.xyz/thomas/excerpta-android/-/raw/main/obtainium.html
+```
+
+**APK direct** (toujours la dernière version) :
+
+```
+https://git.notarobot.xyz/thomas/excerpta-android/-/releases/permalink/latest/downloads/excerpta-android.apk
+```
+
+Chaque push sur `main` déclenche un build CI qui publie une nouvelle release signée. Le badge/URL Obtainium pointe vers la dernière en date.
 
 ## Configuration
 
