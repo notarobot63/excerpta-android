@@ -27,12 +27,16 @@ android {
         versionCode = gitVersionCode
         versionName = "1.${gitVersionCode}"
         buildConfigField("String", "GIT_COMMIT", "\"$gitCommit\"")
-        val serverUrl = System.getenv("GITEA_SERVER_URL") ?: ""
-        val repository = System.getenv("GITEA_REPOSITORY") ?: ""
-        val releasesUrl = if (serverUrl.isNotBlank() && repository.isNotBlank())
-            "$serverUrl/api/v1/repos/$repository/releases/tags/latest" else ""
-        val apkUrl = if (serverUrl.isNotBlank() && repository.isNotBlank())
-            "$serverUrl/$repository/releases/download/latest/excerpta-android.apk" else ""
+        // Maj in-app via l'API GitLab v4 (permalink "latest" = release la plus récente).
+        // REPO_API_URL ex: https://GIT_HOST/api/v4/projects/Thomas%2Fexcerpta-android
+        // REPO_WEB_URL ex: https://GIT_HOST/Thomas/excerpta-android
+        // Injectées par la CI ; vides en build local -> updater désactivé.
+        val apiUrl = System.getenv("REPO_API_URL") ?: ""
+        val webUrl = System.getenv("REPO_WEB_URL") ?: ""
+        val releasesUrl = if (apiUrl.isNotBlank())
+            "$apiUrl/releases/permalink/latest" else ""
+        val apkUrl = if (webUrl.isNotBlank())
+            "$webUrl/-/releases/permalink/latest/downloads/excerpta-android.apk" else ""
         buildConfigField("String", "RELEASES_URL", "\"$releasesUrl\"")
         buildConfigField("String", "APK_URL", "\"$apkUrl\"")
     }
