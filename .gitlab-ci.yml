@@ -1,0 +1,68 @@
+# CI/CD excerpta-android (GitLab CE, git.notarobot.xyz)
+# Remplace l'ancien Gitea Actions (.gitea/workflows/build.yml).
+# build  : assembleRelease signe (keystore via variables CI) -> artifact APK
+# release: upload APK en generic package + cree une release ; le permalink
+#          "latest" pointe toujours sur la release la plus recente (pas de tag a deplacer).
+
+stages:
+  - build
+  - release
+
+variables:
+  GIT_DEPTH: "0"            # historique complet : gitVersionCode = git rev-list --count HEAD
+  GRADLE_USER_HOME: "$CI_PROJECT_DIR/.gradle"
+
+cache:
+  key: "$CI_PROJECT_ID-gradle"
+  paths:
+    - .gradle/caches/
+    - .gradle/wrapper/
+
+build:apk:
+  stage: build
+  image: ghcr.io/cirruslabs/android-sdk:34
+  tags:
+    - docker
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  variables:
+    # Injectees dans BuildConfig (maj in-app via API GitLab v4). Projet public -> pas d'auth runtime.
+    REPO_API_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}"
+    REPO_WEB_URL: "${CI_PROJECT_URL}"
+  script:
+    - chmod +x ./gradlew
+    # KEYSTORE_B64/KEYSTORE_PASS/KEY_ALIAS/KEY_PASS viennent des variables CI (System.getenv)
+    - ./gradlew assembleRelease --no-daemon --stacktrace
+  artifacts:
+    name: "excerpta-android-$CI_COMMIT_SHORT_SHA"
+    paths:
+      - app/build/outputs/apk/release/app-release.apk
+    expire_in: 1 week
+
+release:latest:
+  stage: release
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  tags:
+    - docker
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  needs:
+    - job: build:apk
+      artifacts: true
+  variables:
+    PKG_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/excerpta-android/${CI_COMMIT_SHORT_SHA}/excerpta-android.apk"
+  script:
+    # Upload de l'APK dans le registre de paquets generiques (lisible publiquement, projet public)
+    - |
+      curl --fail-with-body --header "JOB-TOKEN: ${CI_JOB_TOKEN}" \
+        --upload-file app/build/outputs/apk/release/app-release.apk \
+        "${PKG_URL}"
+    # SHORT7 = 7 hex pour matcher BuildConfig.GIT_COMMIT (git rev-parse --short HEAD)
+    - SHORT7=$(echo "$CI_COMMIT_SHA" | cut -c1-7)
+    - |
+      release-cli create \
+        --name "Build ${CI_COMMIT_SHORT_SHA}" \
+        --tag-name "build-${CI_PIPELINE_IID}" \
+        --ref "${CI_COMMIT_SHA}" \
+        --description "commit:${SHORT7}" \
+        --assets-link "{\"name\":\"excerpta-android.apk\",\"url\":\"${PKG_URL}\",\"filepath\":\"/excerpta-android.apk\",\"link_type\":\"package\"}"
