@@ -1,8 +1,9 @@
 # CI/CD excerpta-android (GitLab CE, GIT_HOST)
 # Remplace l'ancien Gitea Actions (.gitea/workflows/build.yml).
-# build  : assembleRelease signe (keystore via variables CI) -> artifact APK
-# release: upload APK en generic package + cree une release ; le permalink
-#          "latest" pointe toujours sur la release la plus recente (pas de tag a deplacer).
+# build  : assembleRelease signe + upload de l'APK en generic package (l'image
+#          android-sdk a curl ; release-cli ne l'a pas).
+# release: cree une release pointant le generic package ; le permalink "latest"
+#          pointe toujours sur la release la plus recente (pas de tag a deplacer).
 
 stages:
   - build
@@ -29,10 +30,16 @@ build:apk:
     # Injectees dans BuildConfig (maj in-app via API GitLab v4). Projet public -> pas d'auth runtime.
     REPO_API_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}"
     REPO_WEB_URL: "${CI_PROJECT_URL}"
+    PKG_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/excerpta-android/${CI_COMMIT_SHORT_SHA}/excerpta-android.apk"
   script:
     - chmod +x ./gradlew
     # KEYSTORE_B64/KEYSTORE_PASS/KEY_ALIAS/KEY_PASS viennent des variables CI (System.getenv)
     - ./gradlew assembleRelease --no-daemon --stacktrace
+    # Upload de l'APK dans le registre de paquets generiques (lisible publiquement, projet public)
+    - |
+      curl --fail-with-body --header "JOB-TOKEN: ${CI_JOB_TOKEN}" \
+        --upload-file app/build/outputs/apk/release/app-release.apk \
+        "${PKG_URL}"
   artifacts:
     name: "excerpta-android-$CI_COMMIT_SHORT_SHA"
     paths:
@@ -48,15 +55,11 @@ release:latest:
     - if: '$CI_COMMIT_BRANCH == "main"'
   needs:
     - job: build:apk
-      artifacts: true
+      artifacts: false
   variables:
     PKG_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/excerpta-android/${CI_COMMIT_SHORT_SHA}/excerpta-android.apk"
   script:
-    # Upload de l'APK dans le registre de paquets generiques (lisible publiquement, projet public)
-    - |
-      curl --fail-with-body --header "JOB-TOKEN: ${CI_JOB_TOKEN}" \
-        --upload-file app/build/outputs/apk/release/app-release.apk \
-        "${PKG_URL}"
+    # L'APK a deja ete uploade en generic package par le job build:apk.
     # SHORT7 = 7 hex pour matcher BuildConfig.GIT_COMMIT (git rev-parse --short HEAD)
     - SHORT7=$(echo "$CI_COMMIT_SHA" | cut -c1-7)
     - |
