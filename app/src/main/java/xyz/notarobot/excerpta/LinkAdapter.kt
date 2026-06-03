@@ -19,6 +19,7 @@ import coil.load
 import coil.transform.RoundedCornersTransformation
 import java.text.SimpleDateFormat
 import java.util.Locale
+import java.util.TimeZone
 
 class LinkAdapter : ListAdapter<ApiClient.LinkItem, LinkAdapter.VH>(DIFF) {
 
@@ -80,7 +81,10 @@ class LinkAdapter : ListAdapter<ApiClient.LinkItem, LinkAdapter.VH>(DIFF) {
         }
 
         holder.itemView.setOnClickListener {
-            it.context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(item.url)))
+            val uri = Uri.parse(item.url)
+            if (uri.scheme in listOf("http", "https")) {
+                it.context.startActivity(Intent(Intent.ACTION_VIEW, uri))
+            }
         }
 
         holder.itemView.setOnLongClickListener {
@@ -92,7 +96,9 @@ class LinkAdapter : ListAdapter<ApiClient.LinkItem, LinkAdapter.VH>(DIFF) {
     private fun formatDate(isoDate: String): String {
         if (isoDate.isBlank()) return ""
         return try {
-            val fmt = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+            val fmt = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).apply {
+                timeZone = TimeZone.getTimeZone("UTC")
+            }
             val date = fmt.parse(isoDate) ?: return ""
             val diff = System.currentTimeMillis() - date.time
             val min = diff / 60_000
@@ -123,22 +129,27 @@ class LinkAdapter : ListAdapter<ApiClient.LinkItem, LinkAdapter.VH>(DIFF) {
             0xFF457b9d.toInt(), 0xFF6a0572.toInt(), 0xFF0077b6.toInt(),
         )
 
+        private val bitmapCache = HashMap<String, Bitmap>()
+
         fun makePlaceholder(view: View, url: String): BitmapDrawable {
             val host = Uri.parse(url).host?.removePrefix("www.") ?: url
-            val initial = host.firstOrNull()?.uppercaseChar()?.toString() ?: "?"
-            val idx = host.sumOf { it.code } % COLORS.size
-            val size = 240
-            val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
-            val canvas = Canvas(bitmap)
-            val paint = Paint(Paint.ANTI_ALIAS_FLAG)
-            paint.color = COLORS[idx]
-            canvas.drawRect(0f, 0f, size.toFloat(), size.toFloat(), paint)
-            paint.color = Color.WHITE
-            paint.textAlign = Paint.Align.CENTER
-            paint.textSize = size * 0.42f
-            paint.isFakeBoldText = true
-            val cy = size / 2f - (paint.descent() + paint.ascent()) / 2f
-            canvas.drawText(initial, size / 2f, cy, paint)
+            val bitmap = bitmapCache.getOrPut(host) {
+                val initial = host.firstOrNull()?.uppercaseChar()?.toString() ?: "?"
+                val idx = host.sumOf { it.code } % COLORS.size
+                val size = 240
+                val bmp = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+                val canvas = Canvas(bmp)
+                val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+                paint.color = COLORS[idx]
+                canvas.drawRect(0f, 0f, size.toFloat(), size.toFloat(), paint)
+                paint.color = Color.WHITE
+                paint.textAlign = Paint.Align.CENTER
+                paint.textSize = size * 0.42f
+                paint.isFakeBoldText = true
+                val cy = size / 2f - (paint.descent() + paint.ascent()) / 2f
+                canvas.drawText(initial, size / 2f, cy, paint)
+                bmp
+            }
             return BitmapDrawable(view.context.resources, bitmap)
         }
     }

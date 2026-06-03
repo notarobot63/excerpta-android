@@ -21,7 +21,9 @@ object ThemeHelper {
 
     fun applyDialog(activity: AppCompatActivity) {
         val theme = Prefs.theme(activity)
-        lastApplied = theme
+        // Ne pas écrire lastApplied : les activités dialog (ShareActivity) sont
+        // transitoires et ne doivent pas masquer un changement de thème en attente
+        // pour LinksActivity.needsRecreate().
         activity.setTheme(dialogResId(theme))
     }
 

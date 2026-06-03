@@ -47,14 +47,31 @@ object ApiClient {
             readTimeout = 10_000
         }
 
+    private fun openRequest(
+        url: String,
+        apiKey: String,
+        method: String,
+        withBody: Boolean = false,
+    ): HttpURLConnection = (URL(url).openConnection() as HttpURLConnection).apply {
+        requestMethod = method
+        setRequestProperty("X-API-Key", apiKey)
+        if (withBody) {
+            setRequestProperty("Content-Type", "application/json")
+            doOutput = true
+        }
+        connectTimeout = 10_000
+        readTimeout = 10_000
+    }
+
     suspend fun ping(serverUrl: String, apiKey: String): Result = withContext(Dispatchers.IO) {
         val conn = openGet("$serverUrl/api/v1/me", apiKey)
         try {
             val code = conn.responseCode
             if (code == 200) {
-                val name = JSONObject(conn.inputStream.bufferedReader().readText()).optString("name", "")
+                val name = JSONObject(conn.inputStream.use { it.bufferedReader().readText() }).optString("name", "")
                 Result(true, "Connecté en tant que $name")
             } else {
+                conn.errorStream?.use { it.readBytes() }  // drain pour libérer la socket keep-alive
                 Result(false, "Erreur $code - vérifiez l'URL et la clé API")
             }
         } catch (e: Exception) {
@@ -153,15 +170,9 @@ object ApiClient {
 
     suspend fun patchLink(serverUrl: String, apiKey: String, linkId: Int, isPublic: Boolean): Result =
         withContext(Dispatchers.IO) {
-            val conn = URL("$serverUrl/api/v1/links/$linkId").openConnection() as HttpURLConnection
+            val conn = openRequest("$serverUrl/api/v1/links/$linkId", apiKey, "PATCH", withBody = true)
             try {
                 val body = JSONObject().put("is_public", isPublic).toString()
-                conn.requestMethod = "PATCH"
-                conn.setRequestProperty("Content-Type", "application/json")
-                conn.setRequestProperty("X-API-Key", apiKey)
-                conn.doOutput = true
-                conn.connectTimeout = 10_000
-                conn.readTimeout = 10_000
                 conn.outputStream.use { it.write(body.toByteArray()) }
                 when (conn.responseCode) {
                     200 -> Result(true, if (isPublic) "Lien rendu public" else "Lien rendu privé")
@@ -177,12 +188,8 @@ object ApiClient {
 
     suspend fun deleteLink(serverUrl: String, apiKey: String, linkId: Int): Result =
         withContext(Dispatchers.IO) {
-            val conn = URL("$serverUrl/api/v1/links/$linkId").openConnection() as HttpURLConnection
+            val conn = openRequest("$serverUrl/api/v1/links/$linkId", apiKey, "DELETE")
             try {
-                conn.requestMethod = "DELETE"
-                conn.setRequestProperty("X-API-Key", apiKey)
-                conn.connectTimeout = 10_000
-                conn.readTimeout = 10_000
                 when (conn.responseCode) {
                     204 -> Result(true, "Lien supprimé")
                     404 -> Result(false, "Lien introuvable")
@@ -204,7 +211,7 @@ object ApiClient {
         tags: List<String>,
         note: String = "",
     ): Result = withContext(Dispatchers.IO) {
-        val conn = URL("$serverUrl/api/v1/links").openConnection() as HttpURLConnection
+        val conn = openRequest("$serverUrl/api/v1/links", apiKey, "POST", withBody = true)
         try {
             val body = JSONObject().apply {
                 put("url", url)
@@ -212,12 +219,6 @@ object ApiClient {
                 put("note", note)
                 put("tags", JSONArray(tags))
             }.toString()
-            conn.requestMethod = "POST"
-            conn.setRequestProperty("Content-Type", "application/json")
-            conn.setRequestProperty("X-API-Key", apiKey)
-            conn.doOutput = true
-            conn.connectTimeout = 10_000
-            conn.readTimeout = 10_000
             conn.outputStream.use { it.write(body.toByteArray()) }
             when (val code = conn.responseCode) {
                 201 -> Result(true, "Lien sauvegardé")

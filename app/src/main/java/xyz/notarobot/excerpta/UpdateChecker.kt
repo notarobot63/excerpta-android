@@ -16,14 +16,14 @@ object UpdateChecker {
 
     fun check(): UpdateInfo? {
         if (RELEASES_URL.isEmpty()) return null
+        val conn = (URL(RELEASES_URL).openConnection() as HttpURLConnection).apply {
+            connectTimeout = 5_000
+            readTimeout = 5_000
+            requestMethod = "GET"
+        }
         return try {
-            val conn = (URL(RELEASES_URL).openConnection() as HttpURLConnection).apply {
-                connectTimeout = 5_000
-                readTimeout = 5_000
-                requestMethod = "GET"
-            }
             if (conn.responseCode == 200) {
-                val body = conn.inputStream.bufferedReader().readText()
+                val body = conn.inputStream.use { it.bufferedReader().readText() }
                 val json = JSONObject(body)
                 // GitLab Releases API : le texte est dans "description" (Gitea utilisait "body")
                 val releaseBody = json.optString("description", "")
@@ -34,6 +34,7 @@ object UpdateChecker {
                 } else null
             } else null
         } catch (_: Exception) { null }
+        finally { conn.disconnect() }
     }
 
     fun openDownload(context: Context) {
