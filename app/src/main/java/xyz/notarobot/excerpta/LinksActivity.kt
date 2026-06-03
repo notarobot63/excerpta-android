@@ -32,6 +32,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -196,12 +197,14 @@ class LinksActivity : AppCompatActivity() {
         addDivider()
 
         lifecycleScope.launch {
-            val tags = withContext(Dispatchers.IO) {
+            val tagsDeferred = async(Dispatchers.IO) {
                 ApiClient.fetchTags(Prefs.serverUrl(this@LinksActivity), Prefs.apiKey(this@LinksActivity))
             }
-            val groups = withContext(Dispatchers.IO) {
+            val groupsDeferred = async(Dispatchers.IO) {
                 ApiClient.fetchGroups(Prefs.serverUrl(this@LinksActivity), Prefs.apiKey(this@LinksActivity))
             }
+            val tags = tagsDeferred.await()
+            val groups = groupsDeferred.await()
 
             if (groups.isNotEmpty()) {
                 addSection("Groupes")
@@ -375,6 +378,8 @@ class LinksActivity : AppCompatActivity() {
                         Snackbar.make(recyclerView, getString(R.string.offline_notice), Snackbar.LENGTH_INDEFINITE).show()
                         return@launch
                     }
+                } else {
+                    Snackbar.make(recyclerView, getString(R.string.load_error), Snackbar.LENGTH_SHORT).show()
                 }
                 emptyView.visibility = if (adapter.itemCount == 0) View.VISIBLE else View.GONE
                 return@launch
@@ -450,7 +455,12 @@ class LinksActivity : AppCompatActivity() {
             .setTitle(item.title.ifBlank { item.url })
             .setItems(options) { _, which ->
                 when (which) {
-                    0 -> startActivity(Intent(Intent.ACTION_VIEW, android.net.Uri.parse(item.url)))
+                    0 -> {
+                        val uri = android.net.Uri.parse(item.url)
+                        if (uri.scheme in listOf("http", "https")) {
+                            startActivity(Intent(Intent.ACTION_VIEW, uri))
+                        }
+                    }
                     1 -> {
                         val clip = ClipData.newPlainText("url", item.url)
                         (getSystemService(CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(clip)
