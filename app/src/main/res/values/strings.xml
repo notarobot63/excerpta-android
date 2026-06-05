@@ -40,4 +40,6 @@
     <string name="menu_delete">Supprimer</string>
     <string name="offline_notice">Mode hors ligne - données mises en cache</string>
     <string name="load_error">Erreur de chargement</string>
+    <string name="queued_offline">Pas de réseau — lien mis en attente</string>
+    <string name="queued_synced">%d lien(s) synchronisé(s)</string>
 </resources>
