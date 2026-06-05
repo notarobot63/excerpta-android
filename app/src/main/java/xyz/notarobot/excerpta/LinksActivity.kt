@@ -25,6 +25,8 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.io.File
 import com.google.android.material.progressindicator.LinearProgressIndicator
@@ -47,6 +49,7 @@ class LinksActivity : AppCompatActivity() {
     private var currentQuery = ""
     private var currentTag: String? = null
     private var currentGroupId: Int? = null
+    private var currentGroupName: String? = null
 
     private lateinit var progressView: View
     private lateinit var emptyView: View
@@ -55,6 +58,8 @@ class LinksActivity : AppCompatActivity() {
     private lateinit var toolbar: MaterialToolbar
     private lateinit var recyclerView: RecyclerView
     private lateinit var swipeRefresh: SwipeRefreshLayout
+    private lateinit var chipScrollView: View
+    private lateinit var chipGroup: ChipGroup
 
     private var selectedNavView: View? = null
     private var listNeedsRefresh = false
@@ -87,6 +92,8 @@ class LinksActivity : AppCompatActivity() {
         drawerLayout.setStatusBarBackgroundColor(tv.data)
         recyclerView = findViewById(R.id.recyclerView)
         swipeRefresh = findViewById(R.id.swipeRefresh)
+        chipScrollView = findViewById(R.id.chipScrollView)
+        chipGroup = findViewById(R.id.chipGroup)
         val progress = findViewById<LinearProgressIndicator>(R.id.progress)
         val tvEmpty = findViewById<View>(R.id.tvEmpty)
         val etSearch = findViewById<TextInputEditText>(R.id.etSearch)
@@ -361,15 +368,39 @@ class LinksActivity : AppCompatActivity() {
     private fun clearFilter() {
         currentTag = null
         currentGroupId = null
-        toolbar.subtitle = null
+        currentGroupName = null
+        updateFilterChip()
         resetAndLoad()
     }
 
     private fun setFilter(tag: String? = null, groupId: Int? = null, groupName: String? = null) {
         currentTag = tag
         currentGroupId = groupId
-        toolbar.subtitle = tag?.let { "#$it" } ?: groupName
+        currentGroupName = groupName
+        updateFilterChip()
         resetAndLoad()
+    }
+
+    private fun updateFilterChip() {
+        chipGroup.removeAllViews()
+        val label = when {
+            currentTag != null -> "#$currentTag"
+            currentGroupName != null -> "📁 $currentGroupName"
+            else -> null
+        }
+        if (label != null) {
+            val chip = Chip(this).apply {
+                text = label
+                isCloseIconVisible = true
+                isClickable = true
+                setOnCloseIconClickListener { clearFilter() }
+                setOnClickListener { clearFilter() }
+            }
+            chipGroup.addView(chip)
+            chipScrollView.visibility = View.VISIBLE
+        } else {
+            chipScrollView.visibility = View.GONE
+        }
     }
 
     // ── Chargement ──────────────────────────────────────────────────────────
