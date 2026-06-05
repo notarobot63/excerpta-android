@@ -106,13 +106,14 @@
                 app:startIconDrawable="@drawable/ic_tag"
                 android:layout_marginBottom="16dp">
 
-                <com.google.android.material.textfield.TextInputEditText
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
                     android:id="@+id/etTags"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="text"
                     android:imeOptions="actionNext"
-                    android:maxLines="1" />
+                    android:maxLines="1"
+                    android:completionThreshold="1" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
