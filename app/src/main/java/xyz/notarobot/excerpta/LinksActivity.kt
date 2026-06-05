@@ -168,9 +168,43 @@ class LinksActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         if (ThemeHelper.needsRecreate(this)) recreate()
-        else if (listNeedsRefresh) {
-            listNeedsRefresh = false
-            resetAndLoad()
+        else {
+            flushPendingQueue()
+            if (listNeedsRefresh) {
+                listNeedsRefresh = false
+                resetAndLoad()
+            }
+        }
+    }
+
+    private fun flushPendingQueue() {
+        if (PendingQueue.isEmpty(this)) return
+        val pending = PendingQueue.load(this)
+        lifecycleScope.launch {
+            val failed = mutableListOf<PendingQueue.PendingLink>()
+            for (link in pending) {
+                val result = ApiClient.addLink(
+                    serverUrl = Prefs.serverUrl(this@LinksActivity),
+                    apiKey = Prefs.apiKey(this@LinksActivity),
+                    url = link.url,
+                    title = link.title,
+                    tags = link.tags,
+                    note = link.note,
+                    folderId = link.folderId,
+                    isPublic = link.isPublic,
+                )
+                if (result.isNetworkError) failed.add(link)
+            }
+            PendingQueue.replace(this@LinksActivity, failed)
+            val sent = pending.size - failed.size
+            if (sent > 0) {
+                Snackbar.make(
+                    recyclerView,
+                    getString(R.string.queued_synced, sent),
+                    Snackbar.LENGTH_SHORT,
+                ).show()
+                resetAndLoad()
+            }
         }
     }
 

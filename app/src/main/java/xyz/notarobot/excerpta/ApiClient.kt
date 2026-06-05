@@ -8,7 +8,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 object ApiClient {
-    data class Result(val success: Boolean, val message: String)
+    data class Result(val success: Boolean, val message: String, val isNetworkError: Boolean = false)
 
     data class TagInfo(val name: String, val count: Int)
 
@@ -180,7 +180,7 @@ object ApiClient {
                     else -> Result(false, "Erreur serveur (${conn.responseCode})")
                 }
             } catch (e: Exception) {
-                Result(false, "Erreur réseau : ${e.message}")
+                Result(false, "Erreur réseau : ${e.message}", isNetworkError = true)
             } finally {
                 conn.disconnect()
             }
@@ -197,7 +197,7 @@ object ApiClient {
                     else -> Result(false, "Erreur serveur (${conn.responseCode})")
                 }
             } catch (e: Exception) {
-                Result(false, "Erreur réseau : ${e.message}")
+                Result(false, "Erreur réseau : ${e.message}", isNetworkError = true)
             } finally {
                 conn.disconnect()
             }
