@@ -118,13 +118,31 @@ class ShareActivity : AppCompatActivity() {
                     note = note,
                 )
                 progress.visibility = View.GONE
-                if (result.success) {
-                    Toast.makeText(this@ShareActivity, result.message, Toast.LENGTH_SHORT).show()
-                    finish()
-                } else {
-                    Toast.makeText(this@ShareActivity, result.message, Toast.LENGTH_LONG).show()
-                    btnSave.isEnabled = true
-                    btnCancel.isEnabled = true
+                when {
+                    result.success -> {
+                        Toast.makeText(this@ShareActivity, result.message, Toast.LENGTH_SHORT).show()
+                        finish()
+                    }
+                    result.isNetworkError -> {
+                        PendingQueue.enqueue(
+                            this@ShareActivity,
+                            PendingQueue.PendingLink(
+                                url = url,
+                                title = title,
+                                tags = tags,
+                                note = note,
+                                folderId = null,
+                                isPublic = false,
+                            ),
+                        )
+                        Toast.makeText(this@ShareActivity, getString(R.string.queued_offline), Toast.LENGTH_SHORT).show()
+                        finish()
+                    }
+                    else -> {
+                        Toast.makeText(this@ShareActivity, result.message, Toast.LENGTH_LONG).show()
+                        btnSave.isEnabled = true
+                        btnCancel.isEnabled = true
+                    }
                 }
             }
         }
