@@ -210,6 +210,8 @@ object ApiClient {
         title: String,
         tags: List<String>,
         note: String = "",
+        folderId: Int? = null,
+        isPublic: Boolean = false,
     ): Result = withContext(Dispatchers.IO) {
         val conn = openRequest("$serverUrl/api/v1/links", apiKey, "POST", withBody = true)
         try {
@@ -218,6 +220,8 @@ object ApiClient {
                 put("title", title)
                 put("note", note)
                 put("tags", JSONArray(tags))
+                put("is_public", isPublic)
+                if (folderId != null) put("folder_id", folderId)
             }.toString()
             conn.outputStream.use { it.write(body.toByteArray()) }
             when (val code = conn.responseCode) {
