@@ -124,7 +124,7 @@ class ShareActivity : AppCompatActivity() {
                         finish()
                     }
                     result.isNetworkError -> {
-                        PendingQueue.enqueue(
+                        val queued = PendingQueue.enqueue(
                             this@ShareActivity,
                             PendingQueue.PendingLink(
                                 url = url,
@@ -135,8 +135,15 @@ class ShareActivity : AppCompatActivity() {
                                 isPublic = false,
                             ),
                         )
-                        Toast.makeText(this@ShareActivity, getString(R.string.queued_offline), Toast.LENGTH_SHORT).show()
-                        finish()
+                        val msg = if (queued) getString(R.string.queued_offline)
+                                  else getString(R.string.queue_full)
+                        Toast.makeText(this@ShareActivity, msg, Toast.LENGTH_LONG).show()
+                        if (queued) {
+                            finish()
+                        } else {
+                            btnSave.isEnabled = true
+                            btnCancel.isEnabled = true
+                        }
                     }
                     else -> {
                         Toast.makeText(this@ShareActivity, result.message, Toast.LENGTH_LONG).show()

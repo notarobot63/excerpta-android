@@ -129,11 +129,13 @@ class LinkAdapter : ListAdapter<ApiClient.LinkItem, LinkAdapter.VH>(DIFF) {
             0xFF457b9d.toInt(), 0xFF6a0572.toInt(), 0xFF0077b6.toInt(),
         )
 
-        private val bitmapCache = HashMap<String, Bitmap>()
+        // LruCache borné et thread-safe : évite la fuite mémoire d'un HashMap
+        // statique non vidé (un bitmap 240×240 par domaine, à vie).
+        private val bitmapCache = android.util.LruCache<String, Bitmap>(64)
 
         fun makePlaceholder(view: View, url: String): BitmapDrawable {
             val host = Uri.parse(url).host?.removePrefix("www.") ?: url
-            val bitmap = bitmapCache.getOrPut(host) {
+            val bitmap = bitmapCache.get(host) ?: run {
                 val initial = host.firstOrNull()?.uppercaseChar()?.toString() ?: "?"
                 val idx = host.sumOf { it.code } % COLORS.size
                 val size = 240
@@ -148,6 +150,7 @@ class LinkAdapter : ListAdapter<ApiClient.LinkItem, LinkAdapter.VH>(DIFF) {
                 paint.isFakeBoldText = true
                 val cy = size / 2f - (paint.descent() + paint.ascent()) / 2f
                 canvas.drawText(initial, size / 2f, cy, paint)
+                bitmapCache.put(host, bmp)
                 bmp
             }
             return BitmapDrawable(view.context.resources, bitmap)
