@@ -188,7 +188,12 @@ class LinksActivity : AppCompatActivity() {
         if (PendingQueue.isEmpty(this)) return
         val pending = PendingQueue.load(this)
         lifecycleScope.launch {
+            // On garde en file les seuls échecs réseau (à retenter plus tard).
+            // Les échecs métier (URL rejetée, clé invalide…) sont retirés de la
+            // file mais signalés à l'utilisateur : on ne les perd pas en silence.
             val failed = mutableListOf<PendingQueue.PendingLink>()
+            var sent = 0
+            var rejected = 0
             for (link in pending) {
                 val result = ApiClient.addLink(
                     serverUrl = Prefs.serverUrl(this@LinksActivity),
@@ -200,10 +205,13 @@ class LinksActivity : AppCompatActivity() {
                     folderId = link.folderId,
                     isPublic = link.isPublic,
                 )
-                if (result.isNetworkError) failed.add(link)
+                when {
+                    result.success -> sent++
+                    result.isNetworkError -> failed.add(link)
+                    else -> rejected++  // erreur métier : retiré de la file
+                }
             }
             PendingQueue.replace(this@LinksActivity, failed)
-            val sent = pending.size - failed.size
             if (sent > 0) {
                 Snackbar.make(
                     recyclerView,
@@ -211,6 +219,13 @@ class LinksActivity : AppCompatActivity() {
                     Snackbar.LENGTH_SHORT,
                 ).show()
                 resetAndLoad()
+            }
+            if (rejected > 0) {
+                Snackbar.make(
+                    recyclerView,
+                    getString(R.string.queued_rejected, rejected),
+                    Snackbar.LENGTH_LONG,
+                ).show()
             }
         }
     }
