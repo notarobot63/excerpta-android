@@ -7,6 +7,7 @@ import java.io.File
 
 object PendingQueue {
     private const val FILENAME = "pending_links.json"
+    private const val MAX_QUEUE = 200  // plafond anti-accumulation hors-ligne prolongé
 
     data class PendingLink(
         val url: String,
@@ -21,10 +22,13 @@ object PendingQueue {
 
     fun isEmpty(ctx: Context): Boolean = load(ctx).isEmpty()
 
-    fun enqueue(ctx: Context, link: PendingLink) {
+    /** Ajoute un lien à la file. Retourne false si la file est pleine (lien non ajouté). */
+    fun enqueue(ctx: Context, link: PendingLink): Boolean {
         val list = load(ctx).toMutableList()
+        if (list.size >= MAX_QUEUE) return false
         list.add(link)
         persist(ctx, list)
+        return true
     }
 
     fun load(ctx: Context): List<PendingLink> {
