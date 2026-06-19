@@ -30,6 +30,12 @@
             android:exported="false"
             android:label="@string/settings_title" />
 
+        <!-- Vue lecteur (article lisible) -->
+        <activity
+            android:name=".ReaderActivity"
+            android:exported="false"
+            android:label="@string/app_name" />
+
         <!-- Partage depuis autres apps -->
         <activity
             android:name=".ShareActivity"
