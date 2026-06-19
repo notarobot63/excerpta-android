@@ -30,7 +30,9 @@ class LinkAdapter : ListAdapter<ApiClient.LinkItem, LinkAdapter.VH>(DIFF) {
         val domain: TextView = view.findViewById(R.id.tvDomain)
         val title: TextView = view.findViewById(R.id.tvTitle)
         val description: TextView = view.findViewById(R.id.tvDescription)
+        val note: TextView = view.findViewById(R.id.tvNote)
         val date: TextView = view.findViewById(R.id.tvDate)
+        val broken: TextView = view.findViewById(R.id.tvBroken)
         val thumbnail: ImageView = view.findViewById(R.id.imgThumbnail)
     }
 
@@ -50,7 +52,23 @@ class LinkAdapter : ListAdapter<ApiClient.LinkItem, LinkAdapter.VH>(DIFF) {
             holder.description.visibility = View.GONE
         }
 
+        // Note personnelle
+        if (item.note.isNotBlank()) {
+            holder.note.visibility = View.VISIBLE
+            holder.note.text = item.note
+        } else {
+            holder.note.visibility = View.GONE
+        }
+
         holder.date.text = formatDate(item.createdAt)
+
+        // Badge lien cassé
+        if (item.isBroken) {
+            holder.broken.visibility = View.VISIBLE
+            holder.broken.text = item.checkStatus?.let { "⚠ Lien cassé ($it)" } ?: "⚠ Lien cassé"
+        } else {
+            holder.broken.visibility = View.GONE
+        }
 
         // Favicon
         if (item.faviconUrl.isNotBlank()) {

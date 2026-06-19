@@ -30,6 +30,18 @@ object ApiClient {
         val tags: List<String>,
         val createdAt: String,
         val isPublic: Boolean = false,
+        val note: String = "",
+        val archivedUrl: String? = null,
+        val archiveStatus: String? = null,
+        val isBroken: Boolean = false,
+        val checkStatus: Int? = null,
+        val hasReader: Boolean = false,
+    )
+
+    data class ReaderContent(
+        val title: String,
+        val html: String,
+        val extractedAt: String?,
     )
 
     data class LinksPage(
@@ -153,6 +165,12 @@ object ApiClient {
                     isPublic = o.optBoolean("is_public", false),
                     tags = List(tagsArr.length()) { tagsArr.getString(it) },
                     createdAt = o.optString("created_at", ""),
+                    note = o.optString("note", ""),
+                    archivedUrl = if (o.isNull("archived_url")) null else o.optString("archived_url", "").ifBlank { null },
+                    archiveStatus = if (o.isNull("archive_status")) null else o.optString("archive_status", "").ifBlank { null },
+                    isBroken = o.optBoolean("is_broken", false),
+                    checkStatus = if (o.isNull("check_status")) null else o.optInt("check_status"),
+                    hasReader = o.optBoolean("has_reader", false),
                 )
             }
             LinksPage(
@@ -167,6 +185,27 @@ object ApiClient {
             conn.disconnect()
         }
     }
+
+    suspend fun fetchReader(serverUrl: String, apiKey: String, linkId: Int): ReaderContent? =
+        withContext(Dispatchers.IO) {
+            val conn = openGet("$serverUrl/api/v1/links/$linkId/reader", apiKey)
+            try {
+                if (conn.responseCode != 200) {
+                    conn.errorStream?.use { it.readBytes() }
+                    return@withContext null
+                }
+                val o = JSONObject(conn.inputStream.bufferedReader().readText())
+                ReaderContent(
+                    title = o.optString("reader_title", ""),
+                    html = o.optString("reader_html", ""),
+                    extractedAt = if (o.isNull("reader_extracted_at")) null else o.optString("reader_extracted_at", null),
+                )
+            } catch (_: Exception) {
+                null
+            } finally {
+                conn.disconnect()
+            }
+        }
 
     suspend fun patchLink(serverUrl: String, apiKey: String, linkId: Int, isPublic: Boolean): Result =
         withContext(Dispatchers.IO) {

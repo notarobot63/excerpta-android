@@ -8,6 +8,16 @@
     android:paddingEnd="16dp">
 
     <TextView
+        android:id="@+id/tvChevron"
+        android:layout_width="28dp"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:textSize="12sp"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:layout_marginStart="-12dp"
+        android:visibility="gone" />
+
+    <TextView
         android:id="@+id/tvLabel"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
