@@ -62,6 +62,8 @@ class LinksActivity : AppCompatActivity() {
     private lateinit var chipGroup: ChipGroup
 
     private var selectedNavView: View? = null
+    private var lastGroups: List<ApiClient.GroupItem> = emptyList()
+    private var lastTags: List<ApiClient.TagInfo> = emptyList()
     private var listNeedsRefresh = false
     private val cacheFile by lazy { File(cacheDir, "links_cache.json") }
 
@@ -233,6 +235,23 @@ class LinksActivity : AppCompatActivity() {
     // ── Drawer ──────────────────────────────────────────────────────────────
 
     private fun buildDrawer() {
+        renderDrawer()  // rendu immédiat avec les dernières données connues (vides au 1er appel)
+
+        lifecycleScope.launch {
+            val tagsDeferred = async(Dispatchers.IO) {
+                ApiClient.fetchTags(Prefs.serverUrl(this@LinksActivity), Prefs.apiKey(this@LinksActivity))
+            }
+            val groupsDeferred = async(Dispatchers.IO) {
+                ApiClient.fetchGroups(Prefs.serverUrl(this@LinksActivity), Prefs.apiKey(this@LinksActivity))
+            }
+            lastTags = tagsDeferred.await()
+            lastGroups = groupsDeferred.await()
+            renderDrawer()
+        }
+    }
+
+    /** Reconstruit le contenu du drawer à partir de lastGroups/lastTags (sans refetch réseau). */
+    private fun renderDrawer() {
         drawerNav.removeAllViews()
         selectedNavView = null  // les vues précédentes sont détachées, reset la référence
 
@@ -252,45 +271,72 @@ class LinksActivity : AppCompatActivity() {
 
         addDivider()
 
-        lifecycleScope.launch {
-            val tagsDeferred = async(Dispatchers.IO) {
-                ApiClient.fetchTags(Prefs.serverUrl(this@LinksActivity), Prefs.apiKey(this@LinksActivity))
-            }
-            val groupsDeferred = async(Dispatchers.IO) {
-                ApiClient.fetchGroups(Prefs.serverUrl(this@LinksActivity), Prefs.apiKey(this@LinksActivity))
-            }
-            val tags = tagsDeferred.await()
-            val groups = groupsDeferred.await()
+        if (lastGroups.isNotEmpty()) {
+            addSection("Groupes")
+            renderGroups()
+        }
 
-            if (groups.isNotEmpty()) {
-                addSection("Groupes")
-                for (group in groups) {
-                    val indent = group.depth * 16
-                    val prefix = if (group.depth > 0) "↳ " else "📁 "
-                    addNavItem(
-                        label = "$prefix${group.name}",
-                        count = group.count,
-                        paddingStart = 16 + indent,
-                        isSelected = currentGroupId == group.id,
-                    ) {
-                        setFilter(groupId = group.id, groupName = group.name)
-                    }
-                }
-            }
-
-            if (tags.isNotEmpty()) {
-                addSection("Tags")
-                for (tag in tags) {
-                    addNavItem(
-                        label = "# ${tag.name}",
-                        count = tag.count,
-                        isSelected = currentTag == tag.name,
-                    ) {
-                        setFilter(tag = tag.name)
-                    }
+        if (lastTags.isNotEmpty()) {
+            addSection("Tags")
+            for (tag in lastTags) {
+                addNavItem(
+                    label = "# ${tag.name}",
+                    count = tag.count,
+                    isSelected = currentTag == tag.name,
+                ) {
+                    setFilter(tag = tag.name)
                 }
             }
         }
+    }
+
+    private fun renderGroups() {
+        val collapsed = Prefs.collapsedFolders(this)
+        val byId = lastGroups.associateBy { it.id }
+        val parentIds = lastGroups.mapNotNull { it.parentId }.toSet()  // dossiers ayant des enfants
+
+        for (group in lastGroups) {
+            if (isHiddenByCollapse(group, byId, collapsed)) continue
+            val isParent = group.id in parentIds
+            val chevron = when {
+                !isParent -> null
+                group.id in collapsed -> "▸"
+                else -> "▾"
+            }
+            val indent = group.depth * 16
+            val prefix = if (group.depth > 0) "↳ " else "📁 "
+            addNavItem(
+                label = "$prefix${group.name}",
+                count = group.count,
+                paddingStart = 16 + indent,
+                isSelected = currentGroupId == group.id,
+                chevron = chevron,
+                onChevronClick = if (isParent) {
+                    {
+                        val c = Prefs.collapsedFolders(this)
+                        if (!c.add(group.id)) c.remove(group.id)
+                        Prefs.saveCollapsedFolders(this, c)
+                        renderDrawer()
+                    }
+                } else null,
+            ) {
+                setFilter(groupId = group.id, groupName = group.name)
+            }
+        }
+    }
+
+    /** Un dossier est masqué si l'un de ses ancêtres est replié. */
+    private fun isHiddenByCollapse(
+        group: ApiClient.GroupItem,
+        byId: Map<Int, ApiClient.GroupItem>,
+        collapsed: Set<Int>,
+    ): Boolean {
+        var pid = group.parentId
+        while (pid != null) {
+            if (pid in collapsed) return true
+            pid = byId[pid]?.parentId
+        }
+        return false
     }
 
     private fun addNavItem(
@@ -298,11 +344,23 @@ class LinksActivity : AppCompatActivity() {
         count: Int = 0,
         paddingStart: Int = 16,
         isSelected: Boolean = false,
+        chevron: String? = null,
+        onChevronClick: (() -> Unit)? = null,
         onClick: () -> Unit,
     ): View {
         val view = LayoutInflater.from(this).inflate(R.layout.item_drawer_nav, drawerNav, false)
         val tvLabel = view.findViewById<TextView>(R.id.tvLabel)
         val tvCount = view.findViewById<TextView>(R.id.tvCount)
+        val tvChevron = view.findViewById<TextView>(R.id.tvChevron)
+
+        if (chevron != null) {
+            tvChevron.text = chevron
+            tvChevron.visibility = View.VISIBLE
+            // Clic sur le chevron = plier/déplier (consomme l'événement, ne filtre pas).
+            onChevronClick?.let { cb -> tvChevron.setOnClickListener { cb() } }
+        } else {
+            tvChevron.visibility = View.GONE
+        }
 
         tvLabel.text = label
         val startPx = (paddingStart * resources.displayMetrics.density).toInt()
@@ -525,32 +583,49 @@ class LinksActivity : AppCompatActivity() {
 
     private fun showLinkMenu(item: ApiClient.LinkItem) {
         val visibilityLabel = if (item.isPublic) getString(R.string.menu_make_private) else getString(R.string.menu_make_public)
-        val options = arrayOf(
-            getString(R.string.menu_open),
-            getString(R.string.menu_copy_url),
-            visibilityLabel,
-            getString(R.string.menu_delete),
-        )
-        MaterialAlertDialogBuilder(this)
-            .setTitle(item.title.ifBlank { item.url })
-            .setItems(options) { _, which ->
-                when (which) {
-                    0 -> {
-                        val uri = android.net.Uri.parse(item.url)
-                        if (uri.scheme in listOf("http", "https")) {
-                            startActivity(Intent(Intent.ACTION_VIEW, uri))
-                        }
-                    }
-                    1 -> {
-                        val clip = ClipData.newPlainText("url", item.url)
-                        (getSystemService(CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(clip)
-                        Snackbar.make(recyclerView, "URL copiée", Snackbar.LENGTH_SHORT).show()
-                    }
-                    2 -> togglePublic(item)
-                    3 -> confirmDelete(item)
+
+        // Liste d'actions construite dynamiquement : libellé + handler.
+        val actions = mutableListOf<Pair<String, () -> Unit>>()
+        actions += getString(R.string.menu_open) to {
+            val uri = android.net.Uri.parse(item.url)
+            if (uri.scheme in listOf("http", "https")) {
+                startActivity(Intent(Intent.ACTION_VIEW, uri))
+            }
+        }
+        if (item.hasReader) {
+            actions += "Vue lecteur" to { openReader(item) }
+        }
+        if (item.archivedUrl != null) {
+            actions += "Voir l'archive" to {
+                val uri = android.net.Uri.parse(item.archivedUrl)
+                if (uri.scheme in listOf("http", "https")) {
+                    startActivity(Intent(Intent.ACTION_VIEW, uri))
                 }
             }
+        }
+        actions += getString(R.string.menu_copy_url) to {
+            val clip = ClipData.newPlainText("url", item.url)
+            (getSystemService(CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(clip)
+            Snackbar.make(recyclerView, "URL copiée", Snackbar.LENGTH_SHORT).show()
+        }
+        actions += visibilityLabel to { togglePublic(item) }
+        actions += getString(R.string.menu_delete) to { confirmDelete(item) }
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(item.title.ifBlank { item.url })
+            .setItems(actions.map { it.first }.toTypedArray()) { _, which ->
+                actions[which].second()
+            }
             .show()
+    }
+
+    private fun openReader(item: ApiClient.LinkItem) {
+        startActivity(
+            Intent(this, ReaderActivity::class.java).apply {
+                putExtra(ReaderActivity.EXTRA_LINK_ID, item.id)
+                putExtra(ReaderActivity.EXTRA_FALLBACK_TITLE, item.title.ifBlank { item.url })
+            }
+        )
     }
 
     private fun togglePublic(item: ApiClient.LinkItem) {

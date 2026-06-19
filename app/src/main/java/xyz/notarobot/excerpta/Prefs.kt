@@ -11,6 +11,7 @@ object Prefs {
     private const val KEY_SERVER = "server_url"
     private const val KEY_API_KEY = "api_key"
     private const val KEY_THEME = "theme"
+    private const val KEY_COLLAPSED_FOLDERS = "collapsed_folders"
 
     @Volatile private var _prefs: SharedPreferences? = null
     @Volatile private var _encrypted: Boolean = true
@@ -57,6 +58,18 @@ object Prefs {
     fun saveTheme(ctx: Context, theme: String) {
         getPrefs(ctx).edit()
             .putString(KEY_THEME, theme)
+            .apply()
+    }
+
+    /** IDs des dossiers repliés dans le drawer (arborescence). */
+    fun collapsedFolders(ctx: Context): MutableSet<Int> =
+        (getPrefs(ctx).getStringSet(KEY_COLLAPSED_FOLDERS, emptySet()) ?: emptySet())
+            .mapNotNull { it.toIntOrNull() }
+            .toMutableSet()
+
+    fun saveCollapsedFolders(ctx: Context, ids: Set<Int>) {
+        getPrefs(ctx).edit()
+            .putStringSet(KEY_COLLAPSED_FOLDERS, ids.map { it.toString() }.toSet())
             .apply()
     }
 }
