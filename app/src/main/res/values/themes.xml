@@ -3,6 +3,8 @@
 
     <!-- ── Light ─────────────────────────────────────────────────── -->
     <style name="Theme.Excerpta" parent="Theme.Material3.Light.NoActionBar">
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
         <item name="colorPrimary">@color/t_light_primary</item>
         <item name="colorOnPrimary">@color/t_light_on_primary</item>
         <item name="colorPrimaryContainer">@color/t_light_primary_container</item>
@@ -16,6 +18,8 @@
         <item name="android:windowLightStatusBar">true</item>
     </style>
     <style name="Theme.Excerpta.Dialog" parent="Theme.Material3.Light.Dialog">
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
         <item name="colorPrimary">@color/t_light_primary</item>
         <item name="colorOnPrimary">@color/t_light_on_primary</item>
         <item name="colorPrimaryContainer">@color/t_light_primary_container</item>
@@ -32,6 +36,8 @@
 
     <!-- ── Dark ──────────────────────────────────────────────────── -->
     <style name="Theme.Excerpta.Dark" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
         <item name="colorPrimary">@color/t_dark_primary</item>
         <item name="colorOnPrimary">@color/t_dark_on_primary</item>
         <item name="colorPrimaryContainer">@color/t_dark_primary_container</item>
@@ -44,6 +50,8 @@
         <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
     <style name="Theme.Excerpta.Dark.Dialog" parent="Theme.Material3.Dark.Dialog">
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
         <item name="colorPrimary">@color/t_dark_primary</item>
         <item name="colorOnPrimary">@color/t_dark_on_primary</item>
         <item name="colorPrimaryContainer">@color/t_dark_primary_container</item>
@@ -60,6 +68,8 @@
 
     <!-- ── Dracula ────────────────────────────────────────────────── -->
     <style name="Theme.Excerpta.Dracula" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
         <item name="colorPrimary">@color/t_dracula_primary</item>
         <item name="colorOnPrimary">@color/t_dracula_on_primary</item>
         <item name="colorPrimaryContainer">@color/t_dracula_primary_container</item>
@@ -72,6 +82,8 @@
         <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
     <style name="Theme.Excerpta.Dracula.Dialog" parent="Theme.Material3.Dark.Dialog">
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
         <item name="colorPrimary">@color/t_dracula_primary</item>
         <item name="colorOnPrimary">@color/t_dracula_on_primary</item>
         <item name="colorPrimaryContainer">@color/t_dracula_primary_container</item>
@@ -88,6 +100,8 @@
 
     <!-- ── Nord ──────────────────────────────────────────────────── -->
     <style name="Theme.Excerpta.Nord" parent="Theme.Material3.Light.NoActionBar">
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
         <item name="colorPrimary">@color/t_nord_primary</item>
         <item name="colorOnPrimary">@color/t_nord_on_primary</item>
         <item name="colorPrimaryContainer">@color/t_nord_primary_container</item>
@@ -101,6 +115,8 @@
         <item name="android:windowLightStatusBar">true</item>
     </style>
     <style name="Theme.Excerpta.Nord.Dialog" parent="Theme.Material3.Light.Dialog">
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
         <item name="colorPrimary">@color/t_nord_primary</item>
         <item name="colorOnPrimary">@color/t_nord_on_primary</item>
         <item name="colorPrimaryContainer">@color/t_nord_primary_container</item>
@@ -117,6 +133,8 @@
 
     <!-- ── Nord Dark ──────────────────────────────────────────────── -->
     <style name="Theme.Excerpta.NordDark" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
         <item name="colorPrimary">@color/t_norddark_primary</item>
         <item name="colorOnPrimary">@color/t_norddark_on_primary</item>
         <item name="colorPrimaryContainer">@color/t_norddark_primary_container</item>
@@ -129,6 +147,8 @@
         <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
     <style name="Theme.Excerpta.NordDark.Dialog" parent="Theme.Material3.Dark.Dialog">
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
         <item name="colorPrimary">@color/t_norddark_primary</item>
         <item name="colorOnPrimary">@color/t_norddark_on_primary</item>
         <item name="colorPrimaryContainer">@color/t_norddark_primary_container</item>
@@ -145,6 +165,8 @@
 
     <!-- ── Catppuccin ─────────────────────────────────────────────── -->
     <style name="Theme.Excerpta.Catppuccin" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
         <item name="colorPrimary">@color/t_catppuccin_primary</item>
         <item name="colorOnPrimary">@color/t_catppuccin_on_primary</item>
         <item name="colorPrimaryContainer">@color/t_catppuccin_primary_container</item>
@@ -157,6 +179,8 @@
         <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
     <style name="Theme.Excerpta.Catppuccin.Dialog" parent="Theme.Material3.Dark.Dialog">
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
         <item name="colorPrimary">@color/t_catppuccin_primary</item>
         <item name="colorOnPrimary">@color/t_catppuccin_on_primary</item>
         <item name="colorPrimaryContainer">@color/t_catppuccin_primary_container</item>
@@ -173,6 +197,8 @@
 
     <!-- ── Gruvbox ────────────────────────────────────────────────── -->
     <style name="Theme.Excerpta.Gruvbox" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
         <item name="colorPrimary">@color/t_gruvbox_primary</item>
         <item name="colorOnPrimary">@color/t_gruvbox_on_primary</item>
         <item name="colorPrimaryContainer">@color/t_gruvbox_primary_container</item>
@@ -185,6 +211,8 @@
         <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
     <style name="Theme.Excerpta.Gruvbox.Dialog" parent="Theme.Material3.Dark.Dialog">
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
         <item name="colorPrimary">@color/t_gruvbox_primary</item>
         <item name="colorOnPrimary">@color/t_gruvbox_on_primary</item>
         <item name="colorPrimaryContainer">@color/t_gruvbox_primary_container</item>
@@ -201,6 +229,8 @@
 
     <!-- ── Solarized ──────────────────────────────────────────────── -->
     <style name="Theme.Excerpta.Solarized" parent="Theme.Material3.Light.NoActionBar">
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
         <item name="colorPrimary">@color/t_solarized_primary</item>
         <item name="colorOnPrimary">@color/t_solarized_on_primary</item>
         <item name="colorPrimaryContainer">@color/t_solarized_primary_container</item>
@@ -214,6 +244,8 @@
         <item name="android:windowLightStatusBar">true</item>
     </style>
     <style name="Theme.Excerpta.Solarized.Dialog" parent="Theme.Material3.Light.Dialog">
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
         <item name="colorPrimary">@color/t_solarized_primary</item>
         <item name="colorOnPrimary">@color/t_solarized_on_primary</item>
         <item name="colorPrimaryContainer">@color/t_solarized_primary_container</item>
@@ -230,6 +262,8 @@
 
     <!-- ── Rosé Pine ──────────────────────────────────────────────── -->
     <style name="Theme.Excerpta.RosePine" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
         <item name="colorPrimary">@color/t_rosepine_primary</item>
         <item name="colorOnPrimary">@color/t_rosepine_on_primary</item>
         <item name="colorPrimaryContainer">@color/t_rosepine_primary_container</item>
@@ -242,6 +276,8 @@
         <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
     <style name="Theme.Excerpta.RosePine.Dialog" parent="Theme.Material3.Dark.Dialog">
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
         <item name="colorPrimary">@color/t_rosepine_primary</item>
         <item name="colorOnPrimary">@color/t_rosepine_on_primary</item>
         <item name="colorPrimaryContainer">@color/t_rosepine_primary_container</item>
@@ -254,6 +290,14 @@
         <item name="colorOutline">@color/t_rosepine_outline</item>
         <item name="android:windowMinWidthMajor">92%</item>
         <item name="android:windowMinWidthMinor">92%</item>
+    </style>
+
+    <!-- Voix display (titre app bar / branding) — parité avec les headings web (Space Grotesk) -->
+    <style name="TextAppearance.Excerpta.Toolbar" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:fontFamily">@font/space_grotesk</item>
+        <item name="fontFamily">@font/space_grotesk</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">-0.01</item>
     </style>
 
 </resources>
