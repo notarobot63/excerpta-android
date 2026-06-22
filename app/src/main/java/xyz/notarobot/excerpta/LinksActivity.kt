@@ -288,6 +288,8 @@ class LinksActivity : AppCompatActivity() {
                 }
             }
         }
+
+        addVersionFooter()
     }
 
     private fun renderGroups() {
@@ -414,6 +416,25 @@ class LinksActivity : AppCompatActivity() {
                 (6 * resources.displayMetrics.density).toInt(),
             )
             letterSpacing = 0.1f
+        }
+        drawerNav.addView(tv)
+    }
+
+    /** Pied du drawer : version + commit, cliquable pour vérifier les mises à jour. */
+    private fun addVersionFooter() {
+        addDivider()
+        val tv = TextView(this).apply {
+            text = "Excerpta v${BuildConfig.VERSION_NAME} · ${BuildConfig.GIT_COMMIT}"
+            setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_LabelSmall)
+            setTextColor(resolveColor(com.google.android.material.R.attr.colorOnSurfaceVariant))
+            val h = (16 * resources.displayMetrics.density).toInt()
+            val v = (12 * resources.displayMetrics.density).toInt()
+            setPadding(h, v, h, v)
+            isClickable = true
+            setOnClickListener {
+                drawerLayout.closeDrawer(GravityCompat.START)
+                checkForUpdate(recyclerView, verbose = true)
+            }
         }
         drawerNav.addView(tv)
     }
@@ -672,13 +693,21 @@ class LinksActivity : AppCompatActivity() {
 
     // ── Mise à jour ──────────────────────────────────────────────────────────
 
-    private fun checkForUpdate(anchor: View) {
+    private fun checkForUpdate(anchor: View, verbose: Boolean = false) {
         lifecycleScope.launch {
             val info = withContext(Dispatchers.IO) { UpdateChecker.check() }
-            if (info != null && info.hasUpdate) {
-                Snackbar.make(anchor, "Mise à jour disponible (${info.remoteCommit})", Snackbar.LENGTH_INDEFINITE)
-                    .setAction("Installer") { UpdateChecker.openDownload(this@LinksActivity) }
-                    .show()
+            when {
+                info != null && info.hasUpdate -> {
+                    Snackbar.make(anchor, "Mise à jour disponible (${info.remoteCommit})", Snackbar.LENGTH_INDEFINITE)
+                        .setAction("Installer") { UpdateChecker.openDownload(this@LinksActivity) }
+                        .show()
+                }
+                verbose && info != null -> {
+                    Snackbar.make(anchor, "À jour (v${BuildConfig.VERSION_NAME})", Snackbar.LENGTH_SHORT).show()
+                }
+                verbose -> {
+                    Snackbar.make(anchor, "Vérification impossible (hors ligne ?)", Snackbar.LENGTH_SHORT).show()
+                }
             }
         }
     }
