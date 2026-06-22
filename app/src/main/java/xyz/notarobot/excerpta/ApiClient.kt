@@ -188,7 +188,10 @@ object ApiClient {
 
     suspend fun fetchReader(serverUrl: String, apiKey: String, linkId: Int): ReaderContent? =
         withContext(Dispatchers.IO) {
+            // L'extraction peut être faite à la volée côté serveur (fetch + readability),
+            // donc readTimeout plus généreux que le défaut de 10 s.
             val conn = openGet("$serverUrl/api/v1/links/$linkId/reader", apiKey)
+                .apply { readTimeout = 25_000 }
             try {
                 if (conn.responseCode != 200) {
                     conn.errorStream?.use { it.readBytes() }
