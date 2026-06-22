@@ -27,7 +27,7 @@
                 app:navigationIcon="@drawable/ic_menu"
                 app:navigationIconTint="?attr/colorOnSurface"
                 app:title="@string/app_name"
-                app:titleTextAppearance="?attr/textAppearanceBodyLarge" />
+                app:titleTextAppearance="@style/TextAppearance.Excerpta.Toolbar" />
 
             <LinearLayout
                 android:layout_width="match_parent"
