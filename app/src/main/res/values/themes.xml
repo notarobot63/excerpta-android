@@ -300,4 +300,10 @@
         <item name="android:letterSpacing">-0.01</item>
     </style>
 
+    <!-- Redesign : vignette arrondie (parité radius-md du web) -->
+    <style name="ShapeAppearance.Excerpta.Thumbnail" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">10dp</item>
+    </style>
+
 </resources>

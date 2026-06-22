@@ -14,31 +14,41 @@
         android:orientation="horizontal"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:paddingTop="14dp"
-        android:paddingBottom="14dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
         android:gravity="top">
 
-        <!-- Partie gauche : source + titre + description + date -->
+        <!-- Vignette à gauche (arrondie) -->
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/imgThumbnail"
+            android:layout_width="76dp"
+            android:layout_height="76dp"
+            android:layout_marginEnd="14dp"
+            android:scaleType="centerCrop"
+            android:contentDescription="@null"
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.Excerpta.Thumbnail"
+            android:visibility="gone" />
+
+        <!-- Partie droite : source + titre + description + date -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical"
-            android:layout_marginEnd="12dp">
+            android:orientation="vertical">
 
-            <!-- Ligne source : favicon + domaine -->
+            <!-- Ligne source : favicon + domaine (eyebrow) -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginBottom="5dp">
+                android:layout_marginBottom="6dp">
 
                 <ImageView
                     android:id="@+id/imgFavicon"
                     android:layout_width="14dp"
                     android:layout_height="14dp"
-                    android:layout_marginEnd="5dp"
+                    android:layout_marginEnd="6dp"
                     android:scaleType="fitCenter"
                     android:contentDescription="@null" />
 
@@ -49,6 +59,8 @@
                     android:textSize="11sp"
                     android:textColor="?attr/colorPrimary"
                     android:fontFamily="sans-serif-medium"
+                    android:textAllCaps="true"
+                    android:letterSpacing="0.04"
                     android:maxLines="1"
                     android:ellipsize="end" />
 
@@ -59,10 +71,12 @@
                 android:id="@+id/tvTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="15sp"
+                android:textSize="16sp"
+                android:textStyle="bold"
                 android:textColor="?attr/colorOnSurface"
                 android:fontFamily="@font/inter"
-                android:lineSpacingMultiplier="1.2"
+                android:letterSpacing="-0.01"
+                android:lineSpacingMultiplier="1.15"
                 android:maxLines="3"
                 android:ellipsize="end" />
 
@@ -73,10 +87,10 @@
                 android:layout_height="wrap_content"
                 android:textSize="13sp"
                 android:textColor="?attr/colorOnSurfaceVariant"
-                android:lineSpacingMultiplier="1.2"
+                android:lineSpacingMultiplier="1.3"
                 android:maxLines="2"
                 android:ellipsize="end"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="5dp"
                 android:visibility="gone" />
 
             <!-- Note personnelle -->
@@ -87,10 +101,10 @@
                 android:textSize="13sp"
                 android:textStyle="italic"
                 android:textColor="?attr/colorOnSurfaceVariant"
-                android:lineSpacingMultiplier="1.2"
+                android:lineSpacingMultiplier="1.3"
                 android:maxLines="3"
                 android:ellipsize="end"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="5dp"
                 android:visibility="gone" />
 
             <!-- Ligne meta : date + badge lien cassé -->
@@ -99,7 +113,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginTop="6dp">
+                android:layout_marginTop="8dp">
 
                 <TextView
                     android:id="@+id/tvDate"
@@ -121,15 +135,6 @@
             </LinearLayout>
 
         </LinearLayout>
-
-        <!-- Thumbnail à droite -->
-        <ImageView
-            android:id="@+id/imgThumbnail"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:scaleType="centerCrop"
-            android:contentDescription="@null"
-            android:visibility="gone" />
 
     </LinearLayout>
 
