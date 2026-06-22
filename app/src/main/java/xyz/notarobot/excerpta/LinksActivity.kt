@@ -613,9 +613,9 @@ class LinksActivity : AppCompatActivity() {
                 startActivity(Intent(Intent.ACTION_VIEW, uri))
             }
         }
-        if (item.hasReader) {
-            actions += "Vue lecteur" to { openReader(item) }
-        }
+        // Toujours proposé : le serveur extrait le contenu à la volée si besoin
+        // (ReaderActivity affiche un loader puis un message si non extractible).
+        actions += "Vue lecteur" to { openReader(item) }
         if (item.archivedUrl != null) {
             actions += "Voir l'archive" to {
                 val uri = android.net.Uri.parse(item.archivedUrl)
