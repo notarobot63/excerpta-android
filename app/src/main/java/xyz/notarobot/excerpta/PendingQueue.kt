@@ -13,6 +13,7 @@ object PendingQueue {
         val url: String,
         val title: String,
         val tags: List<String>,
+        val description: String = "",
         val note: String,
         val folderId: Int?,
         val isPublic: Boolean,
@@ -43,6 +44,7 @@ object PendingQueue {
                     url = o.getString("url"),
                     title = o.optString("title", ""),
                     tags = List(tagsArr.length()) { tagsArr.getString(it) },
+                    description = o.optString("description", ""),
                     note = o.optString("note", ""),
                     folderId = if (o.isNull("folder_id")) null else o.getInt("folder_id"),
                     isPublic = o.optBoolean("is_public", false),
@@ -64,6 +66,7 @@ object PendingQueue {
                 arr.put(JSONObject().apply {
                     put("url", link.url)
                     put("title", link.title)
+                    put("description", link.description)
                     put("note", link.note)
                     put("is_public", link.isPublic)
                     if (link.folderId != null) put("folder_id", link.folderId)

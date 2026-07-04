@@ -9,6 +9,7 @@
     <string name="hint_title">Titre</string>
     <string name="hint_tags">Tags (séparés par des virgules)</string>
     <string name="hint_tags_short">Tags</string>
+    <string name="hint_description">Extrait (optionnel)</string>
     <string name="hint_note">Note (optionnelle)</string>
     <string name="btn_save">Enregistrer</string>
     <string name="btn_save_link">Sauvegarder</string>

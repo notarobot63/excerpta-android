@@ -6,11 +6,14 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
+import java.net.URLEncoder
 
 object ApiClient {
     data class Result(val success: Boolean, val message: String, val isNetworkError: Boolean = false)
 
     data class TagInfo(val name: String, val count: Int)
+
+    data class MetaInfo(val title: String, val description: String)
 
     data class GroupItem(
         val id: Int,
@@ -105,6 +108,25 @@ object ApiClient {
                 }
             } catch (_: Exception) {
                 emptyList()
+            } finally {
+                conn.disconnect()
+            }
+        }
+
+    /** Préremplissage live titre + extrait depuis l'URL, au moment du partage (miroir du fetchMeta() web). */
+    suspend fun fetchMeta(serverUrl: String, apiKey: String, url: String): MetaInfo? =
+        withContext(Dispatchers.IO) {
+            val encoded = URLEncoder.encode(url, "UTF-8")
+            val conn = openGet("$serverUrl/api/v1/fetch-meta?url=$encoded", apiKey)
+            try {
+                if (conn.responseCode != 200) return@withContext null
+                val o = JSONObject(conn.inputStream.bufferedReader().readText())
+                MetaInfo(
+                    title = o.optString("title", ""),
+                    description = o.optString("description", ""),
+                )
+            } catch (_: Exception) {
+                null
             } finally {
                 conn.disconnect()
             }
@@ -251,6 +273,7 @@ object ApiClient {
         url: String,
         title: String,
         tags: List<String>,
+        description: String = "",
         note: String = "",
         folderId: Int? = null,
         isPublic: Boolean = false,
@@ -260,6 +283,7 @@ object ApiClient {
             val body = JSONObject().apply {
                 put("url", url)
                 put("title", title)
+                put("description", description)
                 put("note", note)
                 put("tags", JSONArray(tags))
                 put("is_public", isPublic)

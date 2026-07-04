@@ -47,6 +47,7 @@ class ShareActivity : AppCompatActivity() {
 
         val etUrl = findViewById<TextInputEditText>(R.id.etUrl)
         val etTitle = findViewById<TextInputEditText>(R.id.etTitle)
+        val etDescription = findViewById<TextInputEditText>(R.id.etDescription)
         val etTags = findViewById<MaterialAutoCompleteTextView>(R.id.etTags)
         val etNote = findViewById<TextInputEditText>(R.id.etNote)
         val btnSave = findViewById<MaterialButton>(R.id.btnSave)
@@ -54,6 +55,28 @@ class ShareActivity : AppCompatActivity() {
         val progress = findViewById<ProgressBar>(R.id.progress)
         etUrl.setText(sharedUrl)
         etTitle.setText(sharedTitle)
+
+        // Les applis tierces ne renseignent quasiment jamais EXTRA_SUBJECT/description :
+        // on va chercher titre + extrait côté serveur, sans écraser une saisie déjà présente.
+        if (sharedUrl.isNotBlank()) {
+            progress.visibility = View.VISIBLE
+            lifecycleScope.launch {
+                val meta = ApiClient.fetchMeta(
+                    Prefs.serverUrl(this@ShareActivity),
+                    Prefs.apiKey(this@ShareActivity),
+                    sharedUrl,
+                )
+                if (meta != null) {
+                    if (etTitle.text.isNullOrBlank() && meta.title.isNotBlank()) {
+                        etTitle.setText(meta.title)
+                    }
+                    if (etDescription.text.isNullOrBlank() && meta.description.isNotBlank()) {
+                        etDescription.setText(meta.description)
+                    }
+                }
+                progress.visibility = View.GONE
+            }
+        }
 
         lifecycleScope.launch {
             val fetchedTags = ApiClient.fetchTags(
@@ -98,6 +121,7 @@ class ShareActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
             val title = etTitle.text.toString().trim()
+            val description = etDescription.text.toString().trim()
             val note = etNote.text.toString().trim()
             val tags = etTags.text.toString()
                 .split(",")
@@ -115,6 +139,7 @@ class ShareActivity : AppCompatActivity() {
                     url = url,
                     title = title,
                     tags = tags,
+                    description = description,
                     note = note,
                 )
                 progress.visibility = View.GONE
@@ -130,6 +155,7 @@ class ShareActivity : AppCompatActivity() {
                                 url = url,
                                 title = title,
                                 tags = tags,
+                                description = description,
                                 note = note,
                                 folderId = null,
                                 isPublic = false,
