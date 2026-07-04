@@ -203,6 +203,7 @@ class LinksActivity : AppCompatActivity() {
                     url = link.url,
                     title = link.title,
                     tags = link.tags,
+                    description = link.description,
                     note = link.note,
                     folderId = link.folderId,
                     isPublic = link.isPublic,
