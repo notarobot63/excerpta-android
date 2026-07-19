@@ -1,14 +1,20 @@
 <p align="center">
-  <img src="https://GIT_HOST/thomas/excerpta-android/-/raw/main/app/src/main/res/drawable-xxxhdpi/ic_logo.png" alt="Excerpta" width="120">
+  <img src="https://raw.githubusercontent.com/notarobot63/excerpta-android/main/app/src/main/res/drawable-xxxhdpi/ic_logo.png" alt="Excerpta" width="120">
 </p>
 
 # Excerpta Android
 
-Application Android companion pour [Excerpta](../excerpta), le gestionnaire de liens self-hosted.
+> **🤖 Vibe Coded with Claude**
+> This project was built through an AI-assisted development session with [Claude](https://claude.ai) (Anthropic).
+> It is shared as-is, without warranty of any kind. Test thoroughly before relying on it for anything critical.
+>
+> Remember: if you don't like projects coded with AI help don't use them ;-)
+
+Application Android companion pour [Excerpta](https://github.com/notarobot63/excerpta), le gestionnaire de liens self-hosted.
 
 > collect • annotate • remember
 
-<a href="https://apps.obtainium.imranr.dev/redirect.html?r=obtainium://add/https://GIT_HOST/thomas/excerpta-android/-/raw/main/obtainium.html"><img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" alt="Get it on Obtainium" height="42"></a>
+<a href="https://apps.obtainium.imranr.dev/redirect.html?r=obtainium://add/https://raw.githubusercontent.com/notarobot63/excerpta-android/main/obtainium.html"><img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" alt="Get it on Obtainium" height="42"></a>
 
 ## Fonctionnalités
 
@@ -26,16 +32,16 @@ Application Android companion pour [Excerpta](../excerpta), le gestionnaire de l
 **Obtainium (recommandé)** : clique sur le badge ci-dessus, ou ajoute manuellement cette URL dans Obtainium (mises à jour automatiques) :
 
 ```
-https://GIT_HOST/thomas/excerpta-android/-/raw/main/obtainium.html
+https://raw.githubusercontent.com/notarobot63/excerpta-android/main/obtainium.html
 ```
 
 **APK direct** (toujours la dernière version) :
 
 ```
-https://GIT_HOST/thomas/excerpta-android/-/releases/permalink/latest/downloads/excerpta-android.apk
+https://github.com/notarobot63/excerpta-android/releases/latest/download/excerpta-android.apk
 ```
 
-Chaque push sur `main` déclenche un build CI qui publie une nouvelle release signée. Le badge/URL Obtainium pointe vers la dernière en date.
+Chaque push sur `main` déclenche un build CI (GitHub Actions) qui publie une nouvelle release signée. Le badge/URL Obtainium pointe vers la dernière en date.
 
 ## Configuration
 
@@ -46,7 +52,7 @@ Chaque push sur `main` déclenche un build CI qui publie une nouvelle release si
 ## Compilation
 
 ```bash
-git clone <url-du-dépôt>
+git clone https://github.com/notarobot63/excerpta-android.git
 cd excerpta-android
 
 # Build debug (sans signature)

@@ -28,8 +28,8 @@ build:apk:
     - if: '$CI_COMMIT_BRANCH == "main"'
   variables:
     # Injectees dans BuildConfig (maj in-app via API GitLab v4). Projet public -> pas d'auth runtime.
-    REPO_API_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}"
-    REPO_WEB_URL: "${CI_PROJECT_URL}"
+    RELEASES_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/releases/permalink/latest"
+    APK_URL: "${CI_PROJECT_URL}/-/releases/permalink/latest/downloads/excerpta-android.apk"
     PKG_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/excerpta-android/${CI_COMMIT_SHORT_SHA}/excerpta-android.apk"
   script:
     - chmod +x ./gradlew
