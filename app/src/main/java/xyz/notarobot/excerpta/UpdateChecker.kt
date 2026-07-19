@@ -25,8 +25,8 @@ object UpdateChecker {
             if (conn.responseCode == 200) {
                 val body = conn.inputStream.use { it.bufferedReader().readText() }
                 val json = JSONObject(body)
-                // GitLab Releases API : le texte est dans "description" (Gitea utilisait "body")
-                val releaseBody = json.optString("description", "")
+                // Texte de release : "description" sur GitLab, "body" sur GitHub (Gitea utilisait aussi "body")
+                val releaseBody = json.optString("description", "").ifEmpty { json.optString("body", "") }
                 val remoteCommit = Regex("commit:([0-9a-f]+)").find(releaseBody)?.groupValues?.get(1)
                 if (remoteCommit != null) {
                     val current = BuildConfig.GIT_COMMIT

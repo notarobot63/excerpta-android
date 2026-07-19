@@ -23,12 +23,10 @@
         <domain includeSubdomains="false">127.0.0.1</domain>
         <domain includeSubdomains="false">10.0.2.2</domain>
 
-        <!-- TLD interne résolu par Pi-hole (*.lan) -->
+        <!-- TLD interne résolu par un DNS local type Pi-hole (*.lan) -->
         <domain includeSubdomains="true">lan</domain>
 
-        <!-- Serveurs LAN connus (subnets 192.168.1.x / 192.168.2.x) -->
-        <domain includeSubdomains="false">192.168.1.18</domain>
-        <domain includeSubdomains="false">192.168.2.10</domain>
-        <domain includeSubdomains="false">192.168.2.11</domain>
+        <!-- Ajoute ici l'IP ou le hostname de TON serveur Excerpta si tu y accèdes
+             en HTTP sur ton LAN (ex. <domain includeSubdomains="false">192.168.1.42</domain>) -->
     </domain-config>
 </network-security-config>

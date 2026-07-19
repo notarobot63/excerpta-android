@@ -27,16 +27,14 @@ android {
         versionCode = gitVersionCode
         versionName = "1.${gitVersionCode}"
         buildConfigField("String", "GIT_COMMIT", "\"$gitCommit\"")
-        // Maj in-app via l'API GitLab v4 (permalink "latest" = release la plus récente).
-        // REPO_API_URL ex: https://git.notarobot.xyz/api/v4/projects/Thomas%2Fexcerpta-android
-        // REPO_WEB_URL ex: https://git.notarobot.xyz/Thomas/excerpta-android
-        // Injectées par la CI ; vides en build local -> updater désactivé.
-        val apiUrl = System.getenv("REPO_API_URL") ?: ""
-        val webUrl = System.getenv("REPO_WEB_URL") ?: ""
-        val releasesUrl = if (apiUrl.isNotBlank())
-            "$apiUrl/releases/permalink/latest" else ""
-        val apkUrl = if (webUrl.isNotBlank())
-            "$webUrl/-/releases/permalink/latest/downloads/excerpta-android.apk" else ""
+        // Maj in-app : URLs complètes injectées par la CI (GitLab ou GitHub), qui connaît
+        // son propre schéma de "release la plus récente". Vides en build local -> updater désactivé.
+        // GitLab ex: RELEASES_URL=.../api/v4/projects/ID/releases/permalink/latest
+        //            APK_URL=.../-/releases/permalink/latest/downloads/excerpta-android.apk
+        // GitHub ex: RELEASES_URL=https://api.github.com/repos/OWNER/REPO/releases/latest
+        //            APK_URL=https://github.com/OWNER/REPO/releases/latest/download/excerpta-android.apk
+        val releasesUrl = System.getenv("RELEASES_URL") ?: ""
+        val apkUrl = System.getenv("APK_URL") ?: ""
         buildConfigField("String", "RELEASES_URL", "\"$releasesUrl\"")
         buildConfigField("String", "APK_URL", "\"$apkUrl\"")
     }
