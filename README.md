@@ -16,6 +16,13 @@ Android companion app for [Excerpta](https://github.com/notarobot63/excerpta), t
 
 <a href="https://apps.obtainium.imranr.dev/redirect.html?r=obtainium://add/https://raw.githubusercontent.com/notarobot63/excerpta-android/main/obtainium.html"><img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" alt="Get it on Obtainium" height="42"></a>
 
+## Screenshots
+
+<p align="center">
+  <img src="docs/screenshots/links-list.png" alt="Excerpta Android - links list" width="49%">
+  <img src="docs/screenshots/drawer.png" alt="Excerpta Android - navigation drawer" width="49%">
+</p>
+
 ## Features
 
 - **Paginated link list** with on-demand loading (swipe-to-refresh)
