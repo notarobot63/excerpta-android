@@ -292,7 +292,7 @@
         <item name="android:windowMinWidthMinor">92%</item>
     </style>
 
-    <!-- Voix display (titre app bar / branding) — parité avec les headings web (Space Grotesk) -->
+    <!-- Voix display (titre app bar / branding) - parité avec les headings web (Space Grotesk) -->
     <style name="TextAppearance.Excerpta.Toolbar" parent="TextAppearance.Material3.TitleLarge">
         <item name="android:fontFamily">@font/space_grotesk</item>
         <item name="fontFamily">@font/space_grotesk</item>

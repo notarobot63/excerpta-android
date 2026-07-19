@@ -88,7 +88,7 @@ class LinksActivity : AppCompatActivity() {
         toolbar = findViewById(R.id.toolbar)
 
         // DrawerLayout peint lui-même la status bar en colorPrimary (bleu) quand
-        // fitsSystemWindows=true — on force la couleur du fond du thème
+        // fitsSystemWindows=true - on force la couleur du fond du thème
         val tv = TypedValue()
         theme.resolveAttribute(android.R.attr.colorBackground, tv, true)
         drawerLayout.setStatusBarBackgroundColor(tv.data)

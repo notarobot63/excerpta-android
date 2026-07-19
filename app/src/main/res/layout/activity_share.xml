@@ -59,7 +59,7 @@
             android:paddingTop="20dp"
             android:paddingBottom="8dp">
 
-            <!-- URL — compact, de-emphasisée -->
+            <!-- URL - compact, de-emphasisée -->
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -79,7 +79,7 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Titre — champ principal -->
+            <!-- Titre - champ principal -->
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

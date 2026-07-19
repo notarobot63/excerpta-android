@@ -10,64 +10,64 @@
 >
 > Remember: if you don't like projects coded with AI help don't use them ;-)
 
-Application Android companion pour [Excerpta](https://github.com/notarobot63/excerpta), le gestionnaire de liens self-hosted.
+Android companion app for [Excerpta](https://github.com/notarobot63/excerpta), the self-hosted link manager.
 
 > collect • annotate • remember
 
 <a href="https://apps.obtainium.imranr.dev/redirect.html?r=obtainium://add/https://raw.githubusercontent.com/notarobot63/excerpta-android/main/obtainium.html"><img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" alt="Get it on Obtainium" height="42"></a>
 
-## Fonctionnalités
+## Features
 
-- **Liste de liens** paginée avec chargement à la demande (swipe-to-refresh)
-- **Drawer de navigation** : groupes hiérarchiques puis tags
-- **Ajout rapide** via le FAB ou le bouton de partage depuis Chrome/Firefox/etc.
-- **Actions contextuelles** (appui long) : ouvrir, copier l'URL, rendre public/privé, supprimer
-- **Cache hors-ligne** : les liens restent accessibles sans réseau
-- **Configuration par QR code** : scanner le QR depuis l'interface web (Paramètres)
-- **Clé API chiffrée** localement (EncryptedSharedPreferences / AES-256)
-- **Icône adaptative** Material Design
+- **Paginated link list** with on-demand loading (swipe-to-refresh)
+- **Navigation drawer**: hierarchical groups then tags
+- **Quick add** via the FAB or the share button from Chrome/Firefox/etc.
+- **Contextual actions** (long press): open, copy URL, make public/private, delete
+- **Offline cache**: links stay accessible without network
+- **QR code configuration**: scan the QR code from the web UI (Settings)
+- **API key encrypted** locally (EncryptedSharedPreferences / AES-256)
+- **Adaptive icon**, Material Design
 
-## Téléchargement
+## Download
 
-**Obtainium (recommandé)** : clique sur le badge ci-dessus, ou ajoute manuellement cette URL dans Obtainium (mises à jour automatiques) :
+**Obtainium (recommended)**: tap the badge above, or manually add this URL in Obtainium (automatic updates):
 
 ```
 https://raw.githubusercontent.com/notarobot63/excerpta-android/main/obtainium.html
 ```
 
-**APK direct** (toujours la dernière version) :
+**Direct APK** (always the latest version):
 
 ```
 https://github.com/notarobot63/excerpta-android/releases/latest/download/excerpta-android.apk
 ```
 
-Chaque push sur `main` déclenche un build CI (GitHub Actions) qui publie une nouvelle release signée. Le badge/URL Obtainium pointe vers la dernière en date.
+Every push to `main` triggers a CI build (GitHub Actions) that publishes a new signed release. The Obtainium badge/URL points to the latest one.
 
 ## Configuration
 
-1. Installer l'APK
-2. Ouvrir l'application → scanner le QR code affiché dans **Excerpta → Paramètres**
-3. L'URL du serveur et la clé API sont configurées automatiquement
+1. Install the APK
+2. Open the app → scan the QR code shown in **Excerpta → Settings**
+3. The server URL and API key are configured automatically
 
-## Compilation
+## Building
 
 ```bash
 git clone https://github.com/notarobot63/excerpta-android.git
 cd excerpta-android
 
-# Build debug (sans signature)
+# Debug build (unsigned)
 ./gradlew assembleDebug
 ```
 
-L'APK produit se trouve dans `app/build/outputs/apk/debug/app-debug.apk`.
+The resulting APK is at `app/build/outputs/apk/debug/app-debug.apk`.
 
 ## Stack
 
 - Kotlin + Coroutines
 - Material Design 3
 - EncryptedSharedPreferences (security-crypto)
-- ZXing (scan QR code)
+- ZXing (QR code scanning)
 
-## Licence
+## License
 
-[GNU Affero General Public License v3.0](LICENSE) — fork libre, copyleft fort, attribution obligatoire.
+[GNU Affero General Public License v3.0](LICENSE) - free to fork, strong copyleft, attribution required.

@@ -41,8 +41,8 @@
     <string name="menu_delete">Supprimer</string>
     <string name="offline_notice">Mode hors ligne - données mises en cache</string>
     <string name="load_error">Erreur de chargement</string>
-    <string name="queued_offline">Pas de réseau — lien mis en attente</string>
+    <string name="queued_offline">Pas de réseau - lien mis en attente</string>
     <string name="queued_synced">%d lien(s) synchronisé(s)</string>
     <string name="queued_rejected">%d lien(s) en attente rejeté(s) par le serveur</string>
-    <string name="queue_full">File d\'attente pleine — reconnectez-vous pour synchroniser</string>
+    <string name="queue_full">File d\'attente pleine - reconnectez-vous pour synchroniser</string>
 </resources>
