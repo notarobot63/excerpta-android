@@ -8,7 +8,7 @@
     le serveur Excerpta peut tourner en HTTP sur le réseau local.
     network-security-config n'accepte PAS de plage CIDR : il faut énumérer les
     IP/domaines. Si tu accèdes au serveur via une IP LAN absente de cette liste,
-    la connexion HTTP sera refusée — ajoute simplement un <domain> ici.
+    la connexion HTTP sera refusée - ajoute simplement un <domain> ici.
 -->
 <network-security-config>
     <base-config cleartextTrafficPermitted="false">
