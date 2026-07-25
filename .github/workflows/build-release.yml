@@ -2,7 +2,8 @@ name: Build & release APK
 
 on:
   push:
-    branches: [main]
+    branches: [main]   # build de vérification, sans release
+    tags: ['v*']       # build + release publiée
 
 jobs:
   build:
@@ -37,11 +38,25 @@ jobs:
       - name: Renommer l'APK
         run: cp app/build/outputs/apk/release/app-release.apk excerpta-android.apk
 
+      # Hors tag, l'APK reste récupérable en artefact de run pour un test manuel,
+      # mais n'est pas publié : une release correspond à une version décidée.
+      - name: Publier l'APK en artefact (hors release)
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: excerpta-android-${{ github.sha }}
+          path: excerpta-android.apk
+          retention-days: 14
+
       - name: Créer la release GitHub
+        if: startsWith(github.ref, 'refs/tags/v')
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ github.ref_name }}
         run: |
+          # « commit: » est lu par UpdateChecker pour détecter une mise à jour.
           SHORT7=$(git rev-parse --short=7 HEAD)
-          gh release create "build-${{ github.run_number }}" excerpta-android.apk \
-            --title "Build ${SHORT7}" \
+          gh release create "$VERSION" excerpta-android.apk \
+            --title "$VERSION" \
+            --generate-notes \
             --notes "commit:${SHORT7}"

@@ -14,7 +14,23 @@ fun String.runCommand(): String? = try {
 } catch (_: Exception) { null }
 
 val gitCommit = "git rev-parse --short HEAD".runCommand() ?: "unknown"
+
+/**
+ * versionCode : nombre de commits. Doit rester stritement croissant, sinon
+ * Android refuse la mise a jour des installations existantes. On le conserve
+ * tel quel, decouple du nom de version, precisement pour cette garantie.
+ */
 val gitVersionCode = "git rev-list --count HEAD".runCommand()?.toIntOrNull() ?: 1
+
+/**
+ * versionName : le tag SemVer quand le build vient d'un tag (v1.2.0 -> "1.2.0"),
+ * sinon un nom de developpement portant le compte de commits et le commit, pour
+ * qu'une build hors release reste identifiable sans se faire passer pour une version.
+ */
+val releaseTag = (System.getenv("GITHUB_REF_NAME") ?: "")
+    .takeIf { Regex("""^v\d+\.\d+\.\d+""").matches(it) }
+    ?: "git describe --tags --exact-match".runCommand()?.takeIf { it.startsWith("v") }
+val appVersionName = releaseTag?.removePrefix("v") ?: "$gitVersionCode-dev+$gitCommit"
 
 android {
     namespace = "xyz.notarobot.excerpta"
@@ -25,7 +41,7 @@ android {
         minSdk = 26
         targetSdk = 34
         versionCode = gitVersionCode
-        versionName = "1.${gitVersionCode}"
+        versionName = appVersionName
         buildConfigField("String", "GIT_COMMIT", "\"$gitCommit\"")
         // Maj in-app : URLs complètes injectées par la CI (GitLab ou GitHub), qui connaît
         // son propre schéma de "release la plus récente". Vides en build local -> updater désactivé.
