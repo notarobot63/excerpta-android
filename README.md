@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/notarobot63/excerpta-android/main/app/src/main/res/drawable-xxxhdpi/ic_logo.png" alt="Excerpta" width="120">
+  <img src="logo_full.svg" alt="Excerpta" width="380">
 </p>
 
 # Excerpta Android
