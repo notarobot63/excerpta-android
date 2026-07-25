@@ -48,7 +48,27 @@ https://raw.githubusercontent.com/notarobot63/excerpta-android/main/obtainium.ht
 https://github.com/notarobot63/excerpta-android/releases/latest/download/excerpta-android.apk
 ```
 
-Every push to `main` triggers a CI build (GitHub Actions) that publishes a new signed release. The Obtainium badge/URL points to the latest one.
+## Versioning
+
+Releases follow [SemVer](https://semver.org) and are published by git tag:
+
+```bash
+git tag v1.2.0
+git push origin v1.2.0
+```
+
+Only a `v*` tag creates a signed release; the Obtainium badge and the direct APK
+link above always point to the latest one. A push to `main` still runs the CI
+build, but the resulting APK is kept as a run artifact (14 days) instead of being
+published.
+
+`versionName` is the tag without its `v` (`1.2.0`), or `<count>-dev+<commit>` for
+a build made outside a release. `versionCode` stays derived from the commit
+count: it must increase monotonically, otherwise Android refuses to update
+existing installations.
+
+The server app follows its own release cycle: the contract between the two is
+carried by the `/api/v1/` prefix, not by a shared version number.
 
 ## Configuration
 
