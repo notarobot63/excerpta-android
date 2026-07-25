@@ -53,9 +53,14 @@ android {
             } else {
                 rootProject.file("excerpta-debug.jks") // dev local uniquement
             }
-            storePassword = System.getenv("KEYSTORE_PASS") ?: "excerpta_debug"
-            keyAlias = System.getenv("KEY_ALIAS") ?: "excerpta"
-            keyPassword = System.getenv("KEY_PASS") ?: "excerpta_debug"
+            // `?:` ne rattrape que null : un secret CI declare mais vide (cas
+            // d'un secret GitHub non renseigne, qui vaut "") passait au travers
+            // et produisait un mot de passe vide au lieu du repli local.
+            fun env(name: String, fallback: String) =
+                System.getenv(name)?.takeIf { it.isNotBlank() } ?: fallback
+            storePassword = env("KEYSTORE_PASS", "excerpta_debug")
+            keyAlias = env("KEY_ALIAS", "excerpta")
+            keyPassword = env("KEY_PASS", "excerpta_debug")
         }
     }
 
