@@ -19,7 +19,24 @@ object PendingQueue {
         val isPublic: Boolean,
     )
 
-    private fun file(ctx: Context) = File(ctx.cacheDir, FILENAME)
+    /**
+     * `filesDir` et non `cacheDir` : Android vide le cache sans prevenir sous
+     * pression de stockage, ce qui faisait disparaitre en silence des liens
+     * partages hors-ligne et jamais synchronises.
+     */
+    private fun file(ctx: Context) = File(ctx.filesDir, FILENAME)
+
+    /** Reprend une file laissee dans l'ancien emplacement (cacheDir) par une version anterieure. */
+    private fun migrateFromCacheIfNeeded(ctx: Context) {
+        val legacy = File(ctx.cacheDir, FILENAME)
+        if (!legacy.exists()) return
+        val target = file(ctx)
+        try {
+            if (!target.exists()) legacy.copyTo(target, overwrite = false)
+            legacy.delete()
+        } catch (_: Exception) {
+        }
+    }
 
     fun isEmpty(ctx: Context): Boolean = load(ctx).isEmpty()
 
@@ -33,6 +50,7 @@ object PendingQueue {
     }
 
     fun load(ctx: Context): List<PendingLink> {
+        migrateFromCacheIfNeeded(ctx)
         val f = file(ctx)
         if (!f.exists()) return emptyList()
         return try {

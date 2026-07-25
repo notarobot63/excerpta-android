@@ -21,6 +21,23 @@ class ShareActivity : AppCompatActivity() {
         uri.scheme in listOf("http", "https") && !uri.host.isNullOrBlank()
     } catch (_: Exception) { false }
 
+    /**
+     * Extrait l'URL d'un texte partage.
+     *
+     * La plupart des applis (YouTube, X, navigateurs mobiles) n'envoient pas
+     * une URL nue dans EXTRA_TEXT mais « Un titre quelconque https://… ».
+     * Exiger que la chaine entiere soit une URL laissait le champ vide dans
+     * ces cas, le plus frequent en pratique.
+     */
+    private fun extractUrl(raw: String): String {
+        if (isValidUrl(raw)) return raw
+        return Regex("""https?://\S+""")
+            .findAll(raw)
+            .map { it.value.trimEnd('.', ',', ')', ']', '»', '"', '\'') }
+            .firstOrNull { isValidUrl(it) }
+            ?: ""
+    }
+
     override fun onStart() {
         super.onStart()
         val h = (resources.displayMetrics.heightPixels * 0.85).toInt()
@@ -42,7 +59,10 @@ class ShareActivity : AppCompatActivity() {
         setContentView(R.layout.activity_share)
 
         val raw = intent.getStringExtra(Intent.EXTRA_TEXT)?.trim() ?: ""
-        val sharedUrl = if (isValidUrl(raw)) raw else ""
+        val sharedUrl = extractUrl(raw)
+        // On ne dérive pas de titre du texte restant : il arrive tronqué ou
+        // ponctué de travers, et un champ non vide empêcherait fetchMeta de
+        // renseigner le vrai titre côté serveur.
         val sharedTitle = intent.getStringExtra(Intent.EXTRA_SUBJECT)?.trim() ?: ""
 
         val etUrl = findViewById<TextInputEditText>(R.id.etUrl)
