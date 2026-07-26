@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
+import android.text.format.DateUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -65,7 +66,10 @@ class LinkAdapter : ListAdapter<ApiClient.LinkItem, LinkAdapter.VH>(DIFF) {
         // Badge lien cassé
         if (item.isBroken) {
             holder.broken.visibility = View.VISIBLE
-            holder.broken.text = item.checkStatus?.let { "⚠ Lien cassé ($it)" } ?: "⚠ Lien cassé"
+            val ctx = holder.itemView.context
+            holder.broken.text = item.checkStatus?.let {
+                ctx.getString(R.string.broken_link_with_status, it)
+            } ?: ctx.getString(R.string.broken_link)
         } else {
             holder.broken.visibility = View.GONE
         }
@@ -119,16 +123,13 @@ class LinkAdapter : ListAdapter<ApiClient.LinkItem, LinkAdapter.VH>(DIFF) {
             }
             val date = fmt.parse(isoDate) ?: return ""
             val diff = System.currentTimeMillis() - date.time
-            val min = diff / 60_000
-            val h = diff / 3_600_000
-            val d = diff / 86_400_000
-            when {
-                min < 2 -> "à l'instant"
-                min < 60 -> "il y a $min min"
-                h < 24 -> "il y a ${h}h"
-                d == 1L -> "hier"
-                d < 7 -> "il y a $d jours"
-                else -> SimpleDateFormat("d MMM yyyy", Locale.FRENCH).format(date)
+            if (diff < 7 * DateUtils.DAY_IN_MILLIS) {
+                // Déjà localisé par le système : « 3 days ago », « il y a 3 jours ».
+                DateUtils.getRelativeTimeSpanString(
+                    date.time, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS
+                ).toString()
+            } else {
+                SimpleDateFormat("d MMM yyyy", Locale.getDefault()).format(date)
             }
         } catch (_: Exception) { "" }
     }

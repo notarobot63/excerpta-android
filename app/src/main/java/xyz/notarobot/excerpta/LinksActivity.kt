@@ -170,7 +170,7 @@ class LinksActivity : AppCompatActivity() {
         buildDrawer()
         checkForUpdate(recyclerView)
         if (!Prefs.isEncrypted(this)) {
-            Snackbar.make(recyclerView, "⚠️ Stockage non chiffré (KeyStore indisponible)", Snackbar.LENGTH_LONG).show()
+            Snackbar.make(recyclerView, getString(R.string.storage_unencrypted), Snackbar.LENGTH_LONG).show()
         }
     }
 
@@ -265,7 +265,7 @@ class LinksActivity : AppCompatActivity() {
 
         addDivider()
 
-        addNavItem(label = "⚙ Paramètres") {
+        addNavItem(label = getString(R.string.nav_settings)) {
             drawerLayout.closeDrawer(GravityCompat.START)
             startActivity(Intent(this, MainActivity::class.java))
         }
@@ -628,7 +628,7 @@ class LinksActivity : AppCompatActivity() {
         actions += getString(R.string.menu_copy_url) to {
             val clip = ClipData.newPlainText("url", item.url)
             (getSystemService(CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(clip)
-            Snackbar.make(recyclerView, "URL copiée", Snackbar.LENGTH_SHORT).show()
+            Snackbar.make(recyclerView, getString(R.string.url_copied), Snackbar.LENGTH_SHORT).show()
         }
         actions += visibilityLabel to { togglePublic(item) }
         actions += getString(R.string.menu_delete) to { confirmDelete(item) }
@@ -683,7 +683,7 @@ class LinksActivity : AppCompatActivity() {
                         val updated = adapter.currentList.filter { it.id != item.id }
                         adapter.submitList(updated)
                         emptyView.visibility = if (updated.isEmpty()) View.VISIBLE else View.GONE
-                        Snackbar.make(recyclerView, "Lien supprimé", Snackbar.LENGTH_SHORT).show()
+                        Snackbar.make(recyclerView, getString(R.string.link_deleted), Snackbar.LENGTH_SHORT).show()
                     } else {
                         Snackbar.make(recyclerView, result.message, Snackbar.LENGTH_LONG).show()
                     }
@@ -699,15 +699,15 @@ class LinksActivity : AppCompatActivity() {
             val info = withContext(Dispatchers.IO) { UpdateChecker.check() }
             when {
                 info != null && info.hasUpdate -> {
-                    Snackbar.make(anchor, "Mise à jour disponible (${info.remoteCommit})", Snackbar.LENGTH_INDEFINITE)
+                    Snackbar.make(anchor, getString(R.string.update_available, info.remoteCommit), Snackbar.LENGTH_INDEFINITE)
                         .setAction("Installer") { UpdateChecker.openDownload(this@LinksActivity) }
                         .show()
                 }
                 verbose && info != null -> {
-                    Snackbar.make(anchor, "À jour (v${BuildConfig.VERSION_NAME})", Snackbar.LENGTH_SHORT).show()
+                    Snackbar.make(anchor, getString(R.string.up_to_date, BuildConfig.VERSION_NAME), Snackbar.LENGTH_SHORT).show()
                 }
                 verbose -> {
-                    Snackbar.make(anchor, "Vérification impossible (hors ligne ?)", Snackbar.LENGTH_SHORT).show()
+                    Snackbar.make(anchor, getString(R.string.update_check_failed), Snackbar.LENGTH_SHORT).show()
                 }
             }
         }
