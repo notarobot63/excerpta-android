@@ -659,7 +659,7 @@ class LinksActivity : AppCompatActivity() {
                 item.id,
                 newPublic,
             )
-            Snackbar.make(recyclerView, result.message, Snackbar.LENGTH_SHORT).show()
+            Snackbar.make(recyclerView, result.text(this@LinksActivity), Snackbar.LENGTH_SHORT).show()
             if (result.success) {
                 val updated = adapter.currentList.map { if (it.id == item.id) it.copy(isPublic = newPublic) else it }
                 adapter.submitList(updated)
@@ -685,7 +685,7 @@ class LinksActivity : AppCompatActivity() {
                         emptyView.visibility = if (updated.isEmpty()) View.VISIBLE else View.GONE
                         Snackbar.make(recyclerView, getString(R.string.link_deleted), Snackbar.LENGTH_SHORT).show()
                     } else {
-                        Snackbar.make(recyclerView, result.message, Snackbar.LENGTH_LONG).show()
+                        Snackbar.make(recyclerView, result.text(this@LinksActivity), Snackbar.LENGTH_LONG).show()
                     }
                 }
             }

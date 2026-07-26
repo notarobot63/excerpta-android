@@ -54,4 +54,15 @@
     <string name="update_available">Mise à jour disponible (%1$s)</string>
     <string name="up_to_date">À jour (v%1$s)</string>
     <string name="update_check_failed">Vérification impossible (hors ligne ?)</string>
+    <string name="connected_as">Connecté en tant que %1$s</string>
+    <string name="ping_failed">Erreur %1$s - vérifiez l\'URL et la clé API</string>
+    <string name="server_unreachable">Impossible de joindre le serveur : %1$s</string>
+    <string name="link_made_public">Lien rendu public</string>
+    <string name="link_made_private">Lien rendu privé</string>
+    <string name="link_not_found">Lien introuvable</string>
+    <string name="link_saved">Lien sauvegardé</string>
+    <string name="invalid_api_key">Clé API invalide</string>
+    <string name="invalid_url_rejected">URL invalide ou rejetée</string>
+    <string name="server_error">Erreur serveur (%1$s)</string>
+    <string name="network_error">Erreur réseau : %1$s</string>
 </resources>

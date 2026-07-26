@@ -107,7 +107,7 @@ class MainActivity : AppCompatActivity() {
             btnTest.isEnabled = false
             lifecycleScope.launch {
                 val result = ApiClient.ping(server, key)
-                tvStatus.text = result.message
+                tvStatus.text = result.text(this@MainActivity)
                 btnTest.isEnabled = true
             }
         }

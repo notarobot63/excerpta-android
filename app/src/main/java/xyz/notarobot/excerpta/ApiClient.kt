@@ -1,5 +1,7 @@
 package xyz.notarobot.excerpta
 
+import android.content.Context
+import androidx.annotation.StringRes
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
@@ -9,7 +11,18 @@ import java.net.URL
 import java.net.URLEncoder
 
 object ApiClient {
-    data class Result(val success: Boolean, val message: String, val isNetworkError: Boolean = false)
+    /**
+     * Résultat d'un appel réseau. Le message est désigné par une ressource et
+     * non par du texte : la couche réseau n'a pas de Context et n'a pas à
+     * connaître la langue de l'interface. C'est l'appelant qui résout, via
+     * [text].
+     */
+    data class Result(
+        val success: Boolean,
+        @StringRes val messageRes: Int,
+        val messageArg: String? = null,
+        val isNetworkError: Boolean = false,
+    )
 
     data class TagInfo(val name: String, val count: Int)
 
@@ -84,13 +97,13 @@ object ApiClient {
             val code = conn.responseCode
             if (code == 200) {
                 val name = JSONObject(conn.inputStream.use { it.bufferedReader().readText() }).optString("name", "")
-                Result(true, "Connecté en tant que $name")
+                Result(true, R.string.connected_as, name)
             } else {
                 conn.errorStream?.use { it.readBytes() }  // drain pour libérer la socket keep-alive
-                Result(false, "Erreur $code - vérifiez l'URL et la clé API")
+                Result(false, R.string.ping_failed, code.toString())
             }
         } catch (e: Exception) {
-            Result(false, "Impossible de joindre le serveur : ${e.message}")
+            Result(false, R.string.server_unreachable, e.message ?: "")
         } finally {
             conn.disconnect()
         }
@@ -239,12 +252,12 @@ object ApiClient {
                 val body = JSONObject().put("is_public", isPublic).toString()
                 conn.outputStream.use { it.write(body.toByteArray()) }
                 when (conn.responseCode) {
-                    200 -> Result(true, if (isPublic) "Lien rendu public" else "Lien rendu privé")
-                    404 -> Result(false, "Lien introuvable")
-                    else -> Result(false, "Erreur serveur (${conn.responseCode})")
+                    200 -> Result(true, if (isPublic) R.string.link_made_public else R.string.link_made_private)
+                    404 -> Result(false, R.string.link_not_found)
+                    else -> Result(false, R.string.server_error, conn.responseCode.toString())
                 }
             } catch (e: Exception) {
-                Result(false, "Erreur réseau : ${e.message}", isNetworkError = true)
+                Result(false, R.string.network_error, e.message ?: "", isNetworkError = true)
             } finally {
                 conn.disconnect()
             }
@@ -255,13 +268,13 @@ object ApiClient {
             val conn = openRequest("$serverUrl/api/v1/links/$linkId", apiKey, "DELETE")
             try {
                 when (conn.responseCode) {
-                    204 -> Result(true, "Lien supprimé")
-                    404 -> Result(false, "Lien introuvable")
-                    401 -> Result(false, "Clé API invalide")
-                    else -> Result(false, "Erreur serveur (${conn.responseCode})")
+                    204 -> Result(true, R.string.link_deleted)
+                    404 -> Result(false, R.string.link_not_found)
+                    401 -> Result(false, R.string.invalid_api_key)
+                    else -> Result(false, R.string.server_error, conn.responseCode.toString())
                 }
             } catch (e: Exception) {
-                Result(false, "Erreur réseau : ${e.message}", isNetworkError = true)
+                Result(false, R.string.network_error, e.message ?: "", isNetworkError = true)
             } finally {
                 conn.disconnect()
             }
@@ -291,15 +304,21 @@ object ApiClient {
             }.toString()
             conn.outputStream.use { it.write(body.toByteArray()) }
             when (val code = conn.responseCode) {
-                201 -> Result(true, "Lien sauvegardé")
-                401 -> Result(false, "Clé API invalide")
-                400 -> Result(false, "URL invalide ou rejetée")
-                else -> Result(false, "Erreur serveur ($code)")
+                201 -> Result(true, R.string.link_saved)
+                401 -> Result(false, R.string.invalid_api_key)
+                400 -> Result(false, R.string.invalid_url_rejected)
+                else -> Result(false, R.string.server_error, code.toString())
             }
         } catch (e: Exception) {
-            Result(false, "Erreur réseau : ${e.message}")
+            Result(false, R.string.network_error, e.message ?: "")
         } finally {
             conn.disconnect()
         }
     }
 }
+
+/**
+ * Texte affichable d'un [ApiClient.Result], résolu dans la langue courante.
+ */
+fun ApiClient.Result.text(ctx: Context): String =
+    if (messageArg != null) ctx.getString(messageRes, messageArg) else ctx.getString(messageRes)

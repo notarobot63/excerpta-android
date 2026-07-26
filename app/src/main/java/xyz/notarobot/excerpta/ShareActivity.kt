@@ -165,7 +165,7 @@ class ShareActivity : AppCompatActivity() {
                 progress.visibility = View.GONE
                 when {
                     result.success -> {
-                        Toast.makeText(this@ShareActivity, result.message, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@ShareActivity, result.text(this@ShareActivity), Toast.LENGTH_SHORT).show()
                         finish()
                     }
                     result.isNetworkError -> {
@@ -192,7 +192,7 @@ class ShareActivity : AppCompatActivity() {
                         }
                     }
                     else -> {
-                        Toast.makeText(this@ShareActivity, result.message, Toast.LENGTH_LONG).show()
+                        Toast.makeText(this@ShareActivity, result.text(this@ShareActivity), Toast.LENGTH_LONG).show()
                         btnSave.isEnabled = true
                         btnCancel.isEnabled = true
                     }

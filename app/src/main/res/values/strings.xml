@@ -59,4 +59,15 @@
     <string name="update_available">Update available (%1$s)</string>
     <string name="up_to_date">Up to date (v%1$s)</string>
     <string name="update_check_failed">Check failed (offline?)</string>
+    <string name="connected_as">Connected as %1$s</string>
+    <string name="ping_failed">Error %1$s, check the URL and the API key</string>
+    <string name="server_unreachable">Cannot reach the server: %1$s</string>
+    <string name="link_made_public">Link made public</string>
+    <string name="link_made_private">Link made private</string>
+    <string name="link_not_found">Link not found</string>
+    <string name="link_saved">Link saved</string>
+    <string name="invalid_api_key">Invalid API key</string>
+    <string name="invalid_url_rejected">Invalid or rejected URL</string>
+    <string name="server_error">Server error (%1$s)</string>
+    <string name="network_error">Network error: %1$s</string>
 </resources>
