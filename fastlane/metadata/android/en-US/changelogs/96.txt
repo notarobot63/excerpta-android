@@ -1,0 +1,2 @@
+* New "Unread" filter in the drawer, and a blue dot on unread links in the list.
+* "Mark as read/unread" action in the long-press menu.

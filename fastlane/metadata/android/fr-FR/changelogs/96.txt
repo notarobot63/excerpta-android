@@ -1,0 +1,2 @@
+* Nouveau filtre « Non lus » dans le tiroir de navigation, et une pastille bleue sur les liens non lus dans la liste.
+* Action « Marquer lu/non lu » dans le menu d'appui long.
