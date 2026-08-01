@@ -1,0 +1,1 @@
+* Correction de l'icône de l'app et du logo interne : ils utilisaient une variante déformée et sans les barres du mark, au lieu du logo officiel.

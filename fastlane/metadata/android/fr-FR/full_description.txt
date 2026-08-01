@@ -1,0 +1,21 @@
+Application Android compagnon d'Excerpta, un gestionnaire de liens auto-hébergé et open source (AGPL-3.0-only, https://github.com/notarobot63/excerpta).
+
+Fonctionnalités :
+
+* Liste de liens paginée avec chargement à la demande (swipe-to-refresh)
+* Drawer de navigation : groupes hiérarchiques puis tags
+* Ajout rapide via le partage Android depuis n'importe quelle app, ou le bouton dans l'app
+* Actions contextuelles (appui long) : ouvrir, copier l'URL, rendre public/privé, supprimer
+* Cache hors-ligne : les liens déjà chargés restent accessibles sans réseau
+* Configuration en un scan de QR code : connecte l'app à ton propre serveur sans saisir d'URL ni de clé API
+* Clé API chiffrée localement (EncryptedSharedPreferences, AES-256)
+* Icône adaptative et plusieurs thèmes de couleur : clair, sombre, Dracula, Nord, Catppuccin, Gruvbox, Solarized, Rosé Pine
+
+Prérequis :
+
+Cette app est uniquement un client. Elle nécessite un serveur Excerpta que tu héberges toi-même (ou quelqu'un en qui tu as confiance) ; il n'y a aucun serveur intégré ou par défaut, et aucune donnée n'est envoyée à un tiers. L'appairage se fait une seule fois, en scannant un QR code affiché dans les paramètres web du serveur.
+
+Permissions :
+
+* Internet : pour dialoguer avec le serveur Excerpta que tu as configuré
+* Caméra : utilisée uniquement pour scanner le QR code d'appairage ; aucune photo ni vidéo n'est prise ou stockée

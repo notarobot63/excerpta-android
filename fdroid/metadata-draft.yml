@@ -1,0 +1,40 @@
+# Brouillon de recette F-Droid pour Excerpta Android.
+#
+# Ce fichier n'est PAS lu par les outils F-Droid depuis ce dépôt : c'est un brouillon
+# à copier dans metadata/xyz.notarobot.excerpta.yml lors d'une future Merge Request
+# vers https://gitlab.com/fdroid/fdroiddata (ou à joindre à une "Request For Packaging",
+# voir fdroid/RFP-issue-draft.md).
+#
+# IMPORTANT : ne pas soumettre en pointant sur le tag v1.1.1. Ce tag a été coupé
+# AVANT le fix du 2026-08-01 qui rend le build possible sans secret ni keystore
+# local (voir commit "fix: build release sans secret ni keystore local"). F-Droid
+# construit sans aucun accès à nos secrets CI : sur v1.1.1 le build échouerait au
+# moment de la signature. Couper un nouveau tag (ex. v1.1.2) après ce fix, puis
+# mettre à jour `commit:`, `versionName:` et `versionCode:` ci-dessous en conséquence.
+
+Categories:
+  - Reading
+  - Internet
+License: AGPL-3.0-only
+AuthorName: Thomas
+SourceCode: https://github.com/notarobot63/excerpta-android
+IssueTracker: https://github.com/notarobot63/excerpta-android/issues
+Changelog: https://github.com/notarobot63/excerpta-android/releases
+
+AutoName: Excerpta
+
+RepoType: git
+Repo: https://github.com/notarobot63/excerpta-android.git
+
+Builds:
+  - versionName: 1.1.1   # A REMPLACER par le tag post-fix (ex. 1.1.2)
+    versionCode: 91      # A REMPLACER : git rev-list --count <tag> sur ce nouveau tag
+    commit: v1.1.1        # A REMPLACER par le nouveau tag
+    subdir: app
+    gradle:
+      - yes
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags
+CurrentVersion: 1.1.1     # A REMPLACER
+CurrentVersionCode: 91    # A REMPLACER

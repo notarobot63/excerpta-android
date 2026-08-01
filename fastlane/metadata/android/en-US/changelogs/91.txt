@@ -1,0 +1,1 @@
+* Fix the app icon and in-app logo: they used a distorted, bar-less variant of the mark instead of the official one.

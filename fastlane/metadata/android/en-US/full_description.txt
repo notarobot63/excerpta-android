@@ -1,0 +1,21 @@
+Android companion app for Excerpta, a self-hosted, open-source link manager (AGPL-3.0-only, https://github.com/notarobot63/excerpta).
+
+Features:
+
+* Paginated link list with on-demand loading (swipe-to-refresh)
+* Navigation drawer: hierarchical groups, then tags
+* Quick add via the Android share sheet from any app, or the in-app button
+* Contextual actions (long press): open, copy URL, make public/private, delete
+* Offline cache: previously loaded links stay accessible without network
+* One-scan QR code setup: point the app at your own server without typing a URL or API key
+* API key stored encrypted on-device (EncryptedSharedPreferences, AES-256)
+* Adaptive icon and several color themes: light, dark, Dracula, Nord, Catppuccin, Gruvbox, Solarized, Rosé Pine
+
+Requirements:
+
+This app is a client only. It needs a running Excerpta server that you (or someone you trust) host yourself; there is no bundled or default server, and no data is sent to any third party. Pairing is done once, by scanning a QR code shown on the server's web settings page.
+
+Permissions:
+
+* Internet: to talk to the Excerpta server you configured
+* Camera: only used to scan the pairing QR code; no photo or video is taken or stored
