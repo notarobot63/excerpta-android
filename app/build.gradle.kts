@@ -62,12 +62,15 @@ android {
     signingConfigs {
         create("fixed") {
             val b64 = System.getenv("KEYSTORE_B64") ?: ""
+            val localDebugKeystore = rootProject.file("excerpta-debug.jks")
             storeFile = if (b64.isNotBlank()) {
                 val f = rootProject.file("excerpta-ci.jks")
                 f.writeBytes(Base64.getDecoder().decode(b64))
                 f
+            } else if (localDebugKeystore.exists()) {
+                localDebugKeystore // dev local uniquement
             } else {
-                rootProject.file("excerpta-debug.jks") // dev local uniquement
+                null
             }
             // `?:` ne rattrape que null : un secret CI declare mais vide (cas
             // d'un secret GitHub non renseigne, qui vaut "") passait au travers
@@ -80,12 +83,19 @@ android {
         }
     }
 
+    // Sans secret CI ni keystore de dev local (ex: clone frais, ou un serveur de
+    // build tiers comme F-Droid qui ne connait aucun de nos secrets), storeFile
+    // reste `null` : on n'assigne alors aucune signingConfig, pour laisser debug
+    // retomber sur le keystore debug auto-genere d'Android, et release rester
+    // simplement non signee (F-Droid signe lui-meme les APK qu'il construit).
+    val hasFixedKeystore = signingConfigs.getByName("fixed").storeFile != null
+
     buildTypes {
         debug {
-            signingConfig = signingConfigs.getByName("fixed")
+            if (hasFixedKeystore) signingConfig = signingConfigs.getByName("fixed")
         }
         release {
-            signingConfig = signingConfigs.getByName("fixed")
+            if (hasFixedKeystore) signingConfig = signingConfigs.getByName("fixed")
             isMinifyEnabled = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
