@@ -52,6 +52,7 @@ object ApiClient {
         val isBroken: Boolean = false,
         val checkStatus: Int? = null,
         val hasReader: Boolean = false,
+        val isRead: Boolean = false,
     )
 
     data class ReaderContent(
@@ -175,12 +176,14 @@ object ApiClient {
         q: String = "",
         tag: String = "",
         groupId: Int? = null,
+        unreadOnly: Boolean = false,
     ): LinksPage? = withContext(Dispatchers.IO) {
         val params = buildString {
             append("page=$page&per_page=30")
             if (q.isNotBlank()) append("&q=${java.net.URLEncoder.encode(q, "UTF-8")}")
             if (tag.isNotBlank()) append("&tag=${java.net.URLEncoder.encode(tag, "UTF-8")}")
             if (groupId != null) append("&group_id=$groupId")
+            if (unreadOnly) append("&unread=1")
         }
         val conn = openGet("$serverUrl/api/v1/links?$params", apiKey)
         try {
@@ -206,6 +209,7 @@ object ApiClient {
                     isBroken = o.optBoolean("is_broken", false),
                     checkStatus = if (o.isNull("check_status")) null else o.optInt("check_status"),
                     hasReader = o.optBoolean("has_reader", false),
+                    isRead = o.optBoolean("is_read", false),
                 )
             }
             LinksPage(
@@ -253,6 +257,24 @@ object ApiClient {
                 conn.outputStream.use { it.write(body.toByteArray()) }
                 when (conn.responseCode) {
                     200 -> Result(true, if (isPublic) R.string.link_made_public else R.string.link_made_private)
+                    404 -> Result(false, R.string.link_not_found)
+                    else -> Result(false, R.string.server_error, conn.responseCode.toString())
+                }
+            } catch (e: Exception) {
+                Result(false, R.string.network_error, e.message ?: "", isNetworkError = true)
+            } finally {
+                conn.disconnect()
+            }
+        }
+
+    suspend fun patchLinkRead(serverUrl: String, apiKey: String, linkId: Int, isRead: Boolean): Result =
+        withContext(Dispatchers.IO) {
+            val conn = openRequest("$serverUrl/api/v1/links/$linkId", apiKey, "PATCH", withBody = true)
+            try {
+                val body = JSONObject().put("is_read", isRead).toString()
+                conn.outputStream.use { it.write(body.toByteArray()) }
+                when (conn.responseCode) {
+                    200 -> Result(true, if (isRead) R.string.link_marked_read else R.string.link_marked_unread)
                     404 -> Result(false, R.string.link_not_found)
                     else -> Result(false, R.string.server_error, conn.responseCode.toString())
                 }
