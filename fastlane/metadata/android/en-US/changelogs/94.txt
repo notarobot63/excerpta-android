@@ -1,0 +1,2 @@
+* Fix the release build so it also works without CI secrets (needed for third-party build servers such as F-Droid).
+* Bigger, centered Obtainium badge in the README.

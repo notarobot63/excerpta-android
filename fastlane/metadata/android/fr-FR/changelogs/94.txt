@@ -1,0 +1,2 @@
+* Correction du build release pour qu'il fonctionne aussi sans les secrets CI (nécessaire pour des serveurs de build tiers comme F-Droid).
+* Badge Obtainium agrandi et centré dans le README.
