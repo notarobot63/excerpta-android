@@ -14,7 +14,9 @@ Android companion app for [Excerpta](https://github.com/notarobot63/excerpta), t
 
 > collect • annotate • remember
 
-<a href="https://apps.obtainium.imranr.dev/redirect.html?r=obtainium://add/https://raw.githubusercontent.com/notarobot63/excerpta-android/main/obtainium.html"><img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" alt="Get it on Obtainium" height="42"></a>
+<p align="center">
+  <a href="https://apps.obtainium.imranr.dev/redirect.html?r=obtainium://add/https://raw.githubusercontent.com/notarobot63/excerpta-android/main/obtainium.html"><img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" alt="Get it on Obtainium" height="80"></a>
+</p>
 
 ## Screenshots
 
