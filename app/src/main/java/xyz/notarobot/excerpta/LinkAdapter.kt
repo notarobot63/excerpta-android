@@ -35,7 +35,6 @@ class LinkAdapter : ListAdapter<ApiClient.LinkItem, LinkAdapter.VH>(DIFF) {
         val date: TextView = view.findViewById(R.id.tvDate)
         val broken: TextView = view.findViewById(R.id.tvBroken)
         val thumbnail: ImageView = view.findViewById(R.id.imgThumbnail)
-        val unreadDot: View = view.findViewById(R.id.vUnreadDot)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
@@ -63,8 +62,6 @@ class LinkAdapter : ListAdapter<ApiClient.LinkItem, LinkAdapter.VH>(DIFF) {
         }
 
         holder.date.text = formatDate(item.createdAt)
-
-        holder.unreadDot.visibility = if (item.isRead) View.GONE else View.VISIBLE
 
         // Badge lien cassé
         if (item.isBroken) {

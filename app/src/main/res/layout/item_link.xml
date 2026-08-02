@@ -64,15 +64,6 @@
                     android:maxLines="1"
                     android:ellipsize="end" />
 
-                <View
-                    android:id="@+id/vUnreadDot"
-                    android:layout_width="6dp"
-                    android:layout_height="6dp"
-                    android:layout_marginStart="6dp"
-                    android:background="@drawable/dot_indicator"
-                    android:backgroundTint="?attr/colorPrimary"
-                    android:visibility="gone" />
-
             </LinearLayout>
 
             <!-- Titre -->

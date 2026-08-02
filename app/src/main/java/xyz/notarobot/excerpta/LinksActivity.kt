@@ -50,7 +50,6 @@ class LinksActivity : AppCompatActivity() {
     private var currentTag: String? = null
     private var currentGroupId: Int? = null
     private var currentGroupName: String? = null
-    private var currentUnreadOnly: Boolean = false
 
     private lateinit var progressView: View
     private lateinit var emptyView: View
@@ -259,16 +258,9 @@ class LinksActivity : AppCompatActivity() {
 
         addNavItem(
             label = "Tous les liens",
-            isSelected = currentTag == null && currentGroupId == null && !currentUnreadOnly,
+            isSelected = currentTag == null && currentGroupId == null,
         ) {
             clearFilter()
-        }
-
-        addNavItem(
-            label = "Non lus",
-            isSelected = currentUnreadOnly,
-        ) {
-            setUnreadFilter()
         }
 
         addDivider()
@@ -472,7 +464,6 @@ class LinksActivity : AppCompatActivity() {
         currentTag = null
         currentGroupId = null
         currentGroupName = null
-        currentUnreadOnly = false
         updateFilterChip()
         resetAndLoad()
     }
@@ -481,16 +472,6 @@ class LinksActivity : AppCompatActivity() {
         currentTag = tag
         currentGroupId = groupId
         currentGroupName = groupName
-        currentUnreadOnly = false
-        updateFilterChip()
-        resetAndLoad()
-    }
-
-    private fun setUnreadFilter() {
-        currentTag = null
-        currentGroupId = null
-        currentGroupName = null
-        currentUnreadOnly = true
         updateFilterChip()
         resetAndLoad()
     }
@@ -500,7 +481,6 @@ class LinksActivity : AppCompatActivity() {
         val label = when {
             currentTag != null -> "#$currentTag"
             currentGroupName != null -> "📁 $currentGroupName"
-            currentUnreadOnly -> "Non lus"
             else -> null
         }
         if (label != null) {
@@ -544,7 +524,6 @@ class LinksActivity : AppCompatActivity() {
                 q = currentQuery,
                 tag = currentTag ?: "",
                 groupId = currentGroupId,
-                unreadOnly = currentUnreadOnly,
             )
             progressView.visibility = View.GONE
             swipeRefresh.isRefreshing = false
@@ -626,7 +605,6 @@ class LinksActivity : AppCompatActivity() {
 
     private fun showLinkMenu(item: ApiClient.LinkItem) {
         val visibilityLabel = if (item.isPublic) getString(R.string.menu_make_private) else getString(R.string.menu_make_public)
-        val readLabel = if (item.isRead) getString(R.string.menu_mark_unread) else getString(R.string.menu_mark_read)
 
         // Liste d'actions construite dynamiquement : libellé + handler.
         val actions = mutableListOf<Pair<String, () -> Unit>>()
@@ -653,7 +631,6 @@ class LinksActivity : AppCompatActivity() {
             Snackbar.make(recyclerView, getString(R.string.url_copied), Snackbar.LENGTH_SHORT).show()
         }
         actions += visibilityLabel to { togglePublic(item) }
-        actions += readLabel to { toggleRead(item) }
         actions += getString(R.string.menu_delete) to { confirmDelete(item) }
 
         MaterialAlertDialogBuilder(this)
@@ -686,30 +663,6 @@ class LinksActivity : AppCompatActivity() {
             if (result.success) {
                 val updated = adapter.currentList.map { if (it.id == item.id) it.copy(isPublic = newPublic) else it }
                 adapter.submitList(updated)
-            }
-        }
-    }
-
-    private fun toggleRead(item: ApiClient.LinkItem) {
-        val newRead = !item.isRead
-        lifecycleScope.launch {
-            val result = ApiClient.patchLinkRead(
-                Prefs.serverUrl(this@LinksActivity),
-                Prefs.apiKey(this@LinksActivity),
-                item.id,
-                newRead,
-            )
-            Snackbar.make(recyclerView, result.text(this@LinksActivity), Snackbar.LENGTH_SHORT).show()
-            if (result.success) {
-                // En vue "Non lus", un lien marqué lu doit disparaître de la liste,
-                // pas juste changer d'apparence.
-                val updated = if (currentUnreadOnly && newRead) {
-                    adapter.currentList.filter { it.id != item.id }
-                } else {
-                    adapter.currentList.map { if (it.id == item.id) it.copy(isRead = newRead) else it }
-                }
-                adapter.submitList(updated)
-                updateEmpty()
             }
         }
     }

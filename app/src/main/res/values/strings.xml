@@ -43,8 +43,6 @@
     <string name="menu_copy_url">Copy URL</string>
     <string name="menu_make_public">Make public</string>
     <string name="menu_make_private">Make private</string>
-    <string name="menu_mark_read">Mark as read</string>
-    <string name="menu_mark_unread">Mark as unread</string>
     <string name="menu_delete">Delete</string>
     <string name="offline_notice">Offline, showing cached data</string>
     <string name="load_error">Loading error</string>
@@ -66,8 +64,6 @@
     <string name="server_unreachable">Cannot reach the server: %1$s</string>
     <string name="link_made_public">Link made public</string>
     <string name="link_made_private">Link made private</string>
-    <string name="link_marked_read">Link marked as read</string>
-    <string name="link_marked_unread">Link marked as unread</string>
     <string name="link_not_found">Link not found</string>
     <string name="link_saved">Link saved</string>
     <string name="invalid_api_key">Invalid API key</string>
