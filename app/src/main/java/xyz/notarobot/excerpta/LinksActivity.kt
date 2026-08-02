@@ -245,8 +245,14 @@ class LinksActivity : AppCompatActivity() {
             val groupsDeferred = async(Dispatchers.IO) {
                 ApiClient.fetchGroups(Prefs.serverUrl(this@LinksActivity), Prefs.apiKey(this@LinksActivity))
             }
+            val meDeferred = async(Dispatchers.IO) {
+                ApiClient.fetchMe(Prefs.serverUrl(this@LinksActivity), Prefs.apiKey(this@LinksActivity))
+            }
             lastTags = tagsDeferred.await()
             lastGroups = groupsDeferred.await()
+            meDeferred.await()?.let {
+                Prefs.saveOrganizationPrefs(this@LinksActivity, it.tagsEnabled, it.foldersEnabled)
+            }
             renderDrawer()
         }
     }
@@ -272,12 +278,12 @@ class LinksActivity : AppCompatActivity() {
 
         addDivider()
 
-        if (lastGroups.isNotEmpty()) {
+        if (Prefs.foldersEnabled(this) && lastGroups.isNotEmpty()) {
             addSection("Groupes")
             renderGroups()
         }
 
-        if (lastTags.isNotEmpty()) {
+        if (Prefs.tagsEnabled(this) && lastTags.isNotEmpty()) {
             addSection("Tags")
             for (tag in lastTags) {
                 addNavItem(

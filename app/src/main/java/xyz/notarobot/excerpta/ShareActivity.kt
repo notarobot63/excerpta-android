@@ -76,6 +76,9 @@ class ShareActivity : AppCompatActivity() {
         etUrl.setText(sharedUrl)
         etTitle.setText(sharedTitle)
 
+        val tagsEnabled = Prefs.tagsEnabled(this)
+        findViewById<View>(R.id.tilTags).visibility = if (tagsEnabled) View.VISIBLE else View.GONE
+
         // Les applis tierces ne renseignent quasiment jamais EXTRA_SUBJECT/description :
         // on va chercher titre + extrait côté serveur, sans écraser une saisie déjà présente.
         if (sharedUrl.isNotBlank()) {
@@ -98,7 +101,7 @@ class ShareActivity : AppCompatActivity() {
             }
         }
 
-        lifecycleScope.launch {
+        if (tagsEnabled) lifecycleScope.launch {
             val fetchedTags = ApiClient.fetchTags(
                 Prefs.serverUrl(this@ShareActivity),
                 Prefs.apiKey(this@ShareActivity),

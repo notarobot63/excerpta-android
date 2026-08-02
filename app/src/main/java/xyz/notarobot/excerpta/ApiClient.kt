@@ -26,6 +26,8 @@ object ApiClient {
 
     data class TagInfo(val name: String, val count: Int)
 
+    data class MeInfo(val tagsEnabled: Boolean, val foldersEnabled: Boolean)
+
     data class MetaInfo(val title: String, val description: String)
 
     data class GroupItem(
@@ -108,6 +110,24 @@ object ApiClient {
             conn.disconnect()
         }
     }
+
+    /** Préférences d'organisation du compte (voir Paramètres → Organization côté web). */
+    suspend fun fetchMe(serverUrl: String, apiKey: String): MeInfo? =
+        withContext(Dispatchers.IO) {
+            val conn = openGet("$serverUrl/api/v1/me", apiKey)
+            try {
+                if (conn.responseCode != 200) return@withContext null
+                val o = JSONObject(conn.inputStream.bufferedReader().readText())
+                MeInfo(
+                    tagsEnabled = o.optBoolean("tags_enabled", true),
+                    foldersEnabled = o.optBoolean("folders_enabled", true),
+                )
+            } catch (_: Exception) {
+                null
+            } finally {
+                conn.disconnect()
+            }
+        }
 
     suspend fun fetchTags(serverUrl: String, apiKey: String): List<TagInfo> =
         withContext(Dispatchers.IO) {

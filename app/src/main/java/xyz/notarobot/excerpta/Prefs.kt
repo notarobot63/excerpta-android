@@ -22,6 +22,8 @@ object Prefs {
     private const val KEY_API_KEY = "api_key"
     private const val KEY_THEME = "theme"
     private const val KEY_COLLAPSED_FOLDERS = "collapsed_folders"
+    private const val KEY_TAGS_ENABLED = "tags_enabled"
+    private const val KEY_FOLDERS_ENABLED = "folders_enabled"
 
     @Volatile private var _prefs: SharedPreferences? = null
     @Volatile private var _encrypted: Boolean = true
@@ -171,6 +173,24 @@ object Prefs {
     fun saveCollapsedFolders(ctx: Context, ids: Set<Int>) {
         getPrefs(ctx).edit()
             .putStringSet(KEY_COLLAPSED_FOLDERS, ids.map { it.toString() }.toSet())
+            .apply()
+    }
+
+    /**
+     * Miroir local de User.tags_enabled/folders_enabled côté serveur (voir
+     * GET /api/v1/me), rafraîchi à chaque ouverture de LinksActivity. Défaut
+     * à true : avant le premier fetch réussi, on ne masque rien à tort.
+     */
+    fun tagsEnabled(ctx: Context): Boolean =
+        getPrefs(ctx).getBoolean(KEY_TAGS_ENABLED, true)
+
+    fun foldersEnabled(ctx: Context): Boolean =
+        getPrefs(ctx).getBoolean(KEY_FOLDERS_ENABLED, true)
+
+    fun saveOrganizationPrefs(ctx: Context, tagsEnabled: Boolean, foldersEnabled: Boolean) {
+        getPrefs(ctx).edit()
+            .putBoolean(KEY_TAGS_ENABLED, tagsEnabled)
+            .putBoolean(KEY_FOLDERS_ENABLED, foldersEnabled)
             .apply()
     }
 }
