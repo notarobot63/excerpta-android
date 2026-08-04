@@ -69,12 +69,25 @@ object ApiClient {
         val totalPages: Int,
     )
 
+    /**
+     * Redirections jamais suivies : HttpURLConnection retransmet les en-tetes
+     * personnalises, dont X-API-Key, vers la cible d'un 3xx, y compris sur un
+     * autre hote. Un serveur mal configure ou detourne livrerait ainsi la cle.
+     * L'URL du serveur est saisie par l'utilisateur et pointe directement sur
+     * son instance : une redirection y est anormale, elle remonte donc comme
+     * une erreur (code 3xx) plutot que d'etre suivie en silence.
+     */
+    private fun HttpURLConnection.applyDefaults(apiKey: String) {
+        setRequestProperty("X-API-Key", apiKey)
+        instanceFollowRedirects = false
+        connectTimeout = 10_000
+        readTimeout = 10_000
+    }
+
     private fun openGet(url: String, apiKey: String): HttpURLConnection =
         (URL(url).openConnection() as HttpURLConnection).apply {
             requestMethod = "GET"
-            setRequestProperty("X-API-Key", apiKey)
-            connectTimeout = 10_000
-            readTimeout = 10_000
+            applyDefaults(apiKey)
         }
 
     private fun openRequest(
@@ -84,13 +97,11 @@ object ApiClient {
         withBody: Boolean = false,
     ): HttpURLConnection = (URL(url).openConnection() as HttpURLConnection).apply {
         requestMethod = method
-        setRequestProperty("X-API-Key", apiKey)
+        applyDefaults(apiKey)
         if (withBody) {
             setRequestProperty("Content-Type", "application/json")
             doOutput = true
         }
-        connectTimeout = 10_000
-        readTimeout = 10_000
     }
 
     suspend fun ping(serverUrl: String, apiKey: String): Result = withContext(Dispatchers.IO) {
