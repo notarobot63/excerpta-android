@@ -16,6 +16,7 @@
     <string name="hint_tags_short">Tags</string>
     <string name="hint_description">Excerpt (optional)</string>
     <string name="hint_note">Note (optional)</string>
+    <string name="share_public_label">Public link</string>
     <string name="btn_save">Save</string>
     <string name="btn_save_link">Save link</string>
     <string name="btn_test">Test connection</string>

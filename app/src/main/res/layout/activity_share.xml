@@ -136,6 +136,14 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- Public/privé -->
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/switchPublic"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/share_public_label"
+                android:layout_marginBottom="16dp" />
+
             <!-- Note -->
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"

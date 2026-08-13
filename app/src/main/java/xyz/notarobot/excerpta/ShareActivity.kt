@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.materialswitch.MaterialSwitch
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.launch
@@ -70,6 +71,7 @@ class ShareActivity : AppCompatActivity() {
         val etDescription = findViewById<TextInputEditText>(R.id.etDescription)
         val etTags = findViewById<MaterialAutoCompleteTextView>(R.id.etTags)
         val etNote = findViewById<TextInputEditText>(R.id.etNote)
+        val switchPublic = findViewById<MaterialSwitch>(R.id.switchPublic)
         val btnSave = findViewById<MaterialButton>(R.id.btnSave)
         val btnCancel = findViewById<MaterialButton>(R.id.btnCancel)
         val progress = findViewById<ProgressBar>(R.id.progress)
@@ -150,6 +152,7 @@ class ShareActivity : AppCompatActivity() {
                 .split(",")
                 .map { it.trim().lowercase() }
                 .filter { it.isNotBlank() }
+            val isPublic = switchPublic.isChecked
 
             btnSave.isEnabled = false
             btnCancel.isEnabled = false
@@ -164,6 +167,7 @@ class ShareActivity : AppCompatActivity() {
                     tags = tags,
                     description = description,
                     note = note,
+                    isPublic = isPublic,
                 )
                 progress.visibility = View.GONE
                 when {
@@ -181,7 +185,7 @@ class ShareActivity : AppCompatActivity() {
                                 description = description,
                                 note = note,
                                 folderId = null,
-                                isPublic = false,
+                                isPublic = isPublic,
                             ),
                         )
                         val msg = if (queued) getString(R.string.queued_offline)
