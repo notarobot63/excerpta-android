@@ -15,7 +15,7 @@ Android companion app for [Excerpta](https://github.com/notarobot63/excerpta), t
 > collect • annotate • remember
 
 <p align="center">
-  <a href="https://apps.obtainium.imranr.dev/redirect.html?r=obtainium://add/https://raw.githubusercontent.com/notarobot63/excerpta-android/main/obtainium.html"><img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" alt="Get it on Obtainium" height="80"></a>
+  <a href="https://apps.obtainium.imranr.dev/redirect.html?r=obtainium://add/https://github.com/notarobot63/excerpta-android"><img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" alt="Get it on Obtainium" height="80"></a>
 </p>
 
 ## Screenshots
@@ -38,10 +38,10 @@ Android companion app for [Excerpta](https://github.com/notarobot63/excerpta), t
 
 ## Download
 
-**Obtainium (recommended)**: tap the badge above, or manually add this URL in Obtainium (automatic updates):
+**Obtainium (recommended)**: tap the badge above, or manually add this repo in Obtainium (native GitHub source, version number auto-detected from release tags):
 
 ```
-https://raw.githubusercontent.com/notarobot63/excerpta-android/main/obtainium.html
+https://github.com/notarobot63/excerpta-android
 ```
 
 **Direct APK** (always the latest version):
