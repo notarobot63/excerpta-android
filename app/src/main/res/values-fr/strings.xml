@@ -9,6 +9,8 @@
     <string name="hint_title">Titre</string>
     <string name="hint_tags">Tags (séparés par des virgules)</string>
     <string name="hint_tags_short">Tags</string>
+    <string name="hint_folder">Dossier</string>
+    <string name="folder_none">Aucun dossier</string>
     <string name="hint_description">Extrait (optionnel)</string>
     <string name="hint_note">Note (optionnelle)</string>
     <string name="share_public_label">Lien public</string>

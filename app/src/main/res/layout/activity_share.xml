@@ -136,6 +136,25 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- Dossier -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilFolder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/hint_folder"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+                app:startIconDrawable="@drawable/ic_folder"
+                android:layout_marginBottom="16dp">
+
+                <AutoCompleteTextView
+                    android:id="@+id/etFolder"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none"
+                    android:maxLines="1" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
             <!-- Public/privé -->
             <com.google.android.material.materialswitch.MaterialSwitch
                 android:id="@+id/switchPublic"

@@ -70,6 +70,7 @@ class ShareActivity : AppCompatActivity() {
         val etTitle = findViewById<TextInputEditText>(R.id.etTitle)
         val etDescription = findViewById<TextInputEditText>(R.id.etDescription)
         val etTags = findViewById<MaterialAutoCompleteTextView>(R.id.etTags)
+        val etFolder = findViewById<android.widget.AutoCompleteTextView>(R.id.etFolder)
         val etNote = findViewById<TextInputEditText>(R.id.etNote)
         val switchPublic = findViewById<MaterialSwitch>(R.id.switchPublic)
         val btnSave = findViewById<MaterialButton>(R.id.btnSave)
@@ -80,6 +81,10 @@ class ShareActivity : AppCompatActivity() {
 
         val tagsEnabled = Prefs.tagsEnabled(this)
         findViewById<View>(R.id.tilTags).visibility = if (tagsEnabled) View.VISIBLE else View.GONE
+
+        val foldersEnabled = Prefs.foldersEnabled(this)
+        findViewById<View>(R.id.tilFolder).visibility = if (foldersEnabled) View.VISIBLE else View.GONE
+        var selectedFolderId: Int? = null
 
         // Les applis tierces ne renseignent quasiment jamais EXTRA_SUBJECT/description :
         // on va chercher titre + extrait côté serveur, sans écraser une saisie déjà présente.
@@ -137,6 +142,30 @@ class ShareActivity : AppCompatActivity() {
             }
         }
 
+        if (foldersEnabled) lifecycleScope.launch {
+            val folders = ApiClient.fetchGroups(
+                Prefs.serverUrl(this@ShareActivity),
+                Prefs.apiKey(this@ShareActivity),
+            )
+            if (folders.isNotEmpty()) {
+                val none = getString(R.string.folder_none)
+                val labels = ArrayList<String>()
+                val ids = ArrayList<Int?>()
+                labels.add(none)
+                ids.add(null)
+                for (folder in folders) {
+                    val prefix = if (folder.depth > 0) "↳ ".repeat(folder.depth) else "📁 "
+                    labels.add("$prefix${folder.name}")
+                    ids.add(folder.id)
+                }
+                etFolder.setText(none, false)
+                etFolder.setAdapter(ArrayAdapter(this@ShareActivity, android.R.layout.simple_dropdown_item_1line, labels))
+                etFolder.onItemClickListener = android.widget.AdapterView.OnItemClickListener { _, _, pos, _ ->
+                    selectedFolderId = ids[pos]
+                }
+            }
+        }
+
         btnCancel.setOnClickListener { finish() }
 
         btnSave.setOnClickListener {
@@ -167,6 +196,7 @@ class ShareActivity : AppCompatActivity() {
                     tags = tags,
                     description = description,
                     note = note,
+                    folderId = selectedFolderId,
                     isPublic = isPublic,
                 )
                 progress.visibility = View.GONE
@@ -184,7 +214,7 @@ class ShareActivity : AppCompatActivity() {
                                 tags = tags,
                                 description = description,
                                 note = note,
-                                folderId = null,
+                                folderId = selectedFolderId,
                                 isPublic = isPublic,
                             ),
                         )

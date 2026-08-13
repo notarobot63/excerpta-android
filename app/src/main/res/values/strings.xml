@@ -14,6 +14,8 @@
     <string name="hint_title">Title</string>
     <string name="hint_tags">Tags (comma separated)</string>
     <string name="hint_tags_short">Tags</string>
+    <string name="hint_folder">Folder</string>
+    <string name="folder_none">No folder</string>
     <string name="hint_description">Excerpt (optional)</string>
     <string name="hint_note">Note (optional)</string>
     <string name="share_public_label">Public link</string>
