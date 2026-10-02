@@ -16,6 +16,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import coil.dispose
 import coil.load
 import coil.transform.RoundedCornersTransformation
 import java.text.SimpleDateFormat
@@ -97,6 +98,9 @@ class LinkAdapter : ListAdapter<ApiClient.LinkItem, LinkAdapter.VH>(DIFF) {
                 })
             }
         } else {
+            // Vue recyclée : annuler la requête d'un lien précédent, sans quoi
+            // sa vignette arrivait par-dessus le placeholder.
+            holder.thumbnail.dispose()
             holder.thumbnail.visibility = View.VISIBLE
             holder.thumbnail.scaleType = ImageView.ScaleType.FIT_XY
             holder.thumbnail.setImageDrawable(makePlaceholder(holder.thumbnail, item.url))

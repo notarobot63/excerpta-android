@@ -34,7 +34,8 @@ build:apk:
   script:
     - chmod +x ./gradlew
     # KEYSTORE_B64/KEYSTORE_PASS/KEY_ALIAS/KEY_PASS viennent des variables CI (System.getenv)
-    - ./gradlew assembleRelease --no-daemon --stacktrace
+    # Tests unitaires d'abord : un echec bloque le build, donc la release.
+    - ./gradlew testDebugUnitTest assembleRelease --no-daemon --stacktrace
     # Upload de l'APK dans le registre de paquets generiques (lisible publiquement, projet public)
     - |
       curl --fail-with-body --header "JOB-TOKEN: ${CI_JOB_TOKEN}" \

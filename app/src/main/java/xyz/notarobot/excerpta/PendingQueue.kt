@@ -1,60 +1,38 @@
 package xyz.notarobot.excerpta
 
 import android.content.Context
+import kotlinx.coroutines.sync.Mutex
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 
-object PendingQueue {
-    private const val FILENAME = "pending_links.json"
-    private const val MAX_QUEUE = 200  // plafond anti-accumulation hors-ligne prolongé
+data class PendingLink(
+    val url: String,
+    val title: String,
+    val tags: List<String>,
+    val description: String = "",
+    val note: String,
+    val folderId: Int?,
+    val isPublic: Boolean,
+)
 
-    data class PendingLink(
-        val url: String,
-        val title: String,
-        val tags: List<String>,
-        val description: String = "",
-        val note: String,
-        val folderId: Int?,
-        val isPublic: Boolean,
-    )
+/**
+ * Liens partagés hors-ligne, en attente d'envoi. Sans dépendance Android pour
+ * rester testable en JVM ; [PendingQueue] en fournit l'instance unique.
+ */
+class PendingStore(private val file: File, private val maxSize: Int = 200) {
 
-    /**
-     * `filesDir` et non `cacheDir` : Android vide le cache sans prevenir sous
-     * pression de stockage, ce qui faisait disparaitre en silence des liens
-     * partages hors-ligne et jamais synchronises.
-     */
-    private fun file(ctx: Context) = File(ctx.filesDir, FILENAME)
+    enum class EnqueueResult { QUEUED, FULL, WRITE_FAILED }
 
-    /** Reprend une file laissee dans l'ancien emplacement (cacheDir) par une version anterieure. */
-    private fun migrateFromCacheIfNeeded(ctx: Context) {
-        val legacy = File(ctx.cacheDir, FILENAME)
-        if (!legacy.exists()) return
-        val target = file(ctx)
-        try {
-            if (!target.exists()) legacy.copyTo(target, overwrite = false)
-            legacy.delete()
-        } catch (_: Exception) {
-        }
-    }
+    data class FlushReport(val sent: Int, val rejected: Int)
 
-    fun isEmpty(ctx: Context): Boolean = load(ctx).isEmpty()
+    private val flushing = Mutex()
 
-    /** Ajoute un lien à la file. Retourne false si la file est pleine (lien non ajouté). */
-    fun enqueue(ctx: Context, link: PendingLink): Boolean {
-        val list = load(ctx).toMutableList()
-        if (list.size >= MAX_QUEUE) return false
-        list.add(link)
-        persist(ctx, list)
-        return true
-    }
-
-    fun load(ctx: Context): List<PendingLink> {
-        migrateFromCacheIfNeeded(ctx)
-        val f = file(ctx)
-        if (!f.exists()) return emptyList()
+    @Synchronized
+    fun load(): List<PendingLink> {
+        if (!file.exists()) return emptyList()
         return try {
-            val arr = JSONArray(f.readText())
+            val arr = JSONArray(file.readText())
             List(arr.length()) { i ->
                 val o = arr.getJSONObject(i)
                 val tagsArr = o.getJSONArray("tags")
@@ -68,17 +46,68 @@ object PendingQueue {
                     isPublic = o.optBoolean("is_public", false),
                 )
             }
-        } catch (_: Exception) { emptyList() }
+        } catch (_: Exception) {
+            // Mis de côté plutôt qu'ignoré : le prochain ajout réécrirait le
+            // fichier par-dessus et ferait disparaître les liens qu'il contient.
+            file.renameTo(File(file.parentFile, "${file.name}.corrupt-${System.currentTimeMillis()}"))
+            emptyList()
+        }
     }
 
-    fun clear(ctx: Context) { file(ctx).delete() }
+    fun isEmpty(): Boolean = load().isEmpty()
 
-    fun replace(ctx: Context, links: List<PendingLink>) {
-        if (links.isEmpty()) clear(ctx) else persist(ctx, links)
+    @Synchronized
+    fun enqueue(link: PendingLink): EnqueueResult {
+        val list = load()
+        if (list.size >= maxSize) return EnqueueResult.FULL
+        return if (persist(list + link)) EnqueueResult.QUEUED else EnqueueResult.WRITE_FAILED
     }
 
-    private fun persist(ctx: Context, links: List<PendingLink>) {
+    /**
+     * Retire les liens traités en relisant le fichier : un lien ajouté pendant
+     * l'envoi (partage depuis une autre appli) est conservé.
+     */
+    @Synchronized
+    private fun remove(processed: List<PendingLink>) {
+        if (processed.isEmpty()) return
+        val remaining = load().toMutableList()
+        processed.forEach { remaining.remove(it) }
+        persist(remaining)
+    }
+
+    /**
+     * Envoie la file dans l'ordre. Les refus du serveur sont retirés (et
+     * comptés, pour être signalés) ; au premier échec réseau on s'arrête :
+     * le reste échouerait pareil, chacun après un délai de connexion complet.
+     * Renvoie null si un envoi est déjà en cours, pour ne rien envoyer deux fois.
+     */
+    suspend fun flush(send: suspend (PendingLink) -> ApiClient.Result): FlushReport? {
+        if (!flushing.tryLock()) return null
         try {
+            val done = mutableListOf<PendingLink>()
+            var sent = 0
+            var rejected = 0
+            for (link in load()) {
+                val result = send(link)
+                when {
+                    result.success -> sent++
+                    result.isNetworkError -> break
+                    else -> rejected++
+                }
+                done += link
+            }
+            remove(done)
+            return FlushReport(sent, rejected)
+        } finally {
+            flushing.unlock()
+        }
+    }
+
+    /** Écriture atomique : fichier temporaire puis renommage, jamais de JSON tronqué. */
+    private fun persist(links: List<PendingLink>): Boolean = try {
+        if (links.isEmpty()) {
+            !file.exists() || file.delete()
+        } else {
             val arr = JSONArray()
             links.forEach { link ->
                 arr.put(JSONObject().apply {
@@ -88,12 +117,44 @@ object PendingQueue {
                     put("note", link.note)
                     put("is_public", link.isPublic)
                     if (link.folderId != null) put("folder_id", link.folderId)
-                    val tagsArr = JSONArray()
-                    link.tags.forEach { tagsArr.put(it) }
-                    put("tags", tagsArr)
+                    put("tags", JSONArray(link.tags))
                 })
             }
-            file(ctx).writeText(arr.toString())
-        } catch (_: Exception) {}
+            val tmp = File(file.parentFile, "${file.name}.tmp")
+            tmp.writeText(arr.toString())
+            tmp.renameTo(file)
+        }
+    } catch (_: Exception) {
+        false
+    }
+}
+
+object PendingQueue {
+    private const val FILENAME = "pending_links.json"
+
+    @Volatile private var store: PendingStore? = null
+
+    /**
+     * `filesDir` et non `cacheDir` : Android vide le cache sans prevenir sous
+     * pression de stockage, ce qui faisait disparaitre en silence des liens
+     * partages hors-ligne et jamais synchronises.
+     */
+    fun get(ctx: Context): PendingStore = store ?: synchronized(this) {
+        store ?: run {
+            migrateFromCacheIfNeeded(ctx)
+            PendingStore(File(ctx.filesDir, FILENAME)).also { store = it }
+        }
+    }
+
+    /** Reprend une file laissee dans l'ancien emplacement (cacheDir) par une version anterieure. */
+    private fun migrateFromCacheIfNeeded(ctx: Context) {
+        val legacy = File(ctx.cacheDir, FILENAME)
+        if (!legacy.exists()) return
+        val target = File(ctx.filesDir, FILENAME)
+        try {
+            if (!target.exists()) legacy.copyTo(target, overwrite = false)
+            legacy.delete()
+        } catch (_: Exception) {
+        }
     }
 }

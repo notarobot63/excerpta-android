@@ -153,7 +153,13 @@ object Prefs {
         }.apply()
     }
 
-    fun isConfigured(ctx: Context) = serverUrl(ctx).isNotBlank() && apiKey(ctx).isNotBlank()
+    /**
+     * Une URL enregistrée invalide (versions antérieures, qui ne la validaient
+     * pas) compte comme non configurée : l'utilisateur est renvoyé vers les
+     * paramètres au lieu de buter sur une liste qui ne charge jamais.
+     */
+    fun isConfigured(ctx: Context) =
+        ServerUrl.normalize(serverUrl(ctx)) != null && apiKey(ctx).isNotBlank()
 
     fun theme(ctx: Context): String =
         getPrefs(ctx).getString(KEY_THEME, "light") ?: "light"

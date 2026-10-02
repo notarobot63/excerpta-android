@@ -24,11 +24,9 @@ class MainActivity : AppCompatActivity() {
         if (result.contents != null) {
             try {
                 val json = JSONObject(result.contents)
-                val server = json.optString("server", "")
-                val key = json.optString("key", "")
-                val serverUri = try { android.net.Uri.parse(server) } catch (_: Exception) { null }
-                val serverValid = serverUri?.scheme in listOf("http", "https") && !serverUri?.host.isNullOrBlank()
-                if (server.isNotBlank() && key.isNotBlank() && serverValid) {
+                val server = ServerUrl.normalize(json.optString("server", ""))
+                val key = json.optString("key", "").trim()
+                if (server != null && key.isNotBlank()) {
                     findViewById<EditText>(R.id.etServer).setText(server)
                     findViewById<EditText>(R.id.etApiKey).setText(key)
                     Prefs.save(this, server, key)
@@ -86,7 +84,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         btnSave.setOnClickListener {
-            Prefs.save(this, etServer.text.toString(), etApiKey.text.toString())
+            val server = ServerUrl.normalize(etServer.text.toString())
+            if (server == null) {
+                tvStatus.text = getString(R.string.invalid_server_url)
+                return@setOnClickListener
+            }
+            Prefs.save(this, server, etApiKey.text.toString())
             // Retour à LinksActivity (CLEAR_TOP la réutilise si elle est dans la pile,
             // ou en crée une nouvelle si c'est le premier lancement)
             startActivity(
@@ -97,10 +100,14 @@ class MainActivity : AppCompatActivity() {
         }
 
         btnTest.setOnClickListener {
-            val server = etServer.text.toString().trimEnd('/')
             val key = etApiKey.text.toString().trim()
-            if (server.isBlank() || key.isBlank()) {
+            if (etServer.text.isNullOrBlank() || key.isBlank()) {
                 tvStatus.text = getString(R.string.fill_both_fields)
+                return@setOnClickListener
+            }
+            val server = ServerUrl.normalize(etServer.text.toString())
+            if (server == null) {
+                tvStatus.text = getString(R.string.invalid_server_url)
                 return@setOnClickListener
             }
             tvStatus.text = getString(R.string.testing)

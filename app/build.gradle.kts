@@ -13,7 +13,10 @@ fun String.runCommand(): String? = try {
         .takeIf { it.isNotBlank() }
 } catch (_: Exception) { null }
 
-val gitCommit = "git rev-parse --short HEAD".runCommand() ?: "unknown"
+// Exactement 7 caracteres, comme le « commit: » ecrit par les CI dans la release
+// et compare par UpdateChecker. `--short` allonge le hash s'il devient ambigu,
+// ce qui aurait affiche une mise a jour disponible en permanence.
+val gitCommit = "git rev-parse HEAD".runCommand()?.take(7) ?: "unknown"
 
 /**
  * versionCode : nombre de commits. Doit rester stritement croissant, sinon
@@ -119,4 +122,8 @@ dependencies {
     implementation("io.coil-kt:coil:2.6.0")
     implementation("androidx.security:security-crypto:1.0.0")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+
+    testImplementation("junit:junit:4.13.2")
+    // org.json fait partie du SDK Android, absent (stub) des tests JVM.
+    testImplementation("org.json:json:20240303")
 }

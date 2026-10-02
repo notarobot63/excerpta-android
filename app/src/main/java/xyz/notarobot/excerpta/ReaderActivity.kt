@@ -47,6 +47,9 @@ class ReaderActivity : AppCompatActivity() {
 
         webView.settings.apply {
             javaScriptEnabled = false
+            // Le HTML vient d'une page tierce : aucun accès au stockage local.
+            allowFileAccess = false
+            allowContentAccess = false
             loadsImagesAutomatically = true
             builtInZoomControls = true
             displayZoomControls = false
@@ -67,7 +70,7 @@ class ReaderActivity : AppCompatActivity() {
             progress.visibility = View.GONE
             if (reader == null || reader.html.isBlank()) {
                 tvError.visibility = View.VISIBLE
-                tvError.text = "Vue lecteur indisponible pour ce lien."
+                tvError.text = getString(R.string.reader_unavailable)
                 return@launch
             }
             if (reader.title.isNotBlank()) toolbar.title = reader.title

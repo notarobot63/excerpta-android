@@ -23,7 +23,7 @@ jobs:
       - name: Gradle cache
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Build APK signée
+      - name: Tests + build APK signée
         env:
           RELEASES_URL: https://api.github.com/repos/${{ github.repository }}/releases/latest
           APK_URL: https://github.com/${{ github.repository }}/releases/latest/download/excerpta-android.apk
@@ -33,7 +33,7 @@ jobs:
           KEY_PASS: ${{ secrets.KEY_PASS }}
         run: |
           chmod +x ./gradlew
-          ./gradlew assembleRelease --no-daemon --stacktrace
+          ./gradlew testDebugUnitTest assembleRelease --no-daemon --stacktrace
 
       - name: Renommer l'APK
         run: cp app/build/outputs/apk/release/app-release.apk excerpta-android.apk
@@ -55,7 +55,7 @@ jobs:
           VERSION: ${{ github.ref_name }}
         run: |
           # « commit: » est lu par UpdateChecker pour détecter une mise à jour.
-          SHORT7=$(git rev-parse --short=7 HEAD)
+          SHORT7=$(git rev-parse HEAD | cut -c1-7)
           gh release create "$VERSION" excerpta-android.apk \
             --title "$VERSION" \
             --generate-notes \

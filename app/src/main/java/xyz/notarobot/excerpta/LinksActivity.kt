@@ -46,6 +46,7 @@ class LinksActivity : AppCompatActivity() {
     private var totalPages = 1
     private var isLoading = false
     private var searchJob: Job? = null
+    private var loadJob: Job? = null
     private var currentQuery = ""
     private var currentTag: String? = null
     private var currentGroupId: Int? = null
@@ -106,15 +107,17 @@ class LinksActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         toolbar.setNavigationOnClickListener { drawerLayout.openDrawer(GravityCompat.START) }
 
-        // Fermer le drawer avec le bouton retour
-        onBackPressedDispatcher.addCallback(this) {
-            if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-                drawerLayout.closeDrawer(GravityCompat.START)
-            } else {
-                isEnabled = false
-                onBackPressedDispatcher.onBackPressed()
-            }
+        // Retour ferme le drawer quand il est ouvert, et seulement alors. Le
+        // callback suit l'état du drawer : le désactiver une fois pour toutes
+        // cassait ce comportement après un premier retour sur Android 12+, où
+        // l'activité racine n'est plus détruite mais passée en arrière-plan.
+        val closeDrawerOnBack = onBackPressedDispatcher.addCallback(this, enabled = false) {
+            drawerLayout.closeDrawer(GravityCompat.START)
         }
+        drawerLayout.addDrawerListener(object : DrawerLayout.SimpleDrawerListener() {
+            override fun onDrawerOpened(drawerView: View) { closeDrawerOnBack.isEnabled = true }
+            override fun onDrawerClosed(drawerView: View) { closeDrawerOnBack.isEnabled = false }
+        })
 
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
@@ -187,19 +190,18 @@ class LinksActivity : AppCompatActivity() {
     }
 
     private fun flushPendingQueue() {
-        if (PendingQueue.isEmpty(this)) return
-        val pending = PendingQueue.load(this)
+        val queue = PendingQueue.get(this)
+        if (queue.isEmpty()) return
         lifecycleScope.launch {
-            // On garde en file les seuls échecs réseau (à retenter plus tard).
-            // Les échecs métier (URL rejetée, clé invalide…) sont retirés de la
-            // file mais signalés à l'utilisateur : on ne les perd pas en silence.
-            val failed = mutableListOf<PendingQueue.PendingLink>()
-            var sent = 0
-            var rejected = 0
-            for (link in pending) {
-                val result = ApiClient.addLink(
-                    serverUrl = Prefs.serverUrl(this@LinksActivity),
-                    apiKey = Prefs.apiKey(this@LinksActivity),
+            // Les échecs réseau restent en file (à retenter plus tard). Les
+            // refus du serveur (URL rejetée, clé invalide…) en sortent mais
+            // sont signalés : on ne les perd pas en silence.
+            val serverUrl = Prefs.serverUrl(this@LinksActivity)
+            val apiKey = Prefs.apiKey(this@LinksActivity)
+            val report = queue.flush { link ->
+                ApiClient.addLink(
+                    serverUrl = serverUrl,
+                    apiKey = apiKey,
                     url = link.url,
                     title = link.title,
                     tags = link.tags,
@@ -208,25 +210,19 @@ class LinksActivity : AppCompatActivity() {
                     folderId = link.folderId,
                     isPublic = link.isPublic,
                 )
-                when {
-                    result.success -> sent++
-                    result.isNetworkError -> failed.add(link)
-                    else -> rejected++  // erreur métier : retiré de la file
-                }
-            }
-            PendingQueue.replace(this@LinksActivity, failed)
-            if (sent > 0) {
+            } ?: return@launch
+            if (report.sent > 0) {
                 Snackbar.make(
                     recyclerView,
-                    getString(R.string.queued_synced, sent),
+                    getString(R.string.queued_synced, report.sent),
                     Snackbar.LENGTH_SHORT,
                 ).show()
                 resetAndLoad()
             }
-            if (rejected > 0) {
+            if (report.rejected > 0) {
                 Snackbar.make(
                     recyclerView,
-                    getString(R.string.queued_rejected, rejected),
+                    getString(R.string.queued_rejected, report.rejected),
                     Snackbar.LENGTH_LONG,
                 ).show()
             }
@@ -263,7 +259,7 @@ class LinksActivity : AppCompatActivity() {
         selectedNavView = null  // les vues précédentes sont détachées, reset la référence
 
         addNavItem(
-            label = "Tous les liens",
+            label = getString(R.string.nav_all_links),
             isSelected = currentTag == null && currentGroupId == null,
         ) {
             clearFilter()
@@ -279,12 +275,12 @@ class LinksActivity : AppCompatActivity() {
         addDivider()
 
         if (Prefs.foldersEnabled(this) && lastGroups.isNotEmpty()) {
-            addSection("Groupes")
+            addSection(getString(R.string.nav_folders))
             renderGroups()
         }
 
         if (Prefs.tagsEnabled(this) && lastTags.isNotEmpty()) {
-            addSection("Tags")
+            addSection(getString(R.string.nav_tags))
             for (tag in lastTags) {
                 addNavItem(
                     label = "# ${tag.name}",
@@ -510,7 +506,14 @@ class LinksActivity : AppCompatActivity() {
         emptyView.visibility = if (adapter.itemCount == 0) View.VISIBLE else View.GONE
     }
 
+    /**
+     * Repart de la page 1 avec les filtres courants. Le chargement en cours est
+     * annulé : sinon la nouvelle requête était ignorée (isLoading), et la
+     * réponse de l'ancienne recherche s'affichait sous la nouvelle.
+     */
     private fun resetAndLoad() {
+        loadJob?.cancel()
+        isLoading = false
         currentPage = 1
         totalPages = 1
         adapter.submitList(emptyList())
@@ -522,7 +525,7 @@ class LinksActivity : AppCompatActivity() {
         isLoading = true
         progressView.visibility = View.VISIBLE
 
-        lifecycleScope.launch {
+        loadJob = lifecycleScope.launch {
             val result = ApiClient.fetchLinks(
                 serverUrl = Prefs.serverUrl(this@LinksActivity),
                 apiKey = Prefs.apiKey(this@LinksActivity),
@@ -622,9 +625,9 @@ class LinksActivity : AppCompatActivity() {
         }
         // Toujours proposé : le serveur extrait le contenu à la volée si besoin
         // (ReaderActivity affiche un loader puis un message si non extractible).
-        actions += "Vue lecteur" to { openReader(item) }
+        actions += getString(R.string.menu_reader) to { openReader(item) }
         if (item.archivedUrl != null) {
-            actions += "Voir l'archive" to {
+            actions += getString(R.string.menu_archive) to {
                 val uri = android.net.Uri.parse(item.archivedUrl)
                 if (uri.scheme in listOf("http", "https")) {
                     startActivity(Intent(Intent.ACTION_VIEW, uri))
@@ -675,10 +678,10 @@ class LinksActivity : AppCompatActivity() {
 
     private fun confirmDelete(item: ApiClient.LinkItem) {
         MaterialAlertDialogBuilder(this)
-            .setTitle("Supprimer ce lien ?")
+            .setTitle(R.string.delete_confirm_title)
             .setMessage(item.title.ifBlank { item.url })
-            .setNegativeButton("Annuler", null)
-            .setPositiveButton("Supprimer") { _, _ ->
+            .setNegativeButton(R.string.btn_cancel, null)
+            .setPositiveButton(R.string.menu_delete) { _, _ ->
                 lifecycleScope.launch {
                     val result = ApiClient.deleteLink(
                         Prefs.serverUrl(this@LinksActivity),
@@ -706,7 +709,7 @@ class LinksActivity : AppCompatActivity() {
             when {
                 info != null && info.hasUpdate -> {
                     Snackbar.make(anchor, getString(R.string.update_available, info.remoteCommit), Snackbar.LENGTH_INDEFINITE)
-                        .setAction("Installer") { UpdateChecker.openDownload(this@LinksActivity) }
+                        .setAction(R.string.update_install) { UpdateChecker.openDownload(this@LinksActivity) }
                         .show()
                 }
                 verbose && info != null -> {
