@@ -1,0 +1,2 @@
+* Les liens partagés hors-ligne apparaissent en haut de la liste, marqués « En attente d'envoi », jusqu'à leur arrivée sur le serveur. La recherche et les filtres s'y appliquent aussi.
+* Appui long sur un lien en attente : l'ouvrir, copier son URL ou le retirer de la file.

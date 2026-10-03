@@ -1,0 +1,2 @@
+* Links shared offline now show at the top of the list, marked "Waiting to be sent", until they reach the server. Search and filters apply to them too.
+* Long-press a waiting link to open it, copy its URL or remove it from the queue.
