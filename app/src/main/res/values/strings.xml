@@ -83,4 +83,7 @@
     <string name="delete_confirm_title">Delete this link?</string>
     <string name="update_install">Install</string>
     <string name="reader_unavailable">Reader view unavailable for this link.</string>
+    <string name="pending_badge">⏱ Waiting to be sent</string>
+    <string name="menu_remove_from_queue">Remove from queue</string>
+    <string name="pending_removed">Link removed from the queue</string>
 </resources>

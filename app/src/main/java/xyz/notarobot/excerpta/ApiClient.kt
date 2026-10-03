@@ -58,6 +58,8 @@ object ApiClient {
         val isBroken: Boolean = false,
         val checkStatus: Int? = null,
         val hasReader: Boolean = false,
+        /** Lien de la file hors-ligne, pas encore envoyé (voir [PendingDisplay]). */
+        val isPending: Boolean = false,
     )
 
     data class ReaderContent(

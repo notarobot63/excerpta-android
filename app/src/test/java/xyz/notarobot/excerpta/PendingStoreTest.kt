@@ -84,6 +84,14 @@ class PendingStoreTest {
     }
 
     @Test
+    fun `discard ne retire qu'une occurrence`() {
+        val s = store()
+        s.enqueue(link(1)); s.enqueue(link(2)); s.enqueue(link(1))
+        s.discard(link(1))
+        assertEquals(listOf(link(2), link(1)), s.load())
+    }
+
+    @Test
     fun `un fichier corrompu est mis de cote, pas ecrase`() {
         val f = File(tmp.root, "q.json").apply { writeText("[{\"url\": tronqué") }
         val s = PendingStore(f)

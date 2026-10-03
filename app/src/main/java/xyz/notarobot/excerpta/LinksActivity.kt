@@ -66,6 +66,8 @@ class LinksActivity : AppCompatActivity() {
     private var lastGroups: List<ApiClient.GroupItem> = emptyList()
     private var lastTags: List<ApiClient.TagInfo> = emptyList()
     private var listNeedsRefresh = false
+    /** File hors-ligne telle qu'affichée en tête de liste (les ids des cartes y indexent). */
+    private var shownPending: List<PendingLink> = emptyList()
     private val cacheFile by lazy { File(cacheDir, "links_cache.json") }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -167,6 +169,7 @@ class LinksActivity : AppCompatActivity() {
         adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
             override fun onChanged() = updateEmpty()
             override fun onItemRangeInserted(p: Int, c: Int) = updateEmpty()
+            override fun onItemRangeRemoved(p: Int, c: Int) = updateEmpty()
         })
 
         loadPage(1, append = false)
@@ -181,6 +184,7 @@ class LinksActivity : AppCompatActivity() {
         super.onResume()
         if (ThemeHelper.needsRecreate(this)) recreate()
         else {
+            refreshPending()  // un partage fait depuis une autre appli pendant notre absence
             flushPendingQueue()
             if (listNeedsRefresh) {
                 listNeedsRefresh = false
@@ -217,7 +221,11 @@ class LinksActivity : AppCompatActivity() {
                     getString(R.string.queued_synced, report.sent),
                     Snackbar.LENGTH_SHORT,
                 ).show()
-                resetAndLoad()
+                // Sans vider la liste : la carte « en attente » reste affichée
+                // jusqu'à ce que la liste rechargée, qui contient le vrai lien, la remplace.
+                resetAndLoad(clearList = false)
+            } else {
+                refreshPending()
             }
             if (report.rejected > 0) {
                 Snackbar.make(
@@ -511,13 +519,26 @@ class LinksActivity : AppCompatActivity() {
      * annulé : sinon la nouvelle requête était ignorée (isLoading), et la
      * réponse de l'ancienne recherche s'affichait sous la nouvelle.
      */
-    private fun resetAndLoad() {
+    private fun resetAndLoad(clearList: Boolean = true) {
         loadJob?.cancel()
         isLoading = false
         currentPage = 1
         totalPages = 1
-        adapter.submitList(emptyList())
+        if (clearList) adapter.submitList(emptyList())
         loadPage(1, append = false)
+    }
+
+    /** Liens en attente correspondant aux filtres courants, à placer en tête de liste. */
+    private fun withPending(links: List<ApiClient.LinkItem>): List<ApiClient.LinkItem> {
+        shownPending = PendingQueue.get(this).load()
+        val pending = PendingDisplay.items(shownPending, currentQuery, currentTag, currentGroupId)
+        return pending + links.filter { !it.isPending }
+    }
+
+    /** Remet à jour les seules cartes en attente, sans recharger depuis le serveur. */
+    private fun refreshPending() {
+        if (PendingQueue.get(this).load() == shownPending) return
+        adapter.submitList(withPending(adapter.currentList))
     }
 
     private fun loadPage(page: Int, append: Boolean) {
@@ -541,9 +562,8 @@ class LinksActivity : AppCompatActivity() {
             if (result == null) {
                 if (page == 1 && !append) {
                     val cached = loadCache()
+                    adapter.submitList(withPending(cached.orEmpty()))
                     if (cached != null) {
-                        adapter.submitList(cached)
-                        emptyView.visibility = if (cached.isEmpty()) View.VISIBLE else View.GONE
                         Snackbar.make(recyclerView, getString(R.string.offline_notice), Snackbar.LENGTH_INDEFINITE).show()
                         return@launch
                     }
@@ -556,12 +576,12 @@ class LinksActivity : AppCompatActivity() {
 
             currentPage = result.page
             totalPages = result.totalPages
-            val newList = if (append) (adapter.currentList + result.links) else result.links
+            val newList = if (append) (adapter.currentList + result.links) else withPending(result.links)
             adapter.submitList(newList)
             emptyView.visibility = if (newList.isEmpty()) View.VISIBLE else View.GONE
 
             if (page == 1 && !append && currentTag == null && currentGroupId == null && currentQuery.isBlank()) {
-                saveCache(newList)
+                saveCache(result.links)
             }
         }
     }
@@ -613,6 +633,7 @@ class LinksActivity : AppCompatActivity() {
     // ── Menu contextuel (appui long) ────────────────────────────────────────
 
     private fun showLinkMenu(item: ApiClient.LinkItem) {
+        if (item.isPending) return showPendingMenu(item)
         val visibilityLabel = if (item.isPublic) getString(R.string.menu_make_private) else getString(R.string.menu_make_public)
 
         // Liste d'actions construite dynamiquement : libellé + handler.
@@ -647,6 +668,31 @@ class LinksActivity : AppCompatActivity() {
             .setItems(actions.map { it.first }.toTypedArray()) { _, which ->
                 actions[which].second()
             }
+            .show()
+    }
+
+    /** Pas encore sur le serveur : ni lecteur, ni visibilité, ni suppression serveur. */
+    private fun showPendingMenu(item: ApiClient.LinkItem) {
+        val link = PendingDisplay.indexOf(item.id)?.let { shownPending.getOrNull(it) } ?: return
+        val actions = listOf<Pair<String, () -> Unit>>(
+            getString(R.string.menu_open) to {
+                val uri = android.net.Uri.parse(item.url)
+                if (uri.scheme in listOf("http", "https")) startActivity(Intent(Intent.ACTION_VIEW, uri))
+            },
+            getString(R.string.menu_copy_url) to {
+                val clip = ClipData.newPlainText("url", item.url)
+                (getSystemService(CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(clip)
+                Snackbar.make(recyclerView, getString(R.string.url_copied), Snackbar.LENGTH_SHORT).show()
+            },
+            getString(R.string.menu_remove_from_queue) to {
+                PendingQueue.get(this).discard(link)
+                refreshPending()
+                Snackbar.make(recyclerView, getString(R.string.pending_removed), Snackbar.LENGTH_SHORT).show()
+            },
+        )
+        MaterialAlertDialogBuilder(this)
+            .setTitle(item.title.ifBlank { item.url })
+            .setItems(actions.map { it.first }.toTypedArray()) { _, which -> actions[which].second() }
             .show()
     }
 

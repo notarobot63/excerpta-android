@@ -78,4 +78,7 @@
     <string name="delete_confirm_title">Supprimer ce lien ?</string>
     <string name="update_install">Installer</string>
     <string name="reader_unavailable">Vue lecteur indisponible pour ce lien.</string>
+    <string name="pending_badge">⏱ En attente d\'envoi</string>
+    <string name="menu_remove_from_queue">Retirer de la file</string>
+    <string name="pending_removed">Lien retiré de la file</string>
 </resources>

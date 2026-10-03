@@ -35,6 +35,7 @@ class LinkAdapter : ListAdapter<ApiClient.LinkItem, LinkAdapter.VH>(DIFF) {
         val note: TextView = view.findViewById(R.id.tvNote)
         val date: TextView = view.findViewById(R.id.tvDate)
         val broken: TextView = view.findViewById(R.id.tvBroken)
+        val pending: TextView = view.findViewById(R.id.tvPending)
         val thumbnail: ImageView = view.findViewById(R.id.imgThumbnail)
     }
 
@@ -63,6 +64,10 @@ class LinkAdapter : ListAdapter<ApiClient.LinkItem, LinkAdapter.VH>(DIFF) {
         }
 
         holder.date.text = formatDate(item.createdAt)
+
+        // Lien de la file hors-ligne : même carte, estompée, avec son badge.
+        holder.pending.visibility = if (item.isPending) View.VISIBLE else View.GONE
+        holder.itemView.alpha = if (item.isPending) 0.6f else 1f
 
         // Badge lien cassé
         if (item.isBroken) {

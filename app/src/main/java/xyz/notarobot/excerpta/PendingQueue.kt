@@ -63,6 +63,9 @@ class PendingStore(private val file: File, private val maxSize: Int = 200) {
         return if (persist(list + link)) EnqueueResult.QUEUED else EnqueueResult.WRITE_FAILED
     }
 
+    /** Retrait à la demande de l'utilisateur (appui long sur un lien en attente). */
+    fun discard(link: PendingLink) = remove(listOf(link))
+
     /**
      * Retire les liens traités en relisant le fichier : un lien ajouté pendant
      * l'envoi (partage depuis une autre appli) est conservé.
