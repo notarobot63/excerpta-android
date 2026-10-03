@@ -1,0 +1,5 @@
+* Les liens partagés hors-ligne sont mis en attente et envoyés au retour du réseau (cela n'avait jamais fonctionné).
+* Fin du plantage au lancement quand l'URL du serveur était saisie sans https:// ; elle est désormais vérifiée.
+* La recherche et les filtres n'affichent plus les résultats d'une recherche précédente.
+* Retour ferme le tiroir de façon fiable, les vignettes ne se mélangent plus.
+* Derniers textes en dur traduits.

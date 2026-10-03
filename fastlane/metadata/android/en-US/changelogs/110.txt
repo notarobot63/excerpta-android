@@ -1,0 +1,5 @@
+* Links shared offline are now queued and sent once you're back online (this never actually worked before).
+* No more crash at launch when the server URL was entered without https://; it is now validated.
+* Search and filters no longer show results from a previous search.
+* Back reliably closes the drawer, and thumbnails no longer get mixed up.
+* Leftover hardcoded French text is now translated.
